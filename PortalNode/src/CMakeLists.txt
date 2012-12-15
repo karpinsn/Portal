@@ -38,6 +38,13 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIR})
 set(LIBS ${LIBS} ${GLEW_LIBRARY})
 
+#   -----------------------------------------
+#   GLUT (for now)
+#   -----------------------------------------
+find_package(GLUT REQUIRED)
+include_directories(${GLUT_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${GLUT_LIBRARIES})
+
 #	----------------------------------------------------------------
 #	Libraries
 #	----------------------------------------------------------------
