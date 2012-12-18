@@ -42,7 +42,7 @@ set(LIBS ${LIBS} ${GLEW_LIBRARY})
 #   GLUT (for now)
 #   -----------------------------------------
 find_package(GLUT REQUIRED)
-include_directories(${GLUT_INCLUDE_DIRS})
+include_directories(${GLUT_INCLUDE_DIR})
 set(LIBS ${LIBS} ${GLUT_LIBRARIES})
 
 #	----------------------------------------------------------------
@@ -87,8 +87,13 @@ endif(SLS_GENERATE_DOC)
 
 set(SOURCES	
 	Application.cpp
+    PortalGLContext.cpp
+    GLUTManager.cpp
 
     Application.h
+    IGLContext.h
+    PortalGLContext.h
+    GLUTManager.h
 	)	
 
 #	---------------------------------------------------------------------------------------
