@@ -87,9 +87,27 @@ endif(SLS_GENERATE_DOC)
 
 set(SOURCES	
 	Application.cpp
+    MainController.cpp
+    Capture/CameraCapture.cpp
+
 
     Application.h
+    MainController.h
+    Capture/CameraCapture.h
 	)	
+
+#   Qt Files
+set(MOCS
+    MainController.h
+    Capture/CameraCapture.h)
+
+#   ---------------------------------------------------------------------------------------
+#                           Qt Generation
+#   ---------------------------------------------------------------------------------------
+
+qt4_wrap_cpp(GENERATED_SOURCES ${MOCS})
+
+source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 
 #	---------------------------------------------------------------------------------------
 #							Build the app
@@ -99,7 +117,9 @@ set(SOURCES
 add_executable(${PROJECT_NAME}
 	MACOSX_BUNDLE
 	${SOURCES}
-	${SHADERS_QUALIFIED})
+	${SHADERS_QUALIFIED}
+    ${MOCS}
+    ${GENERATED_SOURCES})
 
 add_dependencies(${PROJECT_NAME} wrench)
 add_dependencies(${PROJECT_NAME} antenna)
