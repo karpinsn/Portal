@@ -1,11 +1,11 @@
 /**
 @file
 @author Nikolaus Karpinsky
-@since  12/15/2012 
+@since  09/01/09
 */
 
-#ifndef _GLUT_GL_CONTEXT_H_
-#define _GLUT_GL_CONTEXT_H_
+#ifndef _PORTAL_GL_CONTEXT_H_
+#define _PORTAL_GL_CONTEXT_H_
 
 #ifdef __APPLE__
 #include <glew.h>
@@ -19,18 +19,15 @@
 #include <GL/glew.h>
 #endif
 
-#include <gl/glut.h>
-
-#include "IGLWidget.h"
+#include "IGLContext.h"
 
 using namespace std;
 
-class GLUTGLContext : public IGLWidget
+class PortalGLContext : public IGLContext
 {
 public:
 	void init(void);
     void init(int width, int height);
-    void start(void);
 	void draw(void);
 	void resize(int width, int height);
 	void cameraSelectMode(int mode);
@@ -38,9 +35,4 @@ public:
 	void mouseMoveEvent(int mouseX, int mouseY);
 };
 
-// ------------------- Globals used by GLUT -----------------------------------
-GLUTGLContext* g_glutContext;
-void glutDisplay(void);
-// ----------------------------------------------------------------------------
-
-#endif	// _GLUT_GL_CONTEXT_H_
+#endif	// _PORTAL_GL_CONTEXT_H_
