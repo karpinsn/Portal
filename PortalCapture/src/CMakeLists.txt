@@ -87,11 +87,13 @@ endif(SLS_GENERATE_DOC)
 
 set(SOURCES	
 	Application.cpp
+    Utils.cpp
     MainController.cpp
     Capture/CameraCapture.cpp
 
 
     Application.h
+    Utils.h
     MainController.h
     Capture/CameraCapture.h
 	)	
