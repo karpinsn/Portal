@@ -8,10 +8,13 @@ MainController::MainController() : QObject()
 void MainController::Init(void)
 {
   //QGLPixelBuffer* buffer = new QGLPixelBuffer(800, 600);
-  MainContext* buffer = new MainContext(800, 600);
+  QGLPixelBuffer* buffer = new QGLPixelBuffer(800, 600);
   bool has		= buffer->hasOpenGLPbuffers();
   bool current	= buffer->makeCurrent();
   bool valid	= buffer->isValid();
+
+  QGLContext* context = new QGLContext(QGLFormat( ), buffer);
+  //context->makeCurrent();
 
   //  Assuming that since our QGLPixelBuffer created and made the context current
   //  that this will be created on that context. 
