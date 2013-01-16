@@ -73,6 +73,14 @@ include_directories(../../Libraries/Antenna/src)
 include_directories(${ANTENNA_INCLUDE_DIRS})
 set(LIBS ${LIBS} antenna "${ANTENNA_LIBRARIES}")
 
+#	-----------------------------------------
+#	Lens
+#	-----------------------------------------
+add_subdirectory(../../Libraries/Lens/src/lens ${PROJECT_BINARY_DIR}/Libraries/Lens)
+include_directories(../../Libraries/Lens/src)
+include_directories(${LENS_INCLUDE_DIRS})
+set(LIBS ${LIBS} lens "${LENS_LIBRARIES}")
+
 #	---------------------------------------------------------------------------------------
 #	Generate Documentation
 #	---------------------------------------------------------------------------------------
