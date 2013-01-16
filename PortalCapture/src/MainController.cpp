@@ -1,30 +1,32 @@
 #include "MainController.h"
 
-MainController::MainController() : QObject()
-{
-
-}
+MainController::MainController() : QObject(), m_mainContext(nullptr), m_captureContext(nullptr)
+{ }
 
 void MainController::Init(void)
 {
-  // By creating a pixel buffer we will get a valid QGLContext without needing
-  // a UI. We must have an actual screen though (X Session or Windows session)
-  // so that we can get a graphics context, but we wont actually show a window
-  m_mainBuffer = unique_ptr<QGLPixelBuffer>( new QGLPixelBuffer( 8, 8 ) ); // 8 is used because it is a small power of 2
+  // By creating a QGLWidget we will get a QGLContext. As long as we
+  // dont show it we will have a headless GLContext. Athough headless
+  // we must have an actual screen though (X Session or Explorer session)
+  // so that we can get a window and graphics context.
+  m_mainContext = unique_ptr<QGLWidget>( new QGLWidget( ) );  
+  Utils::AssertOrThrowIfFalse(m_mainContext->isValid(), "OpenGL context is not valid");
 
-  //  Make sure we support pBuffers and have a valid context
-  Utils::AssertOrThrowIfFalse( m_mainBuffer->hasOpenGLPbuffers( ), "Missing Pixel Buffer support. Can't create an OpenGL Context" );
-  Utils::AssertOrThrowIfFalse( m_mainBuffer->isValid( ), "OpenGL Context is not valid" );
-  Utils::AssertOrThrowIfFalse( m_mainBuffer->makeCurrent( ), "Unable to attach to the OpenGL context" );
-  
-  // Now create the main context (shared with the QGLPixelBuffer). This will be
-  // used by other contexts to share texture access etc...
-  m_mainContext = unique_ptr<QGLContext>( new QGLContext( QGLFormat( ), m_mainBuffer.get( ) ) );
-  m_mainContext->makeCurrent( );
-
-  //  Now I need to get access to the context to share it with additional threads
   m_captureContext = unique_ptr<ICaptureContext>( new CameraCapture( ) );
   m_captureContext->Init( );
+}
+
+shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
+{
+  shared_ptr<QGLWidget> sharedContext(nullptr);
+
+  if(nullptr != m_mainContext)
+  {
+	sharedContext = shared_ptr<QGLWidget>( new QGLWidget( 0, m_mainContext.get( ) ) );
+	Utils::AssertOrThrowIfFalse(sharedContext->isSharing( ), "Unable to create a shared OpenGL context" );
+  }
+  
+  return sharedContext;
 }
 
 void MainController::Start(void)

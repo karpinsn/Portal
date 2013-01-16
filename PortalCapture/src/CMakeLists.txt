@@ -20,7 +20,7 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}")
 #	-----------------------------------------
 #	QT
 #	-----------------------------------------
-find_package(Qt4 COMPONENTS QtCore QtOpenGL REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
 include(${QT_USE_FILE})
 set (LIBS ${LIBS} ${QT_LIBRARIES})
 
@@ -97,12 +97,17 @@ set(SOURCES
 	Application.cpp
     Utils.cpp
     MainController.cpp
+    OpenGLTripleBuffer.cpp
     Capture/CameraCapture.cpp
 
 
     Application.h
     Utils.h
     MainController.h
+    OpenGLTripleBuffer.h
+    IReadBuffer.h
+    IWriteBuffer.h
+    ISharedGLContextFactory.h
     Capture/CameraCapture.h
 	)	
 

@@ -9,6 +9,8 @@
 #include <QCoreApplication>
 #include <QTimer>
 
+#include <QtGui>
+
 #include "MainController.h"
 
 #include "wrench\Logger.h"

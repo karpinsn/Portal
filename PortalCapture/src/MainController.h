@@ -13,20 +13,21 @@
 #include <memory>
 #include <assert.h>
 
+#include "OpenGLTripleBuffer.h"
+#include "ISharedGLContextFactory.h"
 #include "Utils.h"
 #include "Capture\CameraCapture.h"
 
 using namespace std;
 
-class MainController : public QObject
+class MainController : public QObject, public ISharedGLContextFactory
 {
   Q_OBJECT
 
 private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
-  unique_ptr<QGLPixelBuffer> m_mainBuffer;
-  unique_ptr<QGLContext> m_mainContext;
+  unique_ptr<QGLWidget> m_mainContext;
 
   unique_ptr<ICaptureContext> m_captureContext;
   //  IDecodeContext
@@ -35,6 +36,8 @@ private:
 public:
   MainController();
   void Init(void);
+
+  virtual shared_ptr<QGLWidget> MakeSharedContext(void);
 
 public slots:
   void Start(void);
