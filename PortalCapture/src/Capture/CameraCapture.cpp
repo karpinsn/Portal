@@ -3,6 +3,8 @@
 void CameraCaptureWorker::Init(void)
 {
   m_running = true;
+
+  //  TODO: InitWrite on our TripleBuffer
 }
 
 void CameraCaptureWorker::Stop(void)
@@ -31,10 +33,10 @@ void CameraCapture::Init(void)
   m_worker->moveToThread(m_workerThread);
   m_worker->Init();
 
-  connect(m_workerThread, SIGNAL( started() ), m_worker, SLOT( Capture() ));
-  connect(m_worker, SIGNAL( Done() ), m_workerThread, SLOT( quit() ));
-  connect(m_workerThread, SIGNAL( finished() ), m_workerThread, SLOT( deleteLater() ));
-  connect(m_worker, SIGNAL( Done() ), m_worker, SLOT( deleteLater() ));
+  connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( Capture( ) ));
+  connect(m_worker,		  SIGNAL( Done( ) ),	  m_workerThread, SLOT( quit( ) ));
+  connect(m_workerThread, SIGNAL( finished( ) ),  m_workerThread, SLOT( deleteLater( ) ));
+  connect(m_worker,		  SIGNAL( Done( ) ),	  m_worker,		  SLOT( deleteLater( ) ));
 }
 
 void CameraCapture::Start(void)

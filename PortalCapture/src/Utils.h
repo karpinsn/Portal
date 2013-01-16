@@ -1,15 +1,23 @@
-#ifndef _PORTAL_CAPTURE_QGLPBufferGLPaintDevice_H_
-#define _PORTAL_CAPTURE_QGLPBufferGLPaintDevice_H_
+#ifndef _PORTAL_CAPTURE_UTILS_H_
+#define _PORTAL_CAPTURE_UTILS_H_
 
-#include <QGLContext>
+#include <string>
+#include <assert.h>
 
-#include <QGLPixelBuffer>
+using namespace std;
 
-class MainContext : public QGLPixelBuffer
+// Utility Macros:
+
+// A macro to disallow the copy constructor and operator= functions
+// This should be used in the private: declarations for a class
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&);               \
+  void operator=(const TypeName&)
+
+class Utils
 {
 public:
-  MainContext(int width, int height);
-  QGLContext* getContext(void);
+  static void AssertOrThrowIfFalse(bool condition, string errorMessage);
 };
 
-#endif _PORTAL_CAPTURE_QGLPBufferGLPaintDevice_H_
+#endif _PORTAL_CAPTURE_UTILS_H_

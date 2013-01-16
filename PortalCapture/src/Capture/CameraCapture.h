@@ -21,6 +21,7 @@ class CameraCaptureWorker : public QObject
   Q_OBJECT
 
 private:
+  //  TODO: Disallow copying
   bool m_running;
 
 public:
@@ -41,6 +42,7 @@ class CameraCapture : public QObject, public ICaptureContext
 //	Need to create a lens::Camera in initialize
 //	Need a pointer to a triplebuffer
 private:
+  //  TODO: Disallow copying
   QThread* m_workerThread;
   CameraCaptureWorker* m_worker;
 

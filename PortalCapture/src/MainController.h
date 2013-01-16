@@ -23,7 +23,10 @@ class MainController : public QObject
   Q_OBJECT
 
 private:
-  //unique_ptr<QGLContext> m_mainContext;
+  DISALLOW_COPY_AND_ASSIGN(MainController);
+
+  unique_ptr<QGLPixelBuffer> m_mainBuffer;
+  unique_ptr<QGLContext> m_mainContext;
 
   unique_ptr<ICaptureContext> m_captureContext;
   //  IDecodeContext

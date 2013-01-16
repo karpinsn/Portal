@@ -1,10 +1,12 @@
 #include "Utils.h"
 
-MainContext::MainContext(int width, int height) : QGLPixelBuffer(width, height)
-{ }
-
-QGLContext* MainContext::getContext(void)
+void Utils::AssertOrThrowIfFalse(bool condition, string errorMessage)
 {
-  
-  return nullptr;
+  if(!condition)
+  {
+	//	We failed our condition. Try assert so that we have stack trace
+	//	otherwise throw an exception
+	assert(condition);
+	throw errorMessage;
+  }
 }
