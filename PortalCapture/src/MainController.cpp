@@ -12,8 +12,11 @@ void MainController::Init(void)
   m_mainContext = unique_ptr<QGLWidget>( new QGLWidget( ) );  
   Utils::AssertOrThrowIfFalse(m_mainContext->isValid(), "OpenGL context is not valid");
 
+  //  Create our reading buffer
+  auto readBuffer = make_shared<OpenGLTripleBuffer>(*this);
+
   m_captureContext = unique_ptr<ICaptureContext>( new CameraCapture( ) );
-  m_captureContext->Init( );
+  m_captureContext->Init( readBuffer );
 }
 
 shared_ptr<QGLWidget> MainController::MakeSharedContext(void)

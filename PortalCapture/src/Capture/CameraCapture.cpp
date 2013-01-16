@@ -1,10 +1,15 @@
 #include "CameraCapture.h"
 
-void CameraCaptureWorker::Init(void)
-{
-  m_running = true;
+CameraCaptureWorker::CameraCaptureWorker(void)
+{ }
 
-  //  TODO: InitWrite on our TripleBuffer
+void CameraCaptureWorker::Init(shared_ptr<IWriteBuffer> outputBuffer)
+{
+  m_outputBuffer = outputBuffer;
+  //  TODO: Get the actual width and height from the camera
+  m_outputBuffer->initWrite(16, 16);
+
+  m_running = true;
 }
 
 void CameraCaptureWorker::Stop(void)
@@ -16,13 +21,17 @@ void CameraCaptureWorker::Capture()
 {
   while(m_running)
   {
-
+	//	TODO: Grab from the camera, pack, and then write if nessacary
+	//m_outputBuffer->write(0, 0);
   }
 
   emit Done();
 }
 
-void CameraCapture::Init(void)
+CameraCapture::CameraCapture(void)
+{ }
+
+void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
 {
   //  TODO: Make sure we only call this once
   m_workerThread = new QThread();
@@ -31,7 +40,9 @@ void CameraCapture::Init(void)
   //  Init must be called after moving to the thread so that
   //  everything is created in the threads' memory space
   m_worker->moveToThread(m_workerThread);
-  m_worker->Init();
+
+  //  TODO: Might have to call this through SIG/SLOT so that it is on that thread
+  m_worker->Init(outputBuffer);
 
   connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( Capture( ) ));
   connect(m_worker,		  SIGNAL( Done( ) ),	  m_workerThread, SLOT( quit( ) ));
@@ -40,5 +51,6 @@ void CameraCapture::Init(void)
 }
 
 void CameraCapture::Start(void)
-{
+{ 
+  m_workerThread->start();
 }
