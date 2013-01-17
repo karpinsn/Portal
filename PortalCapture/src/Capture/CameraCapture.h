@@ -6,23 +6,30 @@
 #ifndef _PORTAL_CAPTURE_CAMERA_CAPTURE_H_
 #define _PORTAL_CAPTURE_CAMERA_CAPTURE_H_
 
+#include <QMetaType>
 #include <memory>
 
 #include <QObject>
 #include <QThread>
 
+#include <cv.h>
+#include <highgui.h>
+
 #include <Lens\OpenCVCamera.h>
+#include <Lens\CameraObserver.h>
 
 #include "../Utils.h"
 #include "../IWriteBuffer.h"
 
 using namespace std;
 
+Q_DECLARE_METATYPE(shared_ptr<IWriteBuffer>)
+
 class ICaptureContext
 {
 public:
-  virtual void Init(shared_ptr<IWriteBuffer> outputBuffer) = 0;
-  virtual void Start() = 0;
+  virtual void Init( shared_ptr<IWriteBuffer> outputBuffer ) = 0;
+  virtual void Start( ) = 0;
 };
 
 class CameraCaptureWorker : public QObject
@@ -32,18 +39,22 @@ class CameraCaptureWorker : public QObject
 private:
   DISALLOW_COPY_AND_ASSIGN(CameraCaptureWorker);
   bool m_running;
+  int m_currentChannelLoad;
 
   shared_ptr<IWriteBuffer> m_outputBuffer;
+  shared_ptr<lens::Camera> m_camera;
+
+  shared_ptr<IplImage> m_packFrame;
 
 public:
-  CameraCaptureWorker(void);
-  void Init(shared_ptr<IWriteBuffer> outputBuffer);
-  void Stop(void);
-
+  CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer);
+  
 signals:
   void Done(void);
 
 public slots:
+  void Start(void);
+  void Stop(void);
   void Capture(void);
 };
 

@@ -6,10 +6,21 @@
 #ifndef _PORTAL_CAPTURE_MAIN_CONTROLLER_H_
 #define _PORTAL_CAPTURE_MAIN_CONTROLLER_H_
 
+#ifdef __APPLE__
+#include <glew.h>
+#include <OpenGL/gl.h>
+#elif _WIN32
+#include <windows.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
+#else
+#include <GL/glew.h>
+#include <GL/gl.h>
+#endif
+
 #include <QObject>
 #include <QGLWidget>
-#include <QGLPixelBuffer>
-#include <QGLFramebufferObject>
+#include <QGLContext>
 #include <memory>
 #include <assert.h>
 
@@ -37,7 +48,7 @@ public:
   MainController();
   void Init(void);
 
-  virtual shared_ptr<QGLWidget> MakeSharedContext(void);
+  virtual shared_ptr<QGLContext> MakeSharedContext(void);
 
 public slots:
   void Start(void);
