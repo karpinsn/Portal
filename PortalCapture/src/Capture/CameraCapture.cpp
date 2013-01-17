@@ -27,7 +27,7 @@ void CameraCaptureWorker::Capture()
 {
   while(m_running)
   {
-	//	TODO: Grab from the camera, pack, and then write if nessacary
+	//	Grab our image
 	IplImage* frame = m_camera->getFrame();
 	
 	//	Pack our camera image
@@ -49,10 +49,6 @@ void CameraCaptureWorker::Capture()
   emit Done();
 }
 
-CameraCapture::CameraCapture(void)
-{ }
-
-#include <QTimer>
 void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
 {
   //  TODO: Make sure we only call this once
@@ -62,11 +58,6 @@ void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
   //  Init must be called after moving to the thread so that
   //  everything is created in the threads' memory space
   m_worker->moveToThread(m_workerThread);
-
-  //  TODO: Might have to call this through SIG/SLOT so that it is on that thread
-  //QTimer::singleShot(0, m_worker, SLOT( Init( outputBuffer ) ) );
-  //QMetaObject::invokeMethod(m_worker, "Init", Qt::QueuedConnection);
-  //m_worker->Init(outputBuffer);
 
   connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( Start( ) ));
   connect(m_worker,		  SIGNAL( Done( ) ),	  m_workerThread, SLOT( quit( ) ));
@@ -78,5 +69,6 @@ void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
 
 void CameraCapture::Start(void)
 { 
+  //  Calling this will invoke capture on the background thread
   QTimer::singleShot(0, m_worker, SLOT( Capture( ) ) );
 }

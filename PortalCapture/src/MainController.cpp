@@ -22,10 +22,10 @@ void MainController::Init(void)
   wrench::Logger::logDebug("Using GLEW Version: %s", glewGetString( GLEW_VERSION ));
   cout << "Using GLEW Version: " << glewGetString( GLEW_VERSION ) << endl;
 
-  //  Create our reading buffer and initialize our contexts
-  auto readBuffer = make_shared<OpenGLTripleBuffer>(*this);
+  //  Create our capture buffer and initialize our contexts
+  auto captureBuffer = make_shared<OpenGLTripleBuffer>(*this);
   m_captureContext = unique_ptr<ICaptureContext>( new CameraCapture( ) );
-  m_captureContext->Init( readBuffer );
+  m_captureContext->Init( captureBuffer );
 }
 
 shared_ptr<QGLContext> MainController::MakeSharedContext(void)

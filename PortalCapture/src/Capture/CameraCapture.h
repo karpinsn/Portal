@@ -6,11 +6,11 @@
 #ifndef _PORTAL_CAPTURE_CAMERA_CAPTURE_H_
 #define _PORTAL_CAPTURE_CAMERA_CAPTURE_H_
 
-#include <QMetaType>
 #include <memory>
 
 #include <QObject>
 #include <QThread>
+#include <QTimer>
 
 #include <cv.h>
 #include <highgui.h>
@@ -22,8 +22,6 @@
 #include "../IWriteBuffer.h"
 
 using namespace std;
-
-Q_DECLARE_METATYPE(shared_ptr<IWriteBuffer>)
 
 class ICaptureContext
 {
@@ -62,15 +60,13 @@ class CameraCapture : public QObject, public ICaptureContext
 {
   Q_OBJECT
 	
-//	Need to create a lens::Camera in initialize
-//	Need a pointer to a triplebuffer
 private:
   DISALLOW_COPY_AND_ASSIGN(CameraCapture);
   QThread* m_workerThread;
   CameraCaptureWorker* m_worker;
 
 public:
-  CameraCapture(void);
+  CameraCapture(void) { };
   void Init(shared_ptr<IWriteBuffer> outputBuffer);
   void Start();
 };
