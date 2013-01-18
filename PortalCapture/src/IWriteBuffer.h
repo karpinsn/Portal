@@ -9,8 +9,8 @@
 class IWriteBuffer
 {
 public:
-  virtual void initWrite(int width, int height) = 0;
-  virtual void write(const IplImage* data) = 0;
+  virtual void InitWrite(int width, int height) = 0;
+  virtual void Write(const IplImage* data) = 0;
 };
 
 #endif // _PORTAL_CAPTURE_I_WRITE_BUFFER_H_

@@ -25,12 +25,12 @@
 
 #include "ISharedGLContextFactory.h"
 #include "Utils.h"
-#include "IReadBuffer.h"
+#include "IOpenGLReadBuffer.h"
 #include "IWriteBuffer.h"
 
 using namespace wrench::gl;
 
-class OpenGLTripleBuffer : public IReadBuffer, public IWriteBuffer
+class OpenGLTripleBuffer : public IOpenGLReadBuffer, public IWriteBuffer
 {
 private:
   DISALLOW_COPY_AND_ASSIGN(OpenGLTripleBuffer);
@@ -46,8 +46,13 @@ private:
 
 public:
   OpenGLTripleBuffer(ISharedGLContextFactory& contextFactory);
-  virtual void initWrite(int width, int height);
-  virtual void write(const IplImage* data);
+  
+  virtual void InitWrite(int width, int height);
+  virtual void Write(const IplImage* data);
+
+  void	BindBuffer( GLenum texture );
+  int	GetWidth( void );
+  int	GetHeight( void );
 };
 
 #endif // _PORTAL_CAPTURE_OPEN_GL_TRIPLE_BUFFER_H_

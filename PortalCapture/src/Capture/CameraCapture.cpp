@@ -14,7 +14,7 @@ void CameraCaptureWorker::Start( )
 	cvCreateImage( cvSize( m_camera->getWidth( ), m_camera->getHeight( ) ), IPL_DEPTH_8U, 3 ), 
 	[]( IplImage* ptr ) { cvReleaseImage( &ptr ); } );
 
-  m_outputBuffer->initWrite(m_camera->getWidth(), m_camera->getHeight());
+  m_outputBuffer->InitWrite(m_camera->getWidth(), m_camera->getHeight());
   m_running = true;
 }
 
@@ -42,7 +42,7 @@ void CameraCaptureWorker::Capture()
 	if( 3 == m_currentChannelLoad )
 	{
 	  m_currentChannelLoad = 0;
-	  m_outputBuffer->write( m_packFrame.get( ) );
+	  m_outputBuffer->Write( m_packFrame.get( ) );
 	}
   }
 
@@ -54,9 +54,6 @@ void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
   //  TODO: Make sure we only call this once
   m_workerThread = new QThread();
   m_worker = new CameraCaptureWorker( outputBuffer );
-
-  //  Init must be called after moving to the thread so that
-  //  everything is created in the threads' memory space
   m_worker->moveToThread(m_workerThread);
 
   connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( Start( ) ));

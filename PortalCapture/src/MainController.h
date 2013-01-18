@@ -24,10 +24,12 @@
 #include <memory>
 #include <assert.h>
 
-#include "OpenGLTripleBuffer.h"
+#include "MultiOpenGLBuffer.h"
 #include "ISharedGLContextFactory.h"
 #include "Utils.h"
+
 #include "Capture\CameraCapture.h"
+#include "Process\SixFringeProcessor.h"
 
 using namespace std;
 
@@ -38,10 +40,9 @@ class MainController : public QObject, public ISharedGLContextFactory
 private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
-  unique_ptr<QGLWidget> m_mainContext;
-
   unique_ptr<ICaptureContext> m_captureContext;
-  //  IDecodeContext
+  //  Main Context : Runs on UI thread
+  unique_ptr<SixFringeProcessor> m_processContext;
   //  IStreamContext
 
 public:

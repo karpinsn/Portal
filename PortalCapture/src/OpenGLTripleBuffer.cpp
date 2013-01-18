@@ -4,7 +4,7 @@ OpenGLTripleBuffer::OpenGLTripleBuffer(ISharedGLContextFactory& contextFactory) 
   m_contextFactory(contextFactory)
 { }
 
-void OpenGLTripleBuffer::initWrite(int width, int height)
+void OpenGLTripleBuffer::InitWrite(int width, int height)
 {
   //  Get a context for use to use with writes
   m_writeContext = m_contextFactory.MakeSharedContext();
@@ -19,7 +19,7 @@ void OpenGLTripleBuffer::initWrite(int width, int height)
   m_readBuffer->init	(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
 }
 
-void OpenGLTripleBuffer::write(const IplImage* data)
+void OpenGLTripleBuffer::Write(const IplImage* data)
 {
   m_writeContext->makeCurrent();
   m_writeBuffer->transferToTexture(data);
@@ -29,4 +29,25 @@ void OpenGLTripleBuffer::write(const IplImage* data)
 	m_writeBuffer.swap(m_workingBuffer);
   }
   m_swapLock.unlock();
+}
+
+void OpenGLTripleBuffer::BindBuffer(GLenum texture)
+{
+  m_swapLock.lock();
+  {
+	m_readBuffer.swap(m_workingBuffer);
+  }
+  m_swapLock.unlock();
+
+  m_readBuffer->bind(texture);
+}
+
+int OpenGLTripleBuffer::GetWidth( void )
+{
+  return m_readBuffer->getWidth();
+}
+
+int OpenGLTripleBuffer::GetHeight( void )
+{
+  return m_readBuffer->getHeight();
 }

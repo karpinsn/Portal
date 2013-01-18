@@ -97,24 +97,30 @@ set(SOURCES
 	Application.cpp
     Utils.cpp
     MainController.cpp
+    MultiOpenGLBuffer.cpp
     OpenGLTripleBuffer.cpp
-    Capture/CameraCapture.cpp
 
+    Capture/CameraCapture.cpp
+    Process/SixFringeProcessor.cpp
 
     Application.h
     Utils.h
     MainController.h
     OpenGLTripleBuffer.h
-    IReadBuffer.h
+    MultiOpenGLBuffer.h
+    IOpenGLReadBuffer.h
     IWriteBuffer.h
     ISharedGLContextFactory.h
+
     Capture/CameraCapture.h
-	)	
+    Process/SixFringeProcessor.h
+    )	
 
 #   Qt Files
 set(MOCS
     MainController.h
-    Capture/CameraCapture.h)
+    Capture/CameraCapture.h
+    Process/SixFringeProcessor.h)
 
 #   ---------------------------------------------------------------------------------------
 #                           Qt Generation
