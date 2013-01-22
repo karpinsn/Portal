@@ -102,7 +102,8 @@ set(SOURCES
 
     Capture/CameraCapture.cpp
     Process/SixFringeProcessor.cpp
-
+	Stream/WebsocketStream.cpp
+	
     Application.h
     Utils.h
     MainController.h
@@ -114,6 +115,7 @@ set(SOURCES
 
     Capture/CameraCapture.h
     Process/SixFringeProcessor.h
+	Stream/WebsocketStream.h
     )	
 
 #   Qt Files
@@ -122,7 +124,8 @@ set(MOCS
 	OpenGLTripleBuffer.h
 	MultiOpenGLBuffer.h
     Capture/CameraCapture.h
-    Process/SixFringeProcessor.h)
+    Process/SixFringeProcessor.h
+	Stream/WebsocketStream.h)
 
 #   ---------------------------------------------------------------------------------------
 #                           Qt Generation

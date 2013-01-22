@@ -21,6 +21,7 @@ class IOpenGLWriteBuffer : public IWriteBuffer
 {
 public:
   virtual const Texture& WriteBuffer( void ) = 0;
+  virtual void WriteFinished( void ) = 0;
 };
 
 #endif // _PORTAL_CAPTURE_I_WRITE_BUFFER_H_

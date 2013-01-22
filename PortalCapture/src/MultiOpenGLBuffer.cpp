@@ -3,19 +3,20 @@
 MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFactory* contextFactory) :
   m_currentBufferIndex(0)
 { 
-  //  Make all of the buffers that we need
+  // Make all of the buffers that we need
   for ( ::size_t buffer = 0; buffer < bufferCount; ++buffer )
   { 
-	m_buffers.push_back(make_shared<OpenGLTripleBuffer>( contextFactory ) ); 
+	// TODO: Get this info from constructor
+	m_buffers.push_back(make_shared<OpenGLTripleBuffer>( contextFactory, false, true ) ); 
   }
 
-  //  Try and use as little memory as possible
+  // Try and use as little memory as possible
   m_buffers.shrink_to_fit();
 }
 
 void MultiOpenGLBuffer::InitWrite(int width, int height)
 {
-  //  Init all of our buffers
+  // Init all of our buffers
   for ( auto iterator = m_buffers.begin( ); iterator != m_buffers.end( ); ++iterator )
   {
 	(*iterator)->InitWrite( width, height );

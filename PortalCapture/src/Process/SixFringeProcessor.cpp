@@ -45,7 +45,6 @@ SixFringeProcessor::SixFringeProcessor( void ) :
 	
   m_phaseMap0.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
-  //m_depthMap.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_referencePhase.init	( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 	
   m_imageProcessor.init(inputBuffer->GetWidth( ), inputBuffer->GetHeight( ));
@@ -65,6 +64,8 @@ void SixFringeProcessor::paintGL( void )
   if( !m_isInit )
 	{ return; }
 
+  OGLStatus::logOGLErrors("SixFringeProcessor - Init( shared_ptr<IOpenGLReadBuffer> )");
+
   // Our actual decoding is done here
   m_imageProcessor.bind();
   {
@@ -72,9 +73,16 @@ void SixFringeProcessor::paintGL( void )
 	_filterPhase( GL_COLOR_ATTACHMENT1, m_phaseMap0 );
 
 	if( m_captureReference )
-	  { _filterPhase( GL_COLOR_ATTACHMENT3, m_phaseMap1 ); }
+	{ 
+	  _filterPhase( GL_COLOR_ATTACHMENT3, m_phaseMap1 ); 
+	  m_captureReference = false;
+	}
 	else
-	  { _calculateDepth( GL_COLOR_ATTACHMENT2, m_phaseMap1 ); }
+	{ 
+	  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer(), GL_COLOR_ATTACHMENT2 );
+	  _calculateDepth( GL_COLOR_ATTACHMENT2, m_phaseMap1 ); 
+	  m_outputBuffer->WriteFinished( );
+	}
   }
   m_imageProcessor.unbind();
 }

@@ -39,6 +39,9 @@ private:
   ISharedGLContextFactory* m_contextFactory;
   
   shared_ptr<QGLContext> m_writeContext;
+  shared_ptr<QGLContext> m_readContext;
+  bool m_makeReadContext;
+  bool m_makeWriteContext;
 
   unique_ptr<Texture> m_writeBuffer;
   unique_ptr<Texture> m_workingBuffer;
@@ -49,11 +52,12 @@ private:
   QMutex m_swapLock;
 
 public:
-  OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory);
+  OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory, bool makeReadContext, bool makeWriteContext);
   
-  void InitWrite(int width, int height);
-  void Write(const IplImage* data);
-  const Texture& WriteBuffer( void );
+  void			  InitWrite(int width, int height);
+  void			  Write(const IplImage* data);
+  const Texture&  WriteBuffer( void );
+  void			  WriteFinished( void );
 
   int						  GetWidth( void );
   int						  GetHeight( void );

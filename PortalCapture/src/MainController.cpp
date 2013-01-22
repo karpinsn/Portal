@@ -14,7 +14,8 @@ void MainController::Init(void)
   
   //  Calling updateGL will initialize our context so that 
   //  we can actually perform OpenGL calls
-  m_processContext->updateGL();
+  m_processContext->makeCurrent( );
+  m_processContext->updateGL( );
 
   //  Init GLEW so that we can make fancy OpenGL calls
   GLenum status = glewInit();
@@ -24,7 +25,7 @@ void MainController::Init(void)
   //  Create our capture buffer and processed buffers
   //  TODO: Need to know how we need 2 buffers
   auto captureBuffer	= make_shared<MultiOpenGLBuffer>( 2, this );
-  auto processedBuffer	= make_shared<OpenGLTripleBuffer>( nullptr );
+  auto processedBuffer	= make_shared<OpenGLTripleBuffer>( this, true, false );
 
   // ----- Initialize our contexts -----
   // Init our capture context
@@ -34,7 +35,8 @@ void MainController::Init(void)
   m_processContext->makeCurrent( );
   m_processContext->Init( captureBuffer, processedBuffer );
   // Init our output context
-
+  m_streamContext = unique_ptr<IStreamContext> ( new WebsocketStream( ) );
+  m_streamContext->Init( processedBuffer );
 
   //  Wire up signals and slots
   connect(captureBuffer.get( ), SIGNAL( WriteFilled( ) ), m_processContext.get( ), SLOT( updateGL( ) ) );
@@ -60,6 +62,7 @@ void MainController::Start(void)
 {
   wrench::Logger::logDebug("Started");
   m_captureContext->Start( );
+  m_streamContext->Start( );
 }
 
 void MainController::Close(void)

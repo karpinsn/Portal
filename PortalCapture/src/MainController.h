@@ -6,6 +6,15 @@
 #ifndef _PORTAL_CAPTURE_MAIN_CONTROLLER_H_
 #define _PORTAL_CAPTURE_MAIN_CONTROLLER_H_
 
+//	Needed so that windows.h does not include Winsock.h
+#ifdef _WIN32
+	#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <WinSock2.h>
+	#include <windows.h>
+#endif
+
 #ifdef __APPLE__
 #include <glew.h>
 #include <OpenGL/gl.h>
@@ -30,6 +39,7 @@
 
 #include "Capture\CameraCapture.h"
 #include "Process\SixFringeProcessor.h"
+#include "Stream\WebsocketStream.h"
 
 using namespace std;
 
@@ -40,10 +50,9 @@ class MainController : public QObject, public ISharedGLContextFactory
 private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
-  unique_ptr<ICaptureContext> m_captureContext;
-  unique_ptr<SixFringeProcessor> m_processContext; //  Main Context : Runs on UI thread
-  
-  //  IStreamContext
+  unique_ptr<ICaptureContext>	  m_captureContext;
+  unique_ptr<SixFringeProcessor>  m_processContext; //  Main Context : Runs on UI thread
+  unique_ptr<IStreamContext>	  m_streamContext;
 
 public:
   MainController();

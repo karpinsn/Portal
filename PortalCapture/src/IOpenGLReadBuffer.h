@@ -6,6 +6,18 @@
 #ifndef _PORTAL_CAPTURE_I_OPEN_GL_READ_BUFFER_H_
 #define _PORTAL_CAPTURE_I_OPEN_GL_READ_BUFFER_H_
 
+#ifdef __APPLE__
+#include <glew.h>
+#include <OpenGL/gl.h>
+#elif _WIN32
+#include <windows.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
+#else
+#include <GL/glew.h>
+#include <GL/gl.h>
+#endif
+
 class IReadBuffer
 {
 public:
