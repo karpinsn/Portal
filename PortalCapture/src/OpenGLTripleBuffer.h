@@ -30,11 +30,13 @@
 
 using namespace wrench::gl;
 
-class OpenGLTripleBuffer : public IOpenGLReadBuffer, public IWriteBuffer
+class OpenGLTripleBuffer : public QObject, public IOpenGLReadBuffer, public IOpenGLWriteBuffer
 {
+  Q_OBJECT
+
 private:
   DISALLOW_COPY_AND_ASSIGN(OpenGLTripleBuffer);
-  ISharedGLContextFactory& m_contextFactory;
+  ISharedGLContextFactory* m_contextFactory;
   
   shared_ptr<QGLContext> m_writeContext;
 
@@ -42,17 +44,25 @@ private:
   unique_ptr<Texture> m_workingBuffer;
   unique_ptr<Texture> m_readBuffer;
 
+  shared_ptr<IplImage> m_readImage;
+
   QMutex m_swapLock;
 
 public:
-  OpenGLTripleBuffer(ISharedGLContextFactory& contextFactory);
+  OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory);
   
-  virtual void InitWrite(int width, int height);
-  virtual void Write(const IplImage* data);
+  void InitWrite(int width, int height);
+  void Write(const IplImage* data);
+  const Texture& WriteBuffer( void );
 
-  void	BindBuffer( GLenum texture );
-  int	GetWidth( void );
-  int	GetHeight( void );
+  int						  GetWidth( void );
+  int						  GetHeight( void );
+  const shared_ptr<IplImage>  ReadBuffer( void );
+  void						  BindBuffer( GLenum texture );
+
+signals:
+  //  Emitted when the write buffers have been filled up
+  void WriteFilled( void );
 };
 
 #endif // _PORTAL_CAPTURE_OPEN_GL_TRIPLE_BUFFER_H_

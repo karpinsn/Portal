@@ -1,6 +1,6 @@
 #include "MultiOpenGLBuffer.h"
 
-MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFactory& contextFactory) :
+MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFactory* contextFactory) :
   m_currentBufferIndex(0)
 { 
   //  Make all of the buffers that we need
@@ -16,15 +16,15 @@ MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFacto
 void MultiOpenGLBuffer::InitWrite(int width, int height)
 {
   //  Init all of our buffers
-  for ( auto iterator = m_buffers.begin(); iterator != m_buffers.end(); ++iterator )
+  for ( auto iterator = m_buffers.begin( ); iterator != m_buffers.end( ); ++iterator )
   {
-	(*iterator)->InitWrite(width, height);
+	(*iterator)->InitWrite( width, height );
   }
 }
 
 void MultiOpenGLBuffer::Write(const IplImage* data)
 {
-  Utils::AssertOrThrowIfFalse(m_currentBufferIndex < m_buffers.size(), "Trying to access a buffer that we dont have");
+  Utils::AssertOrThrowIfFalse(m_currentBufferIndex < m_buffers.size( ), "Trying to access a buffer that we dont have");
 
   //  Write to the current buffer
   m_buffers[m_currentBufferIndex]->Write(data);
@@ -33,16 +33,14 @@ void MultiOpenGLBuffer::Write(const IplImage* data)
   if ( m_currentBufferIndex >= m_buffers.size() )
   {
 	m_currentBufferIndex = 0;
-	//	TODO - Need to trigger a read
+	emit( WriteFilled( ) );
   }
 }
 
-void MultiOpenGLBuffer::BindBuffer(GLenum texture)
+const shared_ptr<IplImage> MultiOpenGLBuffer::ReadBuffer( void )
 {
-  for ( ::size_t buffer = 0; buffer < m_buffers.size(); ++buffer)
-  {
-	m_buffers[buffer]->BindBuffer(GL_TEXTURE0 + buffer);
-  }
+  //  TODO: This doesn't make sense here
+  return nullptr;
 }
 
 int MultiOpenGLBuffer::GetWidth( void )
@@ -53,4 +51,12 @@ int MultiOpenGLBuffer::GetWidth( void )
 int MultiOpenGLBuffer::GetHeight( void )
 {
   return m_buffers[0]->GetHeight();
+}
+
+void MultiOpenGLBuffer::BindBuffer(GLenum texture)
+{
+  for ( ::size_t buffer = 0; buffer < m_buffers.size(); ++buffer )
+  {
+	m_buffers[buffer]->BindBuffer(GL_TEXTURE0 + buffer);
+  }
 }

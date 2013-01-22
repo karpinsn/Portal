@@ -20,16 +20,26 @@ void MainController::Init(void)
   GLenum status = glewInit();
   Utils::AssertOrThrowIfFalse(GLEW_OK == status, "Failed to init GLEW:" );
   wrench::Logger::logDebug("Using GLEW Version: %s", glewGetString( GLEW_VERSION ));
-  cout << "Using GLEW Version: " << glewGetString( GLEW_VERSION ) << endl;
 
-  //  Create our capture buffer and initialize our contexts
+  //  Create our capture buffer and processed buffers
   //  TODO: Need to know how we need 2 buffers
-  auto captureBuffer = make_shared<MultiOpenGLBuffer>(2, *this);
+  auto captureBuffer	= make_shared<MultiOpenGLBuffer>( 2, this );
+  auto processedBuffer	= make_shared<OpenGLTripleBuffer>( nullptr );
+
+  // ----- Initialize our contexts -----
+  // Init our capture context
   m_captureContext = unique_ptr<ICaptureContext>( new CameraCapture( ) );
   m_captureContext->Init( captureBuffer );
+  // Init our processing/main context
+  m_processContext->makeCurrent( );
+  m_processContext->Init( captureBuffer, processedBuffer );
+  // Init our output context
 
-  //  Init our processing/main context
-  m_processContext->Init( captureBuffer );
+
+  //  Wire up signals and slots
+  connect(captureBuffer.get( ), SIGNAL( WriteFilled( ) ), m_processContext.get( ), SLOT( updateGL( ) ) );
+
+  wrench::Logger::logDebug("Initialization complete");
 }
 
 shared_ptr<QGLContext> MainController::MakeSharedContext(void)
@@ -48,11 +58,13 @@ shared_ptr<QGLContext> MainController::MakeSharedContext(void)
 
 void MainController::Start(void)
 {
+  wrench::Logger::logDebug("Started");
   m_captureContext->Start( );
 }
 
 void MainController::Close(void)
 {
+  wrench::Logger::logDebug("Closing");
   //  This will tell the event loop that we are done and close the app
   emit( Finished( ) );
 }

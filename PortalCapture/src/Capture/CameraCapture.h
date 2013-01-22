@@ -33,6 +33,7 @@ public:
 class CameraCaptureWorker : public QObject
 {
   Q_OBJECT
+  
 
 private:
   DISALLOW_COPY_AND_ASSIGN(CameraCaptureWorker);
@@ -46,14 +47,15 @@ private:
 
 public:
   CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer);
-  
+  bool IsRunning( void );
+
 signals:
-  void Done(void);
+  void Done( void );
 
 public slots:
-  void Start(void);
-  void Stop(void);
-  void Capture(void);
+  void Start( void );
+  void Stop( void );
+  void Capture( void );
 };
 
 class CameraCapture : public QObject, public ICaptureContext

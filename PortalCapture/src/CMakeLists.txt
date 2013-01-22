@@ -119,6 +119,8 @@ set(SOURCES
 #   Qt Files
 set(MOCS
     MainController.h
+	OpenGLTripleBuffer.h
+	MultiOpenGLBuffer.h
     Capture/CameraCapture.h
     Process/SixFringeProcessor.h)
 

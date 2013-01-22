@@ -41,8 +41,8 @@ private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
   unique_ptr<ICaptureContext> m_captureContext;
-  //  Main Context : Runs on UI thread
-  unique_ptr<SixFringeProcessor> m_processContext;
+  unique_ptr<SixFringeProcessor> m_processContext; //  Main Context : Runs on UI thread
+  
   //  IStreamContext
 
 public:
