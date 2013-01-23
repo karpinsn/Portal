@@ -44,6 +44,15 @@ const shared_ptr<IplImage> MultiOpenGLBuffer::ReadBuffer( void )
   return nullptr;
 }
 
+void MultiOpenGLBuffer::InitRead( void )
+{
+  // Init all of our buffers
+  for ( auto iterator = m_buffers.begin( ); iterator != m_buffers.end( ); ++iterator )
+  {
+	(*iterator)->InitRead( );
+  }
+}
+
 int MultiOpenGLBuffer::GetWidth( void )
 {
   return m_buffers[0]->GetWidth();

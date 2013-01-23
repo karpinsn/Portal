@@ -43,6 +43,7 @@ public:
   virtual void InitWrite(int width, int height);
   virtual void Write(const IplImage* data);
 
+  void						  InitRead( void );
   int						  GetWidth( void );
   int						  GetHeight( void );
   const shared_ptr<IplImage>  ReadBuffer( void );

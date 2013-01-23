@@ -50,7 +50,7 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_imageProcessor.init(inputBuffer->GetWidth( ), inputBuffer->GetHeight( ));
   m_imageProcessor.setTextureAttachPoint( m_phaseMap0,					  GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,					  GL_COLOR_ATTACHMENT1 );
-  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer(),  GL_COLOR_ATTACHMENT2 );
+  //m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer(),  GL_COLOR_ATTACHMENT2 );
   m_imageProcessor.setTextureAttachPoint( m_referencePhase,				  GL_COLOR_ATTACHMENT3 );
   m_imageProcessor.unbind();
 	
@@ -79,12 +79,13 @@ void SixFringeProcessor::paintGL( void )
 	}
 	else
 	{ 
-	  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer(), GL_COLOR_ATTACHMENT2 );
+	  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ), GL_COLOR_ATTACHMENT2 );
 	  _calculateDepth( GL_COLOR_ATTACHMENT2, m_phaseMap1 ); 
-	  m_outputBuffer->WriteFinished( );
 	}
   }
   m_imageProcessor.unbind();
+
+  m_outputBuffer->WriteFinished( );
 }
 
 void SixFringeProcessor::_calculatePhase(GLenum drawBuffer)

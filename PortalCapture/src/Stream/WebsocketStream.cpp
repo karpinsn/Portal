@@ -24,17 +24,26 @@ void WebsocketStream::Init(shared_ptr<OpenGLTripleBuffer> inputBuffer)
   m_socketStreamer->moveToThread(m_streamProcessorThread);
 
   //	Connect the thread and its timer
+  connect(m_streamProcessorThread, SIGNAL( started( ) ), m_socketStreamer, SLOT( Init( ) ) );
   connect(m_socketStreamer, SIGNAL(Finished()), m_streamProcessorThread, SLOT(quit()));
   connect(m_streamProcessorThread, SIGNAL(finished()), m_streamProcessorThread, SLOT(deleteLater()));
   connect(m_socketStreamer, SIGNAL(Finished()), m_socketStreamer, SLOT(deleteLater()));
   connect(inputBuffer.get( ), SIGNAL( WriteFilled( ) ), m_socketStreamer, SLOT( StreamFrame( ) ) );
+
+  m_socketProcessorThread->start();
+  m_streamProcessorThread->start();
+
+  //  Need to wait for our thread to start and init before we can return.
+  //  Other threads depend on us to init the buffer 
+  while(!m_socketStreamer->IsRunning( ) )
+  {
+	//	Give our time up since we are just waiting
+	QThread::yieldCurrentThread();
+  }
 }
 
 void WebsocketStream::Start(void)
-{ 
-  m_socketProcessorThread->start();
-  m_streamProcessorThread->start();
-}
+{ }
 
 void WebsocketProcessor::Stop(void)
 {
@@ -48,6 +57,17 @@ void WebsocketProcessor::ProcessSocket()
   emit( Finished( ) );
 }
 
+void WebsocketStreamer::Init(void)
+{
+  m_inputBuffer->InitRead();
+  m_running = true;
+}
+
+bool WebsocketStreamer::IsRunning( void )
+{
+  return m_running;
+}
+
 void WebsocketStreamer::Stop(void)
 {
   m_running = false;
@@ -58,12 +78,12 @@ void WebsocketStreamer::StreamFrame(void)
   //int encodingProperties[] = {CV_IMWRITE_JPEG_QUALITY, 90, 0};
   int encodingProperties[] = {CV_IMWRITE_PNG_COMPRESSION, 3, 0 };
 
-  //	Do our image pulling stuff
+  ////	Do our image pulling stuff
   auto frame = m_inputBuffer->ReadBuffer();
-  //cvCvtColor(frame.get(), frame.get(), CV_RGB2BGR);
+  //////cvCvtColor(frame.get(), frame.get(), CV_RGB2BGR);
 	
   auto buffer = shared_ptr<CvMat>(
-			  cvEncodeImage(".png", frame.get(), encodingProperties), 
-			  [](CvMat* ptr){cvReleaseMat(&ptr);});
+				cvEncodeImage(".png", frame.get(), encodingProperties), 
+				[](CvMat* ptr){cvReleaseMat(&ptr);});
   m_socket.broadcastData(buffer->data.ptr, buffer->width);
 }

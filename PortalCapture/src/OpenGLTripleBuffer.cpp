@@ -12,12 +12,13 @@ void OpenGLTripleBuffer::InitWrite(int width, int height)
   // If needed get a context for use to use with writes
   if( nullptr != m_contextFactory )
   {
-	if ( m_makeReadContext )
-	{
-	  m_readContext = m_contextFactory->MakeSharedContext();
-	  //  TODO: Should this be here?
-	  //m_readContext->makeCurrent( );
-	}
+	//	TODO
+	//if ( m_makeReadContext )
+	//{
+	//  m_readContext = m_contextFactory->MakeSharedContext();
+	//  //  TODO: Should this be here?
+	//  //m_readContext->makeCurrent( );
+	//}
 
 	if ( m_makeWriteContext )
 	{
@@ -63,12 +64,22 @@ const Texture& OpenGLTripleBuffer::WriteBuffer( void )
 
 void OpenGLTripleBuffer::WriteFinished( void )
 {
+  if( nullptr != m_writeContext )
+	{ m_writeContext->makeCurrent(); }
   m_swapLock.lock();
   {
 	m_writeBuffer.swap(m_workingBuffer);
   }
   m_swapLock.unlock();
   emit ( WriteFilled( ) );
+}
+
+void OpenGLTripleBuffer::InitRead( void )
+{
+  if ( m_makeReadContext && nullptr == m_readContext)
+  {
+	m_readContext = m_contextFactory->MakeSharedContext();
+  }
 }
 
 int OpenGLTripleBuffer::GetWidth( void )
@@ -85,6 +96,12 @@ const shared_ptr<IplImage> OpenGLTripleBuffer::ReadBuffer( void )
 {
   if( nullptr != m_readContext )
 	{ m_readContext->makeCurrent(); }
+
+  m_swapLock.lock();
+  {
+	m_readBuffer.swap(m_workingBuffer);
+  }
+  m_swapLock.unlock();
 
   m_readBuffer->transferFromTexture( m_readImage.get( ) );
   return m_readImage;

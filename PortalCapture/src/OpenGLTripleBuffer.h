@@ -59,6 +59,7 @@ public:
   const Texture&  WriteBuffer( void );
   void			  WriteFinished( void );
 
+  void						  InitRead( void );
   int						  GetWidth( void );
   int						  GetHeight( void );
   const shared_ptr<IplImage>  ReadBuffer( void );

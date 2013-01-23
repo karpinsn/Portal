@@ -71,13 +71,15 @@ class WebsocketStreamer : public QObject
 	shared_ptr<IReadBuffer> m_inputBuffer;
 
   public:
-	WebsocketStreamer(antenna::BaseStation& socket, shared_ptr<IReadBuffer> buffer) : m_socket(socket), m_inputBuffer(buffer), m_running(true) { };
+	WebsocketStreamer(antenna::BaseStation& socket, shared_ptr<IReadBuffer> buffer) : m_socket(socket), m_inputBuffer(buffer), m_running(false) { };
+	bool IsRunning( void );
 	void Stop(void);
 
   signals:
 	void Finished(void);
 
   public slots:
+	void Init(void);
 	void StreamFrame(void);
 };
 

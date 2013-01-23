@@ -21,7 +21,7 @@
 class IReadBuffer
 {
 public:
-  
+  virtual void						  InitRead( void )	  = 0;
   virtual int						  GetWidth( void )	  = 0;
   virtual int						  GetHeight( void )	  = 0;
   virtual const shared_ptr<IplImage>  ReadBuffer( void )  = 0;
