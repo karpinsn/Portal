@@ -7,7 +7,7 @@ MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFacto
   for ( ::size_t buffer = 0; buffer < bufferCount; ++buffer )
   { 
 	// TODO: Get this info from constructor
-	m_buffers.push_back(make_shared<OpenGLTripleBuffer>( contextFactory, false, true ) ); 
+	m_buffers.push_back(make_shared<OpenGLTripleBuffer>( contextFactory, false, true ) );
   }
 
   // Try and use as little memory as possible
@@ -42,15 +42,6 @@ const shared_ptr<IplImage> MultiOpenGLBuffer::ReadBuffer( void )
 {
   //  TODO: This doesn't make sense here
   return nullptr;
-}
-
-void MultiOpenGLBuffer::InitRead( void )
-{
-  // Init all of our buffers
-  for ( auto iterator = m_buffers.begin( ); iterator != m_buffers.end( ); ++iterator )
-  {
-	(*iterator)->InitRead( );
-  }
 }
 
 int MultiOpenGLBuffer::GetWidth( void )

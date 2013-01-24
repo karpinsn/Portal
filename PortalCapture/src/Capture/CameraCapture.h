@@ -53,7 +53,7 @@ signals:
   void Done( void );
 
 public slots:
-  void Start( void );
+  void Init( void );
   void Stop( void );
   void Capture( void );
 };

@@ -10,21 +10,17 @@ void OpenGLTripleBuffer::InitWrite(int width, int height)
   Utils::AssertOrThrowIfFalse(height > 0, "Must have a valid height > 0 for the image buffer");
 
   // If needed get a context for use to use with writes
-  if( nullptr != m_contextFactory )
+  if ( nullptr != m_contextFactory )
   {
-	//	TODO
-	//if ( m_makeReadContext )
-	//{
-	//  m_readContext = m_contextFactory->MakeSharedContext();
-	//  //  TODO: Should this be here?
-	//  //m_readContext->makeCurrent( );
-	//}
-
 	if ( m_makeWriteContext )
 	{
-	  m_writeContext = m_contextFactory->MakeSharedContext();
-	  //  TODO: Should this be here?
+	  m_writeContext = m_contextFactory->MakeSharedContext( );
 	  m_writeContext->makeCurrent( );
+	}
+	if ( m_makeReadContext )
+	{
+	  m_readContext = m_contextFactory->MakeSharedContext( );
+	  m_readContext->makeCurrent( );
 	}
   }
 
@@ -51,10 +47,11 @@ void OpenGLTripleBuffer::Write(const IplImage* data)
 	m_writeBuffer.swap(m_workingBuffer);
   }
   m_swapLock.unlock();
+
   emit ( WriteFilled( ) );
 }
 
-const Texture& OpenGLTripleBuffer::WriteBuffer( void )
+Texture& OpenGLTripleBuffer::WriteBuffer( void )
 {
   if( nullptr != m_writeContext )
 	{ m_writeContext->makeCurrent(); }
@@ -72,14 +69,6 @@ void OpenGLTripleBuffer::WriteFinished( void )
   }
   m_swapLock.unlock();
   emit ( WriteFilled( ) );
-}
-
-void OpenGLTripleBuffer::InitRead( void )
-{
-  if ( m_makeReadContext && nullptr == m_readContext)
-  {
-	m_readContext = m_contextFactory->MakeSharedContext();
-  }
 }
 
 int OpenGLTripleBuffer::GetWidth( void )

@@ -29,7 +29,6 @@
 
 #include <QObject>
 #include <QGLWidget>
-#include <QGLContext>
 #include <memory>
 #include <assert.h>
 
@@ -58,7 +57,14 @@ public:
   MainController();
   void Init(void);
 
-  virtual shared_ptr<QGLContext> MakeSharedContext(void);
+ /**
+  * Makes a shared OpenGL context with the main processing context.
+  *
+  * For some reason if you call this it will invalidate all FBOs and VAOs.
+  * That being said, make sure to get all your shared contexts first, and
+  * then initalize your components that make use of FBOs and VAOs
+  */
+  virtual shared_ptr<QGLWidget> MakeSharedContext(void);
 
 public slots:
   void Start(void);

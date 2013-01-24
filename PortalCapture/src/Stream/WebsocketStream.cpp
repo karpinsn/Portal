@@ -22,9 +22,9 @@ void WebsocketStream::Init(shared_ptr<OpenGLTripleBuffer> inputBuffer)
   m_streamProcessorThread = new QThread(this);
   m_socketStreamer = new WebsocketStreamer(m_socket, inputBuffer);
   m_socketStreamer->moveToThread(m_streamProcessorThread);
+  m_socketStreamer->Init( );
 
   //	Connect the thread and its timer
-  connect(m_streamProcessorThread, SIGNAL( started( ) ), m_socketStreamer, SLOT( Init( ) ) );
   connect(m_socketStreamer, SIGNAL(Finished()), m_streamProcessorThread, SLOT(quit()));
   connect(m_streamProcessorThread, SIGNAL(finished()), m_streamProcessorThread, SLOT(deleteLater()));
   connect(m_socketStreamer, SIGNAL(Finished()), m_socketStreamer, SLOT(deleteLater()));
@@ -32,14 +32,6 @@ void WebsocketStream::Init(shared_ptr<OpenGLTripleBuffer> inputBuffer)
 
   m_socketProcessorThread->start();
   m_streamProcessorThread->start();
-
-  //  Need to wait for our thread to start and init before we can return.
-  //  Other threads depend on us to init the buffer 
-  while(!m_socketStreamer->IsRunning( ) )
-  {
-	//	Give our time up since we are just waiting
-	QThread::yieldCurrentThread();
-  }
 }
 
 void WebsocketStream::Start(void)
@@ -59,7 +51,6 @@ void WebsocketProcessor::ProcessSocket()
 
 void WebsocketStreamer::Init(void)
 {
-  m_inputBuffer->InitRead();
   m_running = true;
 }
 
@@ -81,7 +72,7 @@ void WebsocketStreamer::StreamFrame(void)
   ////	Do our image pulling stuff
   auto frame = m_inputBuffer->ReadBuffer();
   //////cvCvtColor(frame.get(), frame.get(), CV_RGB2BGR);
-	
+
   auto buffer = shared_ptr<CvMat>(
 				cvEncodeImage(".png", frame.get(), encodingProperties), 
 				[](CvMat* ptr){cvReleaseMat(&ptr);});

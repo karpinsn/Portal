@@ -31,9 +31,10 @@ void MainController::Init(void)
   // Init our capture context
   m_captureContext = unique_ptr<ICaptureContext>( new CameraCapture( ) );
   m_captureContext->Init( captureBuffer );
+
   // Init our processing/main context
-  m_processContext->makeCurrent( );
   m_processContext->Init( captureBuffer, processedBuffer );
+  
   // Init our output context
   m_streamContext = unique_ptr<IStreamContext> ( new WebsocketStream( ) );
   m_streamContext->Init( processedBuffer );
@@ -44,16 +45,15 @@ void MainController::Init(void)
   wrench::Logger::logDebug("Initialization complete");
 }
 
-shared_ptr<QGLContext> MainController::MakeSharedContext(void)
+shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
 {
-  shared_ptr<QGLContext> sharedContext(nullptr);
+  Utils::AssertOrThrowIfFalse(nullptr != m_processContext, "Need to have a main context to make the shared from");
 
-  if(nullptr != m_processContext)
-  {
-	sharedContext = shared_ptr<QGLContext>( new QGLContext(m_processContext->format(), m_processContext.get( ) ) );
-	bool created = sharedContext->create( m_processContext->context( ) );
-	Utils::AssertOrThrowIfFalse(created, "Unable to create a shared OpenGL context" );
-  }
+  shared_ptr<QGLWidget> sharedContext( new QGLWidget( m_processContext.get( ), m_processContext.get( ) ) );
+
+  //  Make sure that we created the context and that it is properly sharing
+  Utils::AssertOrThrowIfFalse(sharedContext->isSharing( ), "Unable to create a shared OpenGL context" );
+  Utils::AssertOrThrowIfFalse(QGLContext::areSharing( sharedContext->context( ), m_processContext->context( ) ), "Sharing between contexts failed" );
   
   return sharedContext;
 }

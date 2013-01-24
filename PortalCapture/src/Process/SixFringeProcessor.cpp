@@ -4,11 +4,14 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_isInit(false), m_captureReference(true)
 { }
 
-  void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer )
+void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer )
 {
   m_inputBuffer	  = inputBuffer;
   m_outputBuffer  = outputBuffer;
   m_outputBuffer->InitWrite( m_inputBuffer->GetWidth( ), m_inputBuffer->GetHeight( ) );
+
+  //  Make sure we are the current OpenGL Context
+  makeCurrent( );
 
   //  Initialize our shaders
   m_phaseCalculator.init();
@@ -30,8 +33,8 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_phaseFilter.link();
   m_phaseFilter.uniform("image", 0);
   //  In the shader these are floating point, so ensure that they are with a cast
-  m_phaseFilter.uniform("width", ( float )inputBuffer->GetWidth( ));
-  m_phaseFilter.uniform("height", ( float )inputBuffer->GetHeight( ));
+  m_phaseFilter.uniform("width", ( float )inputBuffer->GetWidth( ) );
+  m_phaseFilter.uniform("height", ( float )inputBuffer->GetHeight( ) );
 	
   m_depthCalculator.init();
   m_depthCalculator.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/DepthCalculator.vert"));
@@ -47,13 +50,14 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_phaseMap1.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_referencePhase.init	( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 	
-  m_imageProcessor.init(inputBuffer->GetWidth( ), inputBuffer->GetHeight( ));
+  m_imageProcessor.init(inputBuffer->GetWidth( ), inputBuffer->GetHeight( ) );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap0,					  GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,					  GL_COLOR_ATTACHMENT1 );
-  //m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer(),  GL_COLOR_ATTACHMENT2 );
+  //m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ),  GL_COLOR_ATTACHMENT2 );
   m_imageProcessor.setTextureAttachPoint( m_referencePhase,				  GL_COLOR_ATTACHMENT3 );
-  m_imageProcessor.unbind();
-	
+  OGLStatus::logFBOStatus( );
+  m_imageProcessor.unbind( );
+
   m_isInit = true;
   OGLStatus::logOGLErrors("SixFringeProcessor - Init( shared_ptr<IOpenGLReadBuffer> )");
 }
@@ -64,7 +68,10 @@ void SixFringeProcessor::paintGL( void )
   if( !m_isInit )
 	{ return; }
 
-  OGLStatus::logOGLErrors("SixFringeProcessor - Init( shared_ptr<IOpenGLReadBuffer> )");
+  OGLStatus::logOGLErrors("SixFringeProcessor - paintGL( )");
+  
+  //  Make sure we are the current OpenGL Context
+  makeCurrent( );
 
   // Our actual decoding is done here
   m_imageProcessor.bind();

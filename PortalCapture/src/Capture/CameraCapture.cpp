@@ -9,7 +9,7 @@ bool CameraCaptureWorker::IsRunning( void )
   return m_running;
 }
 
-void CameraCaptureWorker::Start( )
+void CameraCaptureWorker::Init( void )
 {
   m_camera = make_shared<lens::OpenCVCamera>();
   m_camera->init();
@@ -61,25 +61,15 @@ void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
   m_worker = new CameraCaptureWorker( outputBuffer );
   m_worker->moveToThread(m_workerThread);
 
-  connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( Start( ) ));
+  m_worker->Init( );
+
+  connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( Capture( ) ));
   connect(m_worker,		  SIGNAL( Done( ) ),	  m_workerThread, SLOT( quit( ) ));
   connect(m_workerThread, SIGNAL( finished( ) ),  m_workerThread, SLOT( deleteLater( ) ));
   connect(m_worker,		  SIGNAL( Done( ) ),	  m_worker,		  SLOT( deleteLater( ) ));
-
-  m_workerThread->start();
-
-  //  Need to wait for our thread to start and init before we can return.
-  //  Other threads depend on us to init the buffer based on the camera, 
-  //  that is why we have to wait
-  while(!m_worker->IsRunning( ) )
-  {
-	//	Give our time up since we are just waiting
-	QThread::yieldCurrentThread();
-  }
 }
 
 void CameraCapture::Start(void)
 { 
-  //  Calling this will invoke capture on the background thread
-  QTimer::singleShot(0, m_worker, SLOT( Capture( ) ) );
+  m_workerThread->start();
 }

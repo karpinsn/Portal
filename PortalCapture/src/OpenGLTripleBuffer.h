@@ -18,7 +18,8 @@
 #include <GL/gl.h>
 #endif
 
-#include <QGLContext>
+#include <QObject>
+#include <QGLWidget>
 #include <QMutex>
 
 #include <wrench\gl\Texture.h>
@@ -38,8 +39,8 @@ private:
   DISALLOW_COPY_AND_ASSIGN(OpenGLTripleBuffer);
   ISharedGLContextFactory* m_contextFactory;
   
-  shared_ptr<QGLContext> m_writeContext;
-  shared_ptr<QGLContext> m_readContext;
+  shared_ptr<QGLWidget> m_writeContext;
+  shared_ptr<QGLWidget> m_readContext;
   bool m_makeReadContext;
   bool m_makeWriteContext;
 
@@ -56,10 +57,9 @@ public:
   
   void			  InitWrite(int width, int height);
   void			  Write(const IplImage* data);
-  const Texture&  WriteBuffer( void );
+  Texture&  WriteBuffer( void );
   void			  WriteFinished( void );
 
-  void						  InitRead( void );
   int						  GetWidth( void );
   int						  GetHeight( void );
   const shared_ptr<IplImage>  ReadBuffer( void );
