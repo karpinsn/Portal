@@ -23,8 +23,10 @@
 
 using namespace std;
 
-class ICaptureContext
+class ICaptureContext : public QObject
 {
+  Q_OBJECT
+
 public:
   virtual void Init( shared_ptr<IWriteBuffer> outputBuffer ) = 0;
   virtual void Start( ) = 0;
@@ -58,7 +60,7 @@ public slots:
   void Capture( void );
 };
 
-class CameraCapture : public QObject, public ICaptureContext
+class CameraCapture : public ICaptureContext
 {
   Q_OBJECT
 	

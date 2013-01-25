@@ -28,10 +28,12 @@
 #endif
 
 #include <QObject>
+#include <QScriptEngine>
 #include <QGLWidget>
 #include <memory>
 #include <assert.h>
 
+#include "ScriptInterface.h"
 #include "MultiOpenGLBuffer.h"
 #include "ISharedGLContextFactory.h"
 #include "Utils.h"
@@ -49,6 +51,7 @@ class MainController : public QObject, public ISharedGLContextFactory
 private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
+  unique_ptr<ScriptInterface>	  m_interface;
   unique_ptr<ICaptureContext>	  m_captureContext;
   unique_ptr<SixFringeProcessor>  m_processContext; //  Main Context : Runs on UI thread
   unique_ptr<IStreamContext>	  m_streamContext;
@@ -57,7 +60,7 @@ public:
   MainController();
   void Init(void);
 
- /**
+ /** TODO - Not sure if this is true
   * Makes a shared OpenGL context with the main processing context.
   *
   * For some reason if you call this it will invalidate all FBOs and VAOs.

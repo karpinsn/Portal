@@ -55,7 +55,6 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,					  GL_COLOR_ATTACHMENT1 );
   //m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ),  GL_COLOR_ATTACHMENT2 );
   m_imageProcessor.setTextureAttachPoint( m_referencePhase,				  GL_COLOR_ATTACHMENT3 );
-  OGLStatus::logFBOStatus( );
   m_imageProcessor.unbind( );
 
   m_isInit = true;
@@ -69,7 +68,7 @@ void SixFringeProcessor::paintGL( void )
 	{ return; }
 
   OGLStatus::logOGLErrors("SixFringeProcessor - paintGL( )");
-  
+
   //  Make sure we are the current OpenGL Context
   makeCurrent( );
 

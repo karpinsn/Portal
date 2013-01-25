@@ -31,8 +31,10 @@
 
 using namespace std;
 
-class IStreamContext
+class IStreamContext : public QObject
 {
+  Q_OBJECT
+
 public:
   //  TODO: Get away from concreate
   virtual void Init( shared_ptr<OpenGLTripleBuffer> inputBuffer ) = 0;
@@ -83,7 +85,7 @@ class WebsocketStreamer : public QObject
 	void StreamFrame(void);
 };
 
-class WebsocketStream : public QObject, public IStreamContext
+class WebsocketStream : public IStreamContext
 {
   Q_OBJECT
 	

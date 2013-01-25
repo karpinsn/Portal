@@ -20,7 +20,7 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}")
 #	-----------------------------------------
 #	QT
 #	-----------------------------------------
-find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL QtScript REQUIRED)
 include(${QT_USE_FILE})
 set (LIBS ${LIBS} ${QT_LIBRARIES})
 
@@ -99,6 +99,7 @@ set(SOURCES
     MainController.cpp
     MultiOpenGLBuffer.cpp
     OpenGLTripleBuffer.cpp
+	ScriptInterface.cpp
 
     Capture/CameraCapture.cpp
     Process/SixFringeProcessor.cpp
@@ -112,6 +113,7 @@ set(SOURCES
     IOpenGLReadBuffer.h
     IWriteBuffer.h
     ISharedGLContextFactory.h
+	ScriptInterface.h
 
     Capture/CameraCapture.h
     Process/SixFringeProcessor.h
@@ -123,6 +125,7 @@ set(MOCS
     MainController.h
 	OpenGLTripleBuffer.h
 	MultiOpenGLBuffer.h
+    ScriptInterface.h
     Capture/CameraCapture.h
     Process/SixFringeProcessor.h
 	Stream/WebsocketStream.h)

@@ -29,18 +29,28 @@ void MainController::Init(void)
 
   // ----- Initialize our contexts -----
   // Init our capture context
+  wrench::Logger::logDebug("Loading capture context");
   m_captureContext = unique_ptr<ICaptureContext>( new CameraCapture( ) );
   m_captureContext->Init( captureBuffer );
 
   // Init our processing/main context
+  wrench::Logger::logDebug("Loading processing context");
   m_processContext->Init( captureBuffer, processedBuffer );
   
   // Init our output context
+  wrench::Logger::logDebug("Loading streaming context");
   m_streamContext = unique_ptr<IStreamContext> ( new WebsocketStream( ) );
   m_streamContext->Init( processedBuffer );
 
   //  Wire up signals and slots
   connect(captureBuffer.get( ), SIGNAL( WriteFilled( ) ), m_processContext.get( ), SLOT( updateGL( ) ) );
+
+  wrench::Logger::logDebug("Loading scripting interface");
+  //  Add the scripting interface so that we can communicate with the app
+  m_interface = unique_ptr<ScriptInterface>( new ScriptInterface() );
+  m_interface->AddObject(m_captureContext.get(), "Capture");
+  m_interface->AddObject(m_processContext.get(), "Process");
+  m_interface->AddObject(m_streamContext.get(), "Stream");
 
   wrench::Logger::logDebug("Initialization complete");
 }
