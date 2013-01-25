@@ -15,14 +15,16 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
 
   //  Initialize our shaders
   m_phaseCalculator.init();
-  m_phaseCalculator.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PhaseCalculator.vert"));
-  m_phaseCalculator.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/PhaseCalculator.frag"));
+  m_phaseCalculator.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/Fringe2Phase.vert"));
+  m_phaseCalculator.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2Phase.frag"));
   m_phaseCalculator.bindAttributeLocation("vert", 0);
   m_phaseCalculator.bindAttributeLocation("vertTexCoord", 1);
   m_phaseCalculator.link();
   m_phaseCalculator.uniform("fringeImage1", 0);
   m_phaseCalculator.uniform("fringeImage2", 1); 
   m_phaseCalculator.uniform("gammaCutoff", 0.0f);
+  m_phaseCalculator.uniform("pitch1", 74.0f);
+  m_phaseCalculator.uniform("pitch2", 79.0f);
 
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PhaseFilter.vert"));

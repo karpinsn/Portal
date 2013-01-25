@@ -7,14 +7,14 @@ include(FileCopyTargets)
 set(SHADER_VERT_SOURCES
 	MedianFilter3x3.vert	
     DepthCalculator.vert
-	PhaseCalculator.vert
+	Fringe2Phase.vert
 	PhaseFilter.vert
 )
 
 set(SHADER_FRAG_SOURCES
 	MedianFilter3x3.frag
     DepthCalculator.frag
-	PhaseCalculator.frag
+	Fringe2Phase.frag
 	PhaseFilter.frag
 )
 
