@@ -1,7 +1,7 @@
 #include "CameraCapture.h"
 
 CameraCaptureWorker::CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer) : 
-  m_running(false), m_currentChannelLoad(0), m_outputBuffer(outputBuffer)
+  m_running(false), m_currentChannelLoad(0), m_outputBuffer(outputBuffer), m_dropFrame(false)
 { }
 
 bool CameraCaptureWorker::IsRunning( void )
@@ -28,6 +28,12 @@ void CameraCaptureWorker::Stop(void)
   m_running = false;
 }
 
+void CameraCaptureWorker::DropFrame( void )
+{
+  wrench::Logger::logDebug("Dropping a frame");
+  m_dropFrame = true;
+}
+
 void CameraCaptureWorker::Capture()
 {
   while(m_running)
@@ -35,6 +41,13 @@ void CameraCaptureWorker::Capture()
 	//	Grab our image
 	IplImage* frame = m_camera->getFrame();
 	
+	//	Check if we should drop this frame
+	if(m_dropFrame)
+	{ 
+	  m_dropFrame = false;
+	  continue; 
+	} 
+
 	//	Pack our camera image
 	cvSetImageCOI(frame, 1);
 	cvSetImageCOI(m_packFrame.get(), ( m_currentChannelLoad + 1 ) );
@@ -72,4 +85,9 @@ void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
 void CameraCapture::Start(void)
 { 
   m_workerThread->start();
+}
+
+void CameraCapture::DropFrame( void )
+{
+  m_worker->DropFrame();
 }

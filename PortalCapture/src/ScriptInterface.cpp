@@ -17,7 +17,7 @@ void ScriptWorker::ProcessInput( void )
 	if( m_scriptEngine.hasUncaughtException( ) )
 	{
 	  int line = m_scriptEngine.uncaughtExceptionLineNumber();
-	  wrench::Logger::logError( "Uncaught exception at line: %d : %s", line );
+	  wrench::Logger::logError( "Uncaught exception at line: %d", line );
 	}
   }
 

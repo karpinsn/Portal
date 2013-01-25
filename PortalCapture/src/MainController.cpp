@@ -29,16 +29,16 @@ void MainController::Init(void)
 
   // ----- Initialize our contexts -----
   // Init our capture context
-  wrench::Logger::logDebug("Loading capture context");
+  wrench::Logger::logDebug("Loading (Capture) context");
   m_captureContext = unique_ptr<ICaptureContext>( new CameraCapture( ) );
   m_captureContext->Init( captureBuffer );
 
   // Init our processing/main context
-  wrench::Logger::logDebug("Loading processing context");
+  wrench::Logger::logDebug("Loading (Process) context");
   m_processContext->Init( captureBuffer, processedBuffer );
   
   // Init our output context
-  wrench::Logger::logDebug("Loading streaming context");
+  wrench::Logger::logDebug("Loading (Stream) context");
   m_streamContext = unique_ptr<IStreamContext> ( new WebsocketStream( ) );
   m_streamContext->Init( processedBuffer );
 

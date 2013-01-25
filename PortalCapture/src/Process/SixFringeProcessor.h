@@ -73,6 +73,9 @@ public:
   SixFringeProcessor(void);
   void Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer );
 
+public slots:
+  void CaptureReference( void );
+
 signals:
   void ProcessedFrame( void );
 

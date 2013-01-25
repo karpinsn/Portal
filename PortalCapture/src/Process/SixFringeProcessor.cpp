@@ -61,6 +61,12 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
   OGLStatus::logOGLErrors("SixFringeProcessor - Init( shared_ptr<IOpenGLReadBuffer> )");
 }
 
+void SixFringeProcessor::CaptureReference( void )
+{
+  wrench::Logger::logDebug("Capturing a reference plane");
+  m_captureReference = true;
+}
+
 void SixFringeProcessor::paintGL( void )
 {
   // If we are not init then just return

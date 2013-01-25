@@ -30,6 +30,9 @@ class ICaptureContext : public QObject
 public:
   virtual void Init( shared_ptr<IWriteBuffer> outputBuffer ) = 0;
   virtual void Start( ) = 0;
+
+public slots:
+  virtual void DropFrame( ) = 0;
 };
 
 class CameraCaptureWorker : public QObject
@@ -41,10 +44,10 @@ private:
   DISALLOW_COPY_AND_ASSIGN(CameraCaptureWorker);
   bool m_running;
   int m_currentChannelLoad;
+  bool m_dropFrame;
 
   shared_ptr<IWriteBuffer> m_outputBuffer;
   shared_ptr<lens::Camera> m_camera;
-
   shared_ptr<IplImage> m_packFrame;
 
 public:
@@ -57,6 +60,7 @@ signals:
 public slots:
   void Init( void );
   void Stop( void );
+  void DropFrame ( void );
   void Capture( void );
 };
 
@@ -73,6 +77,9 @@ public:
   CameraCapture(void) { };
   void Init(shared_ptr<IWriteBuffer> outputBuffer);
   void Start();
+
+public slots:
+  void DropFrame( void );
 };
 
 #endif	// _PORTAL_CAPTURE_CAMERA_CAPTURE_H_
