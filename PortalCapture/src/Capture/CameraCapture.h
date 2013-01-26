@@ -16,7 +16,7 @@
 #include <highgui.h>
 
 #include <Lens\FileCamera.h>
-#include <Lens\OpenCVCamera.h>
+#include <Lens\PointGreyCamera.h>
 #include <Lens\CameraObserver.h>
 
 #include "../Utils.h"

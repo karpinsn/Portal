@@ -68,11 +68,16 @@ private:
   bool m_isInit;
   bool m_captureReference;
 
+  float m_shift;
+  float m_scale;
+
 public:
   SixFringeProcessor(void);
   void Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer );
 
 public slots:
+  void SetScale( float scale );
+  void SetShift( float shift );
   void CaptureReference( void );
 
 signals:

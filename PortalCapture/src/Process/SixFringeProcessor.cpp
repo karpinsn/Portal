@@ -1,7 +1,7 @@
 #include "SixFringeProcessor.h"
 
 SixFringeProcessor::SixFringeProcessor( void ) :
-  m_isInit(false), m_captureReference(true)
+  m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0)
 { }
 
 void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer )
@@ -45,8 +45,8 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
   m_phase2Depth.link();
   m_phase2Depth.uniform("actualPhase", 0);
   m_phase2Depth.uniform("referencePhase", 1);
-  m_phase2Depth.uniform("scale", .04f);
-  m_phase2Depth.uniform("shift", .0f);
+  m_phase2Depth.uniform("scale", m_scale);
+  m_phase2Depth.uniform("shift", m_shift);
 	
   m_phaseMap0.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
@@ -66,6 +66,16 @@ void SixFringeProcessor::CaptureReference( void )
 {
   wrench::Logger::logDebug("Capturing a reference plane");
   m_captureReference = true;
+}
+
+void SixFringeProcessor::SetScale( float scale )
+{
+  m_scale = scale;
+}
+
+void SixFringeProcessor::SetShift( float shift )
+{
+  m_shift = shift;
 }
 
 void SixFringeProcessor::paintGL( void )
@@ -127,6 +137,8 @@ void SixFringeProcessor::_calculateDepth( GLenum drawBuffer, Texture& phase )
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
   m_phase2Depth.bind( );
+  m_phase2Depth.uniform("scale", m_scale);
+  m_phase2Depth.uniform("shift", m_shift);
   phase.bind( GL_TEXTURE0 );
   m_referencePhase.bind( GL_TEXTURE1 );
   m_imageProcessor.process( );

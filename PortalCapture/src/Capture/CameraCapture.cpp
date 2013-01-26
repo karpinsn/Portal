@@ -12,7 +12,8 @@ bool CameraCaptureWorker::IsRunning( void )
 void CameraCaptureWorker::Init( void )
 {
   //m_camera = make_shared<lens::OpenCVCamera>();
-  m_camera = make_shared<lens::FileCamera>();
+  //m_camera = make_shared<lens::FileCamera>();
+  m_camera = make_shared<lens::PointGreyCamera>();
   m_camera->init();
 
   //  TODO: Not sure how we want to know we want a 3 channel image
