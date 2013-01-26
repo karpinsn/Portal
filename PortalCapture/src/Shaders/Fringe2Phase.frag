@@ -2,10 +2,10 @@
 
 uniform sampler2D fringeImage1;
 uniform sampler2D fringeImage2;
+uniform float pitch1;
+uniform float pitch2;
 
 in vec2 fragTexCoord;
-in float pitch1;
-in float pitch2;
 
 out vec4 phase;
 

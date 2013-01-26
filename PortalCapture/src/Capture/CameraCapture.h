@@ -15,6 +15,7 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include <Lens\FileCamera.h>
 #include <Lens\OpenCVCamera.h>
 #include <Lens\CameraObserver.h>
 

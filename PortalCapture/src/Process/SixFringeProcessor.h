@@ -56,13 +56,12 @@ private:
   shared_ptr<IOpenGLReadBuffer> m_inputBuffer;
   shared_ptr<IOpenGLWriteBuffer> m_outputBuffer;
 
-  ShaderProgram m_phaseCalculator;
+  ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
-  ShaderProgram m_depthCalculator;
+  ShaderProgram m_phase2Depth;
 
   Texture m_phaseMap0;
   Texture m_phaseMap1;
-  //Texture m_depthMap;
   Texture m_referencePhase;
 
   FBO m_imageProcessor;
