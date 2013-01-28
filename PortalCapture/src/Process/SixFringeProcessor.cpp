@@ -127,6 +127,7 @@ void SixFringeProcessor::paintGL( void )
 void SixFringeProcessor::_calculatePhase(GLenum drawBuffer)
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_fringe2Phase.bind( );
   m_inputBuffer->BindBuffer( GL_TEXTURE0 );
   m_imageProcessor.process( );
@@ -135,6 +136,7 @@ void SixFringeProcessor::_calculatePhase(GLenum drawBuffer)
 void SixFringeProcessor::_filterPhase( GLenum drawBuffer, Texture& phase2Filter )
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_phaseFilter.bind( );
   phase2Filter.bind( GL_TEXTURE0 );
   m_imageProcessor.process( );
@@ -143,6 +145,7 @@ void SixFringeProcessor::_filterPhase( GLenum drawBuffer, Texture& phase2Filter 
 void SixFringeProcessor::_calculateDepth( GLenum drawBuffer, Texture& phase )
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_phase2Depth.bind( );
   m_phase2Depth.uniform("scale", m_scale);
   m_phase2Depth.uniform("shift", m_shift);
@@ -154,6 +157,7 @@ void SixFringeProcessor::_calculateDepth( GLenum drawBuffer, Texture& phase )
 void SixFringeProcessor::_holoEncode( GLenum drawBuffer )
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_depth2Holo.bind();
   m_depthMap.bind( GL_TEXTURE0 );
   m_imageProcessor.process( );
