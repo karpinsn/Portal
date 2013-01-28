@@ -100,11 +100,7 @@ void SixFringeProcessor::paintGL( void )
 	  _calculatePhase( GL_COLOR_ATTACHMENT2 );
 	  _filterPhase( GL_COLOR_ATTACHMENT2, m_phaseMap1 ); 
 
-	  static int count = 0;	//	TODO Remove this stuff
-	  if(count > 2)
-		m_captureReference = false;
-	  else
-		count++;
+	  m_captureReference = false;
 	}
 	else
 	{ 
