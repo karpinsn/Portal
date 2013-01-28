@@ -51,6 +51,9 @@ void WebsocketProcessor::ProcessSocket()
 
 void WebsocketStreamer::Init(void)
 {
+  m_formatConverterImage = shared_ptr<IplImage>(
+	cvCreateImage( cvSize( m_inputBuffer->GetWidth(), m_inputBuffer->GetHeight() ), IPL_DEPTH_8U, 3),
+	[](IplImage* ptr) { cvReleaseImage( &ptr ); } );
   m_running = true;
 }
 
@@ -66,15 +69,16 @@ void WebsocketStreamer::Stop(void)
 
 void WebsocketStreamer::StreamFrame(void)
 {
-  //int encodingProperties[] = {CV_IMWRITE_JPEG_QUALITY, 90, 0};
-  int encodingProperties[] = {CV_IMWRITE_PNG_COMPRESSION, 3, 0 };
+  int encodingProperties[] = {CV_IMWRITE_JPEG_QUALITY, 95, 0};
+  //int encodingProperties[] = {CV_IMWRITE_PNG_COMPRESSION, 3, 0 };
 
   ////	Do our image pulling stuff
   auto frame = m_inputBuffer->ReadBuffer();
-  //////cvCvtColor(frame.get(), frame.get(), CV_RGB2BGR);
+  cvCvtColor(frame.get(), m_formatConverterImage.get(), CV_RGB2BGR);
 
+  // PROFILE: Hot point in the code (for PNG)
   auto buffer = shared_ptr<CvMat>(
-				cvEncodeImage(".png", frame.get(), encodingProperties), 
+				cvEncodeImage(".jpg", m_formatConverterImage.get(), encodingProperties), 
 				[](CvMat* ptr){cvReleaseMat(&ptr);});
   m_socket.broadcastData(buffer->data.ptr, buffer->width);
 }

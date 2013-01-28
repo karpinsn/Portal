@@ -71,6 +71,7 @@ class WebsocketStreamer : public QObject
 	bool m_running;
 	antenna::BaseStation& m_socket;
 	shared_ptr<IReadBuffer> m_inputBuffer;
+	shared_ptr<IplImage>	m_formatConverterImage;
 
   public:
 	WebsocketStreamer(antenna::BaseStation& socket, shared_ptr<IReadBuffer> buffer) : m_socket(socket), m_inputBuffer(buffer), m_running(false) { };
