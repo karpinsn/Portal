@@ -59,10 +59,12 @@ private:
   ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
   ShaderProgram m_phase2Depth;
+  ShaderProgram m_depth2Holo;
 
   Texture m_phaseMap0;
   Texture m_phaseMap1;
   Texture m_referencePhase;
+  Texture m_depthMap;
 
   FBO m_imageProcessor;
   bool m_isInit;
@@ -90,6 +92,7 @@ private:
   void _calculatePhase( GLenum drawBuffer );
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
   void _calculateDepth( GLenum drawBuffer, Texture& phase );
+  void _holoEncode( GLenum drawBuffer );
 };
 
 #endif	// _PORTAL_PROCESS_SIX_FRINGE_PROCESSOR_H_

@@ -50,6 +50,7 @@ void CameraCaptureWorker::Capture()
 	  continue; 
 	} 
 
+	// PROFILE-TODO: Copying is a "hot point" in the code. 
 	//	Pack our camera image
 	cvSetImageCOI(frame, 1);
 	cvSetImageCOI(m_packFrame.get(), ( m_currentChannelLoad + 1 ) );
@@ -86,7 +87,7 @@ void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
 
 void CameraCapture::Start(void)
 { 
-  m_workerThread->start();
+  m_workerThread->start( QThread::TimeCriticalPriority );
 }
 
 void CameraCapture::DropFrame( void )

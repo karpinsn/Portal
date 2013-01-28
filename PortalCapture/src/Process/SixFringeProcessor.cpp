@@ -48,14 +48,23 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
   m_phase2Depth.uniform("scale", m_scale);
   m_phase2Depth.uniform("shift", m_shift);
 	
+  m_depth2Holo.init();
+  m_depth2Holo.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/Depth2Holo.vert"));
+  m_depth2Holo.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Depth2Holo.frag"));
+  m_depth2Holo.link();
+  m_depth2Holo.uniform("fringeFrequency", 16.0f);
+  m_depth2Holo.uniform("depthMap", 0);
+
   m_phaseMap0.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_referencePhase.init	( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_depthMap.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 	
   m_imageProcessor.init(inputBuffer->GetWidth( ), inputBuffer->GetHeight( ) );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap0,					  GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,					  GL_COLOR_ATTACHMENT1 );
   m_imageProcessor.setTextureAttachPoint( m_referencePhase,				  GL_COLOR_ATTACHMENT2 );
+  m_imageProcessor.setTextureAttachPoint( m_depthMap,					  GL_COLOR_ATTACHMENT3 );
   m_imageProcessor.unbind( );
 
   m_isInit = true;
@@ -104,8 +113,10 @@ void SixFringeProcessor::paintGL( void )
 	}
 	else
 	{ 
-	  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ), GL_COLOR_ATTACHMENT3 );
-	  _calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap0 ); 
+	  _calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap0 );
+
+	  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ), GL_COLOR_ATTACHMENT4 );
+	  _holoEncode( GL_COLOR_ATTACHMENT4 );
 	}
   }
   m_imageProcessor.unbind();
@@ -137,5 +148,13 @@ void SixFringeProcessor::_calculateDepth( GLenum drawBuffer, Texture& phase )
   m_phase2Depth.uniform("shift", m_shift);
   phase.bind( GL_TEXTURE0 );
   m_referencePhase.bind( GL_TEXTURE1 );
+  m_imageProcessor.process( );
+}
+
+void SixFringeProcessor::_holoEncode( GLenum drawBuffer )
+{
+  m_imageProcessor.bindDrawBuffer( drawBuffer );
+  m_depth2Holo.bind();
+  m_depthMap.bind( GL_TEXTURE0 );
   m_imageProcessor.process( );
 }
