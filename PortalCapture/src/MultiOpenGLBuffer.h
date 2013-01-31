@@ -20,16 +20,15 @@
 
 #include <vector>
 
+#include "ITripleBuffer.h"
 #include "OpenGLTripleBuffer.h"
 #include "ISharedGLContextFactory.h"
 #include "Utils.h"
-#include "IOpenGLReadBuffer.h"
-#include "IWriteBuffer.h"
 
 using namespace std;
 using namespace wrench::gl;
 
-class MultiOpenGLBuffer : public QObject, public IOpenGLReadBuffer, public IWriteBuffer
+class MultiOpenGLBuffer : public ITripleBuffer
 {
   Q_OBJECT
 
@@ -40,9 +39,14 @@ private:
 
 public:
   MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFactory* contextFactory);
-  virtual void InitWrite(int width, int height);
-  virtual void Write(const IplImage* data);
+  
+  // Write buffers
+  void InitWrite(int width, int height);
+  void Write(const IplImage* data);
+  Texture& WriteBuffer( void );
+  void WriteFinished( void );
 
+  // Read buffers
   int						  GetWidth( void );
   int						  GetHeight( void );
   const shared_ptr<IplImage>  ReadBuffer( void );

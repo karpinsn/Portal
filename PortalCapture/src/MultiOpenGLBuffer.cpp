@@ -38,6 +38,16 @@ void MultiOpenGLBuffer::Write(const IplImage* data)
   }
 }
 
+Texture& MultiOpenGLBuffer::WriteBuffer( void )
+{
+  throw "UNIMPLEMENTED!!!!";
+}
+
+void MultiOpenGLBuffer::WriteFinished( void )
+{
+  throw "UNIMPLEMENTED!!!!";
+}
+
 const shared_ptr<IplImage> MultiOpenGLBuffer::ReadBuffer( void )
 {
   //  TODO: This doesn't make sense here

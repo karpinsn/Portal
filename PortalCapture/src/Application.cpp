@@ -15,11 +15,11 @@ int main(int argc, char **argv)
 
   // Create and initialize our controller
   MainController controller;
-  controller.Init();
+  controller.Init("SingleCam.qs");
   QObject::connect(&controller, SIGNAL( Finished() ), &app, SLOT( quit() ), Qt::QueuedConnection);
 
   // This will put start on top of the event loop
-  QTimer::singleShot(0, &controller, SLOT( Start() ));
+  //controller.Start();
 
   // Finally start up the event loop
   return app.exec(); 

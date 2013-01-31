@@ -1,9 +1,9 @@
 #include "ScriptInterface.h"
 
-void ScriptWorker::AddObject(QObject* object, string name)
+void ScriptWorker::AddObject(QObject* object, QString name)
 {
   QScriptValue value = m_scriptEngine.newQObject(object);
-  m_scriptEngine.globalObject().setProperty(name.c_str(), value);
+  m_scriptEngine.globalObject().setProperty(name, value);
 }
 
 void ScriptWorker::ProcessInput( void )
@@ -24,6 +24,26 @@ void ScriptWorker::ProcessInput( void )
   emit Done();
 }
 
+void ScriptWorker::RunScript( QString filename )
+{
+  QFile scriptFile(filename);
+  if ( !scriptFile.open( QIODevice::ReadOnly ) )
+  {
+	wrench::Logger::logError( "Unable to load script file %s", filename.toLocal8Bit().data() ); 
+  }
+  QTextStream stream(&scriptFile);
+  //  Not the most efficent way but it will work for now
+  QString contents = stream.readAll();
+  scriptFile.close();
+
+  m_scriptEngine.evaluate(contents, filename);
+  if( m_scriptEngine.hasUncaughtException( ) )
+  {
+	int line = m_scriptEngine.uncaughtExceptionLineNumber();
+	wrench::Logger::logError( "Uncaught exception at line: %d", line );
+  }
+}
+
 ScriptInterface::ScriptInterface( void )
 {
   m_workerThread = new QThread();
@@ -38,7 +58,13 @@ ScriptInterface::ScriptInterface( void )
   m_workerThread->start();
 }
 
-void ScriptInterface::AddObject(QObject* object, string name)
+void ScriptInterface::AddObject(QObject* object, QString name)
 {
   m_worker->AddObject(object, name);
+}
+
+void ScriptInterface::RunScript(QString filename)
+{
+  // TODO: Could have problems if we are already processing input
+  m_worker->RunScript(filename);
 }

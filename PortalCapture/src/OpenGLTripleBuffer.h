@@ -26,12 +26,11 @@
 
 #include "ISharedGLContextFactory.h"
 #include "Utils.h"
-#include "IOpenGLReadBuffer.h"
-#include "IWriteBuffer.h"
+#include "ITripleBuffer.h"
 
 using namespace wrench::gl;
 
-class OpenGLTripleBuffer : public QObject, public IOpenGLReadBuffer, public IOpenGLWriteBuffer
+class OpenGLTripleBuffer : public ITripleBuffer
 {
   Q_OBJECT
 
@@ -55,10 +54,10 @@ private:
 public:
   OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory, bool makeReadContext, bool makeWriteContext);
   
-  void			  InitWrite(int width, int height);
-  void			  Write(const IplImage* data);
-  Texture&  WriteBuffer( void );
-  void			  WriteFinished( void );
+  void						  InitWrite(int width, int height);
+  void						  Write(const IplImage* data);
+  Texture&					  WriteBuffer( void );
+  void						  WriteFinished( void );
 
   int						  GetWidth( void );
   int						  GetHeight( void );

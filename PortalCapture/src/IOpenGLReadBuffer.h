@@ -18,6 +18,11 @@
 #include <GL/gl.h>
 #endif
 
+#include <QObject>
+
+#include <cv.h>
+#include <highgui.h>
+
 class IReadBuffer
 {
 public:
@@ -26,8 +31,10 @@ public:
   virtual const shared_ptr<IplImage>  ReadBuffer( void )  = 0;
 };
 
-class IOpenGLReadBuffer : public IReadBuffer
+class IOpenGLReadBuffer : public QObject, public IReadBuffer
 {
+  Q_OBJECT
+
 public:
   virtual void	BindBuffer( GLenum texture ) = 0;
 };

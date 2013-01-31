@@ -114,6 +114,8 @@ set(SOURCES
     IWriteBuffer.h
     ISharedGLContextFactory.h
 	ScriptInterface.h
+	IContext.h
+    ITripleBuffer.h
 
     Capture/CameraCapture.h
     Process/SixFringeProcessor.h
@@ -123,6 +125,7 @@ set(SOURCES
 #   Qt Files
 set(MOCS
     MainController.h
+    IOpenGLReadBuffer.h
 	OpenGLTripleBuffer.h
 	MultiOpenGLBuffer.h
     ScriptInterface.h

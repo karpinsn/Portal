@@ -1,6 +1,6 @@
 #include "WebsocketStream.h"
 
-void WebsocketStream::Init(shared_ptr<OpenGLTripleBuffer> inputBuffer)
+void WebsocketStream::Init(shared_ptr<IOpenGLReadBuffer> inputBuffer)
 {
   //  TODO: Make sure we only call this once
 

@@ -32,6 +32,10 @@
 #include <QGLWidget>
 #include <memory>
 #include <assert.h>
+#include <map>
+
+#include "IContext.h"
+#include "ITripleBuffer.h"
 
 #include "ScriptInterface.h"
 #include "MultiOpenGLBuffer.h"
@@ -51,6 +55,10 @@ class MainController : public QObject, public ISharedGLContextFactory
 private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
+  map<QString, shared_ptr<ITripleBuffer>> m_buffers;
+  //  TODO: These should be unique_ptr
+  map<QString, shared_ptr<IContext>>	  m_contexts;
+
   unique_ptr<ScriptInterface>	  m_interface;
   unique_ptr<ICaptureContext>	  m_captureContext;
   unique_ptr<SixFringeProcessor>  m_processContext; //  Main Context : Runs on UI thread
@@ -58,7 +66,7 @@ private:
 
 public:
   MainController();
-  void Init(void);
+  void Init(QString initScriptFilename);
 
  /** TODO - Not sure if this is true
   * Makes a shared OpenGL context with the main processing context.
@@ -72,6 +80,16 @@ public:
 public slots:
   void Start(void);
   void Close(void);
+  // Buffer adding slots
+  void AddBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
+  void AddMultiBuffer( QString bufferName, int bufferCount);
+
+  // Stream adding slots
+  void AddCaptureContext( QString contextName, QString outputBufferName );
+  void AddStreamContext( QString contextName, QString inputBufferName );
+
+private slots:
+  void StartSystem(void);
 
 signals:
   void Finished(void);

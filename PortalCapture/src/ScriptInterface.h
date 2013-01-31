@@ -9,6 +9,8 @@
 #include <QObject>
 #include <QThread>
 #include <QScriptEngine>
+#include <QFile>
+#include <QTextStream>
 
 #include <memory>
 #include <iostream>
@@ -27,7 +29,8 @@ private:
 
 public:
   ScriptWorker( void ) : m_running(true) { };
-  void AddObject(QObject* object, string name);
+  void AddObject(QObject* object, QString name);
+  void RunScript( QString filename );
 
 signals:
   void Done( void );
@@ -46,7 +49,8 @@ private:
   
 public:
   ScriptInterface( void );
-  void AddObject(QObject* object, string name);
+  void AddObject(QObject* object, QString name);
+  void RunScript(QString filename);
 };
 
 #endif	// _PORTAL_CAPTURE_SCRIPT_INTERFACE_H_

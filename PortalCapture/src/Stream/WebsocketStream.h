@@ -25,19 +25,20 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include "../IContext.h"
 #include "../Utils.h"
 #include "../IOpenGLReadBuffer.h"
 #include "../OpenGLTripleBuffer.h"
 
 using namespace std;
 
-class IStreamContext : public QObject
+class IStreamContext : public QObject, public IContext
 {
   Q_OBJECT
 
 public:
   //  TODO: Get away from concreate
-  virtual void Init( shared_ptr<OpenGLTripleBuffer> inputBuffer ) = 0;
+  virtual void Init( shared_ptr<IOpenGLReadBuffer> inputBuffer ) = 0;
   virtual void Start( ) = 0;
 };
 
@@ -106,7 +107,7 @@ private:
 public:
   // TODO: Fix hardcoding
   WebsocketStream(void) : m_port(7681) { };
-  void Init(shared_ptr<OpenGLTripleBuffer> inputBuffer);
+  void Init(shared_ptr<IOpenGLReadBuffer> inputBuffer);
   void Start( );
 };
 

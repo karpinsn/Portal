@@ -17,22 +17,24 @@
 
 #include <Lens\FileCamera.h>
 #include <Lens\PointGreyCamera.h>
+#include <Lens\OpenCVCamera.h>
 #include <Lens\CameraObserver.h>
 
+#include "../IContext.h"
 #include "../Utils.h"
 #include "../IWriteBuffer.h"
 
 using namespace std;
 
-class ICaptureContext : public QObject
+class ICaptureContext : public QObject, public IContext
 {
   Q_OBJECT
 
 public:
   virtual void Init( shared_ptr<IWriteBuffer> outputBuffer ) = 0;
-  virtual void Start( ) = 0;
 
 public slots:
+  virtual void Start( ) = 0;
   virtual void DropFrame( ) = 0;
 };
 
@@ -77,9 +79,9 @@ private:
 public:
   CameraCapture(void) { };
   void Init(shared_ptr<IWriteBuffer> outputBuffer);
-  void Start();
 
 public slots:
+  void Start( );
   void DropFrame( void );
 };
 
