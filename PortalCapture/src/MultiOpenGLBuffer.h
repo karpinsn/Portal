@@ -38,7 +38,7 @@ private:
   ::size_t m_currentBufferIndex;
 
 public:
-  MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFactory* contextFactory);
+  MultiOpenGLBuffer(::size_t bufferCount, bool makeReadContext, bool makeWriteContext, ISharedGLContextFactory* contextFactory);
   
   // Write buffers
   void InitWrite(int width, int height);

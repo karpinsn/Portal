@@ -1,11 +1,9 @@
 #include "WebsocketStream.h"
 
-void WebsocketStream::Init(shared_ptr<IOpenGLReadBuffer> inputBuffer)
+WebsocketStream::WebsocketStream(int port, shared_ptr<IOpenGLReadBuffer> inputBuffer)
 {
-  //  TODO: Make sure we only call this once
-
   // Open our socket connection
-  m_socket.start(m_port);
+  m_socket.start(port);
 
   //	Start our background thread that the socket can broadcast on
   m_socketProcessorThread = new QThread(this);
@@ -29,13 +27,13 @@ void WebsocketStream::Init(shared_ptr<IOpenGLReadBuffer> inputBuffer)
   connect(m_streamProcessorThread, SIGNAL(finished()), m_streamProcessorThread, SLOT(deleteLater()));
   connect(m_socketStreamer, SIGNAL(Finished()), m_socketStreamer, SLOT(deleteLater()));
   connect(inputBuffer.get( ), SIGNAL( WriteFilled( ) ), m_socketStreamer, SLOT( StreamFrame( ) ) );
-
-  m_socketProcessorThread->start();
-  m_streamProcessorThread->start();
 }
 
 void WebsocketStream::Start(void)
-{ }
+{ 
+  m_socketProcessorThread->start();
+  m_streamProcessorThread->start();
+}
 
 void WebsocketProcessor::Stop(void)
 {

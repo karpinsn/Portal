@@ -5,11 +5,7 @@ include(FileCopyTargets)
 #	---------------------------------------------------------------------------------------
 
 set(SHADER_VERT_SOURCES
-	MedianFilter3x3.vert	
-	Phase2Depth.vert
-	Fringe2Phase.vert
-	PhaseFilter.vert
-	Depth2Holo.vert
+	PassThrough.vert
 )
 
 set(SHADER_FRAG_SOURCES
@@ -18,6 +14,7 @@ set(SHADER_FRAG_SOURCES
 	Fringe2Phase.frag
 	PhaseFilter.frag
 	Depth2Holo.frag
+	RenderTexture.frag
 )
 
 set(SHADER_SOURCES ${SHADER_VERT_SOURCES} ${SHADER_FRAG_SOURCES})

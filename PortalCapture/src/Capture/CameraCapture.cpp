@@ -71,9 +71,8 @@ void CameraCaptureWorker::Capture()
   emit Done();
 }
 
-void CameraCapture::Init(shared_ptr<IWriteBuffer> outputBuffer)
+CameraCapture::CameraCapture(shared_ptr<IWriteBuffer> outputBuffer)
 {
-  //  TODO: Make sure we only call this once
   m_workerThread = new QThread();
   m_worker = new CameraCaptureWorker( outputBuffer );
   m_worker->moveToThread(m_workerThread);

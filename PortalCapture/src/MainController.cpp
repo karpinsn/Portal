@@ -28,9 +28,8 @@ void MainController::Init(QString initScriptFilename)
   m_interface->AddObject(this, "Main");
   m_interface->AddObject(m_interface.get(), "Global");
   m_interface->AddObject(m_processContext.get(), "Process");
-
-  m_interface->RunScript(initScriptFilename);
   wrench::Logger::logDebug("Loading scripting interface");
+  m_interface->RunScript(initScriptFilename);
 
   wrench::Logger::logDebug("Initialization complete");
 }
@@ -64,10 +63,10 @@ void MainController::AddBuffer( QString bufferName, bool makeReadContext, bool m
   m_interface->AddObject(buffer.get(), bufferName);
 }
 
-void MainController::AddMultiBuffer( QString bufferName, int bufferCount)
+void MainController::AddMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount)
 {
   // Make the buffer then add it to the scripting interface
-  auto buffer = make_shared<MultiOpenGLBuffer>( bufferCount, this );
+  auto buffer = make_shared<MultiOpenGLBuffer>( bufferCount, makeReadContext, makeWriteContext, this );
   m_buffers.insert( pair<QString, shared_ptr<ITripleBuffer>>(
 	bufferName, buffer ) );
 
@@ -78,15 +77,13 @@ void MainController::AddCaptureContext( QString contextName, QString outputBuffe
 {
     // Init our output context
   wrench::Logger::logDebug("Loading (%s) context", contextName.toLocal8Bit().data()); 
+  auto buffer = m_buffers.at(outputBufferName);
+  Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
 
-  auto context = make_shared<CameraCapture>( );
+  auto context = make_shared<CameraCapture>( buffer );
   m_contexts.insert(
 	pair<QString, shared_ptr<IContext>>(
 	  contextName, context) );
-
-  auto buffer = m_buffers.at(outputBufferName);
-  Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
-  context->Init(buffer);
 
   // Add our object to the script interface
   m_interface->AddObject(context.get(), contextName);
@@ -102,21 +99,17 @@ void MainController::InitProcessContext( QString inputBufferName, QString output
   m_processContext->Init( inputBuffer, outputBuffer );
 }
 
-void MainController::AddStreamContext( QString contextName, QString inputBufferName )
+void MainController::AddStreamContext( QString contextName, int port, QString inputBufferName )
 {
-  // Init our output context
   wrench::Logger::logDebug("Loading (%s) context", contextName.toLocal8Bit().data());  
+  auto buffer = m_buffers.at(inputBufferName);
+  Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
   
   // Create our object and add to the list of contexts
-  auto context = make_shared<WebsocketStream> ( );
+  auto context = make_shared<WebsocketStream> ( port, buffer );
   m_contexts.insert(
 	pair<QString, shared_ptr<IContext>>(
 	  contextName, context) );
-  
-  // Init with the input buffer
-  auto buffer = m_buffers.at(inputBufferName);
-  Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
-  context->Init(buffer);
 
   // Add our object to the script interface
   m_interface->AddObject(context.get(), contextName);

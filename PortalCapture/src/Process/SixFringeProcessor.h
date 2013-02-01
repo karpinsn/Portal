@@ -60,11 +60,14 @@ private:
   ShaderProgram m_phaseFilter;
   ShaderProgram m_phase2Depth;
   ShaderProgram m_depth2Holo;
+  ShaderProgram m_renderTexture;
 
-  Texture m_phaseMap0;
-  Texture m_phaseMap1;
-  Texture m_referencePhase;
-  Texture m_depthMap;
+  Texture	m_phaseMap0;
+  Texture	m_phaseMap1;
+  Texture	m_referencePhase;
+  Texture	m_depthMap;
+  Texture	m_encodedMap;
+  Texture*	m_outputTexture;
 
   FBO m_imageProcessor;
   bool m_isInit;
@@ -81,6 +84,9 @@ public slots:
   void SetScale( float scale );
   void SetShift( float shift );
   void CaptureReference( void );
+  void OutputFringe( void );
+  void OutputDepth( void );
+  void OutputHolo( void );
 
 signals:
   void ProcessedFrame( void );
@@ -93,6 +99,7 @@ private:
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
   void _calculateDepth( GLenum drawBuffer, Texture& phase );
   void _holoEncode( GLenum drawBuffer );
+  void _outputTexture( GLenum drawBuffer );
 };
 
 #endif	// _PORTAL_PROCESS_SIX_FRINGE_PROCESSOR_H_
