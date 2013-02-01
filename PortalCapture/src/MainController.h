@@ -86,6 +86,7 @@ public slots:
 
   // Stream adding slots
   void AddCaptureContext( QString contextName, QString outputBufferName );
+  void InitProcessContext( QString inputBufferName, QString outputBufferName);
   void AddStreamContext( QString contextName, QString inputBufferName );
 
 private slots:

@@ -18,10 +18,14 @@
 #include <GL/gl.h>
 #endif
 
+#include <memory>
+
 #include <QObject>
 
 #include <cv.h>
 #include <highgui.h>
+
+using namespace std;
 
 class IReadBuffer
 {

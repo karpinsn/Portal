@@ -18,6 +18,8 @@
 #include <GL/gl.h>
 #endif
 
+#include <memory>
+
 #include <QObject>
 #include <QGLWidget>
 #include <QMutex>
