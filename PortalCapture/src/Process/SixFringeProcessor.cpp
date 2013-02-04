@@ -1,7 +1,7 @@
 #include "SixFringeProcessor.h"
 
 SixFringeProcessor::SixFringeProcessor( void ) :
-  m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0)
+  m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap)
 { }
 
 void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer )
@@ -15,7 +15,7 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
 
   //  Initialize our shaders
   m_fringe2Phase.init();
-  m_fringe2Phase.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/Fringe2Phase.vert"));
+  m_fringe2Phase.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_fringe2Phase.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2Phase.frag"));
   m_fringe2Phase.bindAttributeLocation("vert", 0);
   m_fringe2Phase.bindAttributeLocation("vertTexCoord", 1);
@@ -27,7 +27,7 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
   m_fringe2Phase.uniform("pitch2", 79.0f);
 
   m_phaseFilter.init();
-  m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PhaseFilter.vert"));
+  m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_phaseFilter.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/PhaseFilter.frag"));
   m_phaseFilter.bindAttributeLocation("vert", 0);
   m_phaseFilter.bindAttributeLocation("vertTexCoord", 1);
@@ -38,7 +38,7 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
   m_phaseFilter.uniform("height", ( float )inputBuffer->GetHeight( ) );
 	
   m_phase2Depth.init();
-  m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/Phase2Depth.vert"));
+  m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_phase2Depth.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Phase2Depth.frag"));
   m_phase2Depth.bindAttributeLocation("vert", 0);
   m_phase2Depth.bindAttributeLocation("vertTexCoord", 1);
@@ -49,22 +49,30 @@ void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared
   m_phase2Depth.uniform("shift", m_shift);
 	
   m_depth2Holo.init();
-  m_depth2Holo.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/Depth2Holo.vert"));
+  m_depth2Holo.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_depth2Holo.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Depth2Holo.frag"));
   m_depth2Holo.link();
   m_depth2Holo.uniform("fringeFrequency", 16.0f);
   m_depth2Holo.uniform("depthMap", 0);
 
+  m_renderTexture.init();
+  m_renderTexture.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
+  m_renderTexture.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/RenderTexture.frag"));
+  m_renderTexture.link();
+  m_renderTexture.uniform("image", 0);
+
   m_phaseMap0.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_referencePhase.init	( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_depthMap.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
-	
+  m_encodedMap.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+
   m_imageProcessor.init(inputBuffer->GetWidth( ), inputBuffer->GetHeight( ) );
-  m_imageProcessor.setTextureAttachPoint( m_phaseMap0,					  GL_COLOR_ATTACHMENT0 );
-  m_imageProcessor.setTextureAttachPoint( m_phaseMap1,					  GL_COLOR_ATTACHMENT1 );
-  m_imageProcessor.setTextureAttachPoint( m_referencePhase,				  GL_COLOR_ATTACHMENT2 );
-  m_imageProcessor.setTextureAttachPoint( m_depthMap,					  GL_COLOR_ATTACHMENT3 );
+  m_imageProcessor.setTextureAttachPoint( m_phaseMap0,		GL_COLOR_ATTACHMENT0 );
+  m_imageProcessor.setTextureAttachPoint( m_phaseMap1,		GL_COLOR_ATTACHMENT1 );
+  m_imageProcessor.setTextureAttachPoint( m_referencePhase,	GL_COLOR_ATTACHMENT2 );
+  m_imageProcessor.setTextureAttachPoint( m_depthMap,		GL_COLOR_ATTACHMENT3 );
+  m_imageProcessor.setTextureAttachPoint( m_encodedMap,		GL_COLOR_ATTACHMENT4 );
   m_imageProcessor.unbind( );
 
   m_isInit = true;
@@ -87,6 +95,21 @@ void SixFringeProcessor::SetShift( float shift )
   m_shift = shift;
 }
 
+void SixFringeProcessor::OutputFringe( void )
+{
+  m_outputTexture = nullptr;
+}
+
+void SixFringeProcessor::OutputDepth( void )
+{
+  m_outputTexture = &m_depthMap;
+}
+
+void SixFringeProcessor::OutputHolo( void )
+{
+  m_outputTexture = &m_encodedMap;
+}
+
 void SixFringeProcessor::paintGL( void )
 {
   // If we are not init then just return
@@ -104,20 +127,18 @@ void SixFringeProcessor::paintGL( void )
 	_calculatePhase( GL_COLOR_ATTACHMENT0 );
 	_filterPhase( GL_COLOR_ATTACHMENT1, m_phaseMap0 );
 
+	//	If we are capturing reference phase, just filter into the reference phase
 	if( m_captureReference )
 	{ 
-	  _calculatePhase( GL_COLOR_ATTACHMENT2 );
 	  _filterPhase( GL_COLOR_ATTACHMENT2, m_phaseMap1 ); 
-
 	  m_captureReference = false;
 	}
-	else
-	{ 
-	  _calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap0 );
 
-	  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ), GL_COLOR_ATTACHMENT4 );
-	  _holoEncode( GL_COLOR_ATTACHMENT4 );
-	}
+	_calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap1 );
+	_holoEncode( GL_COLOR_ATTACHMENT4 );
+
+	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ), GL_COLOR_ATTACHMENT5 );
+	_outputTexture( GL_COLOR_ATTACHMENT5 );
   }
   m_imageProcessor.unbind();
 
@@ -160,5 +181,24 @@ void SixFringeProcessor::_holoEncode( GLenum drawBuffer )
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_depth2Holo.bind();
   m_depthMap.bind( GL_TEXTURE0 );
+  m_imageProcessor.process( );
+}
+
+void SixFringeProcessor::_outputTexture( GLenum drawBuffer )
+{
+  m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT5 );
+  m_renderTexture.bind( );
+  // If our outputTexture is null then it means output the fringe
+  if(nullptr == m_outputTexture)
+  {
+	// TODO - This is a hack
+	// Unfortainetly this will trigger a swap 
+	// so do it twice to remove the effect
+	m_inputBuffer->BindBuffer( GL_TEXTURE0 ); 
+	m_inputBuffer->BindBuffer( GL_TEXTURE0 ); 
+  }
+  else
+	{ m_outputTexture->bind( GL_TEXTURE0 ); }
+
   m_imageProcessor.process( );
 }

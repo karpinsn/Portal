@@ -16,7 +16,7 @@
 #include <highgui.h>
 
 #include <Lens\FileCamera.h>
-#include <Lens\PointGreyCamera.h>
+//#include <Lens\PointGreyCamera.h>
 #include <Lens\OpenCVCamera.h>
 #include <Lens\CameraObserver.h>
 
@@ -29,9 +29,6 @@ using namespace std;
 class ICaptureContext : public QObject, public IContext
 {
   Q_OBJECT
-
-public:
-  virtual void Init( shared_ptr<IWriteBuffer> outputBuffer ) = 0;
 
 public slots:
   virtual void Start( ) = 0;
@@ -77,8 +74,7 @@ private:
   CameraCaptureWorker* m_worker;
 
 public:
-  CameraCapture(void) { };
-  void Init(shared_ptr<IWriteBuffer> outputBuffer);
+  CameraCapture( shared_ptr<IWriteBuffer> outputBuffer );
 
 public slots:
   void Start( );

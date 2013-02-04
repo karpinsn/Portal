@@ -37,8 +37,6 @@ class IStreamContext : public QObject, public IContext
   Q_OBJECT
 
 public:
-  //  TODO: Get away from concreate
-  virtual void Init( shared_ptr<IOpenGLReadBuffer> inputBuffer ) = 0;
   virtual void Start( ) = 0;
 };
 
@@ -96,7 +94,6 @@ private:
 
   // Socket and port that we are connected with
   antenna::BaseStation	m_socket;
-  const int				m_port;
 
   QThread* m_socketProcessorThread;
   QThread* m_streamProcessorThread;
@@ -105,9 +102,7 @@ private:
   WebsocketStreamer*  m_socketStreamer;
 
 public:
-  // TODO: Fix hardcoding
-  WebsocketStream(void) : m_port(7681) { };
-  void Init(shared_ptr<IOpenGLReadBuffer> inputBuffer);
+  WebsocketStream(int port, shared_ptr<IOpenGLReadBuffer> inputBuffer);
   void Start( );
 };
 

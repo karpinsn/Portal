@@ -1,13 +1,12 @@
 #include "MultiOpenGLBuffer.h"
 
-MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, ISharedGLContextFactory* contextFactory) :
+MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, bool makeReadContext, bool makeWriteContext, ISharedGLContextFactory* contextFactory) :
   m_currentBufferIndex(0)
 { 
   // Make all of the buffers that we need
   for ( ::size_t buffer = 0; buffer < bufferCount; ++buffer )
   { 
-	// TODO: Get this info from constructor
-	m_buffers.push_back(make_shared<OpenGLTripleBuffer>( contextFactory, false, true ) );
+	m_buffers.push_back(make_shared<OpenGLTripleBuffer>( contextFactory, makeReadContext, makeWriteContext ) );
   }
 
   // Try and use as little memory as possible
@@ -50,7 +49,7 @@ void MultiOpenGLBuffer::WriteFinished( void )
 
 const shared_ptr<IplImage> MultiOpenGLBuffer::ReadBuffer( void )
 {
-  //  TODO: This doesn't make sense here
+  throw "UNIMPLEMENTED!!!!";
   return nullptr;
 }
 

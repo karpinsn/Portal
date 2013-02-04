@@ -67,26 +67,19 @@ private:
 public:
   MainController();
   void Init(QString initScriptFilename);
-
- /** TODO - Not sure if this is true
-  * Makes a shared OpenGL context with the main processing context.
-  *
-  * For some reason if you call this it will invalidate all FBOs and VAOs.
-  * That being said, make sure to get all your shared contexts first, and
-  * then initalize your components that make use of FBOs and VAOs
-  */
-  virtual shared_ptr<QGLWidget> MakeSharedContext(void);
+  shared_ptr<QGLWidget> MakeSharedContext(void);
 
 public slots:
   void Start(void);
   void Close(void);
   // Buffer adding slots
   void AddBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
-  void AddMultiBuffer( QString bufferName, int bufferCount);
+  void AddMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
 
   // Stream adding slots
   void AddCaptureContext( QString contextName, QString outputBufferName );
-  void AddStreamContext( QString contextName, QString inputBufferName );
+  void InitProcessContext( QString inputBufferName, QString outputBufferName);
+  void AddStreamContext( QString contextName, int port, QString inputBufferName );
 
 private slots:
   void StartSystem(void);

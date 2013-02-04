@@ -17,20 +17,21 @@
 
 #include <Wrench\Logger.h>
 
+#include "Utils.h"
+
 using namespace std;
 
-class ScriptWorker : public QObject
+class ScriptInterface;
+class ConsoleWorker : public QObject
 {
   Q_OBJECT
 
 private:
-  QScriptEngine m_scriptEngine;
+  ScriptInterface& m_scriptInterface;
   bool m_running;
 
 public:
-  ScriptWorker( void ) : m_running(true) { };
-  void AddObject(QObject* object, QString name);
-  void RunScript( QString filename );
+  ConsoleWorker( ScriptInterface& scriptInterface ) : m_running(true), m_scriptInterface(scriptInterface) { };
 
 signals:
   void Done( void );
@@ -42,13 +43,17 @@ public slots:
 class ScriptInterface : public QObject
 {
   Q_OBJECT
+  friend ConsoleWorker;
 
 private:
-  ScriptWorker* m_worker;
+  QScriptEngine m_scriptEngine;
+  ConsoleWorker* m_worker;
   QThread* m_workerThread;
   
 public:
   ScriptInterface( void );
+
+public slots:
   void AddObject(QObject* object, QString name);
   void RunScript(QString filename);
 };
