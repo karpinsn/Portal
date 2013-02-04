@@ -3,6 +3,8 @@
 
 # Ignore all build files
 /bin*
+# And any bin directories
+bin/
 
 # Ignore all User files
 *.user

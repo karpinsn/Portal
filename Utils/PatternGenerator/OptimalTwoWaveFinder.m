@@ -14,7 +14,14 @@ for i = 1:length(lambda1s),
     lambda1 = lambda1s(i);
     lambda2 = lambda2s(j);
    
-    noiseAmt = 0.04;
+    % Remove lambdas not divisible by 3. Will result in error
+    % due to 3 stepping
+    if(0 ~= mod(lambda1, 3) || 0 ~= mod(lambda2, 3))
+        error(i,j) = 1;
+        continue;
+    end
+    
+    noiseAmt = 0.03;
     % Add noise with normal dist, mean 0 and standard deviation noiseAmt
     % Negative and positive numbers are added
     phi1 = getPhi(x, lambda1) + normrnd(0, noiseAmt, [1 length(x)]);
@@ -23,7 +30,7 @@ for i = 1:length(lambda1s),
     phi12 = phiAbs3(phi1, phi2, lambda1, lambda2);
     error(i,j) = rms(phi12 - x)/(950 - 100);
     
-    if (error(i,j) < 0.0006),
+    if (error(i,j) < 0.001),
         fprintf('\n%3d \t%3d \t%1.5f', lambda1, lambda2, error(i,j))
     end 
     end

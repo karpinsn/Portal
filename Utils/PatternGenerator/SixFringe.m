@@ -11,8 +11,8 @@ height = 768;
 direction = 0;
 
 % Pitches of the patterns. Found using optimal finder above
-pitch1 = 74;
-pitch2 = 79;
+pitch1 = 60;
+pitch2 = 63;
 
 %% Calculated numbers
 pitch12 = (pitch1 * pitch2) / abs(pitch1 - pitch2);
@@ -30,10 +30,10 @@ fringe2Dither = stuckiDithering(fringe2);
 %% Output generated patterns
 for channel = 1 : 3
     out = uint8(fringe1Dither(:,:,channel) * 255.0);
-    imwrite(out, sprintf('sixfringe-patterns/%d-%d.png', pitch1, channel));
+    imwrite(out, sprintf('bin/sixfringe-patterns/%d-%d.png', pitch1, channel));
 
     out = uint8(fringe2Dither(:,:,channel) * 255.0);
-    imwrite(out, sprintf('sixfringe-patterns/%d-%d.png', pitch2, channel));
+    imwrite(out, sprintf('bin/sixfringe-patterns/%d-%d.png', pitch2, channel));
 end
 
 %% Test phase unwrapping

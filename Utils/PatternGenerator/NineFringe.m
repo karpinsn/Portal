@@ -28,13 +28,13 @@ fringe3Dither = stuckiDithering(fringe3);
 %% Output generated patterns
 for channel = 1 : 3
     out = uint8(fringe1Dither(:,:,channel) * 255.0);
-    imwrite(out, sprintf('ninefringe-patterns/%d-%d.png', pitch1, channel));
+    imwrite(out, sprintf('bin/ninefringe-patterns/%d-%d.png', pitch1, channel));
 
     out = uint8(fringe2Dither(:,:,channel) * 255.0);
-    imwrite(out, sprintf('ninefringe-patterns/%d-%d.png', pitch2, channel));
+    imwrite(out, sprintf('bin/ninefringe-patterns/%d-%d.png', pitch2, channel));
     
     out = uint8(fringe3Dither(:,:,channel) * 255.0);
-    imwrite(out, sprintf('ninefringe-patterns/%d-%d.png', pitch3, channel));
+    imwrite(out, sprintf('bin/ninefringe-patterns/%d-%d.png', pitch3, channel));
 end
 
 %% Test phase unwrapping
