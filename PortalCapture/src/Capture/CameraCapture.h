@@ -62,6 +62,12 @@ public slots:
   void Stop( void );
   void DropFrame ( void );
   void Capture( void );
+
+private:
+  //  OpenCV version of image packing. Uses channel copying
+  void _OpenCVPack(IplImage* src);
+  //  Faster version of image packing. Tuned x86 asm
+  void _FastPack(IplImage* src);
 };
 
 class CameraCapture : public ICaptureContext

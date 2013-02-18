@@ -53,11 +53,8 @@ void CameraCaptureWorker::Capture()
 
 	// PROFILE-TODO: Copying is a "hot point" in the code. 
 	//	Pack our camera image
-	cvSetImageCOI(frame, 1);
-	cvSetImageCOI(m_packFrame.get(), ( m_currentChannelLoad + 1 ) );
-	cvCopy(frame, m_packFrame.get());
-	cvSetImageCOI(frame, 0 );
-	cvSetImageCOI(m_packFrame.get(), 0 );
+	_OpenCVPack(frame);
+	//_FastPack(frame);
 
 	//	If we have all the channels packed then we need to transfer
 	m_currentChannelLoad++;
@@ -69,6 +66,41 @@ void CameraCaptureWorker::Capture()
   }
 
   emit Done();
+}
+
+void CameraCaptureWorker::_OpenCVPack(IplImage* src)
+{
+  //  Pack using OpenCV channel copying
+  cvSetImageCOI(src, 1);
+  cvSetImageCOI(m_packFrame.get(), ( m_currentChannelLoad + 1 ) );
+  cvCopy(src, m_packFrame.get());
+  cvSetImageCOI(src, 0 );
+  cvSetImageCOI(m_packFrame.get(), 0 );
+}
+
+void CameraCaptureWorker::_FastPack(IplImage* src)
+{
+  int height = src->height;
+  int colStart = src->width + 1; // Start at plus 1 so we can predecrement
+
+  int srcWidthStep = src->widthStep;
+  int destWidthStep = m_packFrame->widthStep;
+  char* destPtr = m_packFrame->imageData;
+
+  int rowIndex = height + 1;	// Start at plus 1 so we can predecrement
+  while(--rowIndex)
+  {
+	char* srcDataPtr = &(src->imageData[(height - rowIndex) * srcWidthStep]);
+	char* destDataPtr = &(destPtr[(height - rowIndex) * destWidthStep + m_currentChannelLoad]);
+	
+	int colIndex = colStart;	
+	while(--colIndex)
+	{
+	  *destDataPtr = *srcDataPtr;
+	  destDataPtr += 3;
+	  srcDataPtr += 3;
+	}
+  }
 }
 
 CameraCapture::CameraCapture(shared_ptr<IWriteBuffer> outputBuffer)
