@@ -1,6 +1,6 @@
 #include "WebsocketStream.h"
 
-WebsocketStream::WebsocketStream(int port, shared_ptr<IOpenGLReadBuffer> inputBuffer)
+WebsocketStream::WebsocketStream(int port, shared_ptr<IReadBuffer> inputBuffer)
 {
   // Open our socket connection
   m_socket.start(port);

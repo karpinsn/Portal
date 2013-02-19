@@ -15,11 +15,6 @@ class IWriteBuffer
 public:
   virtual void InitWrite(int width, int height) = 0;
   virtual void Write(const IplImage* data) = 0;
-};
-
-class IOpenGLWriteBuffer : public IWriteBuffer
-{
-public:
   virtual Texture& WriteBuffer( void ) = 0;
   virtual void WriteFinished( void ) = 0;
 };

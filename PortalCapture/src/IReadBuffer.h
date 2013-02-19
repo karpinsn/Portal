@@ -27,19 +27,14 @@
 
 using namespace std;
 
-class IReadBuffer
-{
-public:
-  virtual int						  GetWidth( void )		= 0;
-  virtual int						  GetHeight( void )		= 0;
-  virtual const shared_ptr<IplImage>  ReadBuffer( void )	= 0;
-};
-
-class IOpenGLReadBuffer : public QObject, public IReadBuffer
+class IReadBuffer : public QObject
 {
   Q_OBJECT
 
 public:
+  virtual int						  GetWidth( void )		= 0;
+  virtual int						  GetHeight( void )		= 0;
+  virtual const shared_ptr<IplImage>  ReadBuffer( void )	= 0;
   virtual void	BindBuffer( GLenum texture ) = 0;
 };
 

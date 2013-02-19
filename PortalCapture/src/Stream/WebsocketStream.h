@@ -27,7 +27,7 @@
 
 #include "../IContext.h"
 #include "../Utils.h"
-#include "../IOpenGLReadBuffer.h"
+#include "../IReadBuffer.h"
 #include "../OpenGLTripleBuffer.h"
 
 using namespace std;
@@ -102,7 +102,7 @@ private:
   WebsocketStreamer*  m_socketStreamer;
 
 public:
-  WebsocketStream(int port, shared_ptr<IOpenGLReadBuffer> inputBuffer);
+  WebsocketStream(int port, shared_ptr<IReadBuffer> inputBuffer);
   void Start( );
 };
 

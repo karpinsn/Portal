@@ -110,7 +110,7 @@ set(SOURCES
     MainController.h
     OpenGLTripleBuffer.h
     MultiOpenGLBuffer.h
-    IOpenGLReadBuffer.h
+    IReadBuffer.h
     IWriteBuffer.h
     ISharedGLContextFactory.h
 	ScriptInterface.h
@@ -125,7 +125,7 @@ set(SOURCES
 #   Qt Files
 set(MOCS
     MainController.h
-    IOpenGLReadBuffer.h
+    IReadBuffer.h
 	OpenGLTripleBuffer.h
 	MultiOpenGLBuffer.h
     ScriptInterface.h

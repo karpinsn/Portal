@@ -34,7 +34,7 @@
 #include <wrench/gl/FBO.h>
 
 #include "../IWriteBuffer.h"
-#include "../IOpenGLReadBuffer.h"
+#include "../IReadBuffer.h"
 
 #include "../Utils.h"
 
@@ -44,7 +44,7 @@ using namespace wrench::gl;
 class IProcessContext
 {
 public:
-  virtual void Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer ) = 0;
+  virtual void Init( shared_ptr<IReadBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer ) = 0;
 };
 
 class SixFringeProcessor : public QGLWidget, public IProcessContext
@@ -53,8 +53,8 @@ class SixFringeProcessor : public QGLWidget, public IProcessContext
 	
 private:
   DISALLOW_COPY_AND_ASSIGN(SixFringeProcessor);
-  shared_ptr<IOpenGLReadBuffer> m_inputBuffer;
-  shared_ptr<IOpenGLWriteBuffer> m_outputBuffer;
+  shared_ptr<IReadBuffer> m_inputBuffer;
+  shared_ptr<IWriteBuffer> m_outputBuffer;
 
   ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
@@ -78,7 +78,7 @@ private:
 
 public:
   SixFringeProcessor(void);
-  void Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer );
+  void Init( shared_ptr<IReadBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer );
 
 public slots:
   void SetScale( float scale );

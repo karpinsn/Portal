@@ -4,7 +4,7 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap)
 { }
 
-void SixFringeProcessor::Init( shared_ptr<IOpenGLReadBuffer> inputBuffer, shared_ptr<IOpenGLWriteBuffer> outputBuffer )
+void SixFringeProcessor::Init( shared_ptr<IReadBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer )
 {
   m_inputBuffer	  = inputBuffer;
   m_outputBuffer  = outputBuffer;

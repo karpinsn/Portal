@@ -11,11 +11,11 @@ bool CameraCaptureWorker::IsRunning( void )
 
 void CameraCaptureWorker::Init( void )
 {
-  m_camera = make_shared<lens::OpenCVCamera>();
-  //m_camera = make_shared<lens::FileCamera>();
+  //m_camera = make_shared<lens::OpenCVCamera>();
+  m_camera = make_shared<lens::FileCamera>();
   //m_camera = make_shared<lens::PointGreyCamera>();
   m_camera->init();
-  m_camera->open();
+  //m_camera->open();
 
   //  TODO: Not sure how we want to know we want a 3 channel image
   m_packFrame = shared_ptr<IplImage>(
@@ -41,6 +41,7 @@ void CameraCaptureWorker::Capture()
 {
   while(m_running)
   {
+	Sleep(10);
 	//	Grab our image
 	IplImage* frame = m_camera->getFrame();
 	
@@ -53,8 +54,8 @@ void CameraCaptureWorker::Capture()
 
 	// PROFILE-TODO: Copying is a "hot point" in the code. 
 	//	Pack our camera image
-	_OpenCVPack(frame);
-	//_FastPack(frame);
+	//_OpenCVPack(frame);
+	_FastPack(frame);
 
 	//	If we have all the channels packed then we need to transfer
 	m_currentChannelLoad++;
