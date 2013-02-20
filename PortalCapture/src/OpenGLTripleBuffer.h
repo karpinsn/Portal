@@ -58,13 +58,19 @@ public:
   
   void						  InitWrite(int width, int height);
   void						  Write(const IplImage* data);
-  Texture&					  WriteBuffer( void );
+  Texture&					  StartWriteTexture( void );
   void						  WriteFinished( void );
+  void						  SwapWriteBuffer( void );
 
   int						  GetWidth( void );
   int						  GetHeight( void );
-  const shared_ptr<IplImage>  ReadBuffer( void );
-  void						  BindBuffer( GLenum texture );
+  void						  StartRead( void );
+  const shared_ptr<IplImage>  ReadImage( void );
+  const Texture&			  ReadTexture( void );
+
+private:
+  void _swapWriteBuffer( void );
+  void _swapReadBuffer( void );
 
 signals:
   //  Emitted when the write buffers have been filled up

@@ -42,16 +42,12 @@ void OpenGLTripleBuffer::Write(const IplImage* data)
 	{ m_writeContext->makeCurrent(); }
   
   m_writeBuffer->transferToTexture(data);
-  m_swapLock.lock();
-  {
-	m_writeBuffer.swap(m_workingBuffer);
-  }
-  m_swapLock.unlock();
+  _swapWriteBuffer();
 
   emit ( WriteFilled( ) );
 }
 
-Texture& OpenGLTripleBuffer::WriteBuffer( void )
+Texture& OpenGLTripleBuffer::StartWriteTexture( void )
 {
   if( nullptr != m_writeContext )
 	{ m_writeContext->makeCurrent(); }
@@ -63,11 +59,8 @@ void OpenGLTripleBuffer::WriteFinished( void )
 {
   if( nullptr != m_writeContext )
 	{ m_writeContext->makeCurrent(); }
-  m_swapLock.lock();
-  {
-	m_writeBuffer.swap(m_workingBuffer);
-  }
-  m_swapLock.unlock();
+ 
+  _swapWriteBuffer();
   emit ( WriteFilled( ) );
 }
 
@@ -81,31 +74,47 @@ int OpenGLTripleBuffer::GetHeight( void )
   return m_readBuffer->getHeight();
 }
 
-const shared_ptr<IplImage> OpenGLTripleBuffer::ReadBuffer( void )
+void OpenGLTripleBuffer::StartRead( void )
 {
   if( nullptr != m_readContext )
 	{ m_readContext->makeCurrent(); }
 
-  m_swapLock.lock();
-  {
-	m_readBuffer.swap(m_workingBuffer);
-  }
-  m_swapLock.unlock();
+  _swapReadBuffer();
+}
+
+const shared_ptr<IplImage> OpenGLTripleBuffer::ReadImage( void )
+{
+  if( nullptr != m_readContext )
+	{ m_readContext->makeCurrent(); }
 
   m_readBuffer->transferFromTexture( m_readImage.get( ) );
   return m_readImage;
 }
 
-void OpenGLTripleBuffer::BindBuffer(GLenum texture)
+const Texture& OpenGLTripleBuffer::ReadTexture( void )
 {
   if( nullptr != m_readContext )
 	{ m_readContext->makeCurrent(); }
 
+  _swapReadBuffer();
+
+  return *( m_readBuffer.get( ) );
+}
+
+void OpenGLTripleBuffer::_swapWriteBuffer( void )
+{
+  m_swapLock.lock();
+  {
+	m_writeBuffer.swap(m_workingBuffer);
+  }
+  m_swapLock.unlock();
+}
+
+void OpenGLTripleBuffer::_swapReadBuffer( void )
+{
   m_swapLock.lock();
   {
 	m_readBuffer.swap(m_workingBuffer);
   }
   m_swapLock.unlock();
-
-  m_readBuffer->bind(texture);
 }

@@ -55,15 +55,12 @@ class MainController : public QObject, public ISharedGLContextFactory
 private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
-  map<QString, shared_ptr<ITripleBuffer>> m_buffers;
-  //  TODO: These should be unique_ptr
-  map<QString, shared_ptr<IContext>>	  m_contexts;
+  map<QString, shared_ptr<QObject>>	  m_buffers;
+  map<QString, shared_ptr<IContext>>  m_contexts;
 
   unique_ptr<ScriptInterface>	  m_interface;
-  unique_ptr<ICaptureContext>	  m_captureContext;
   unique_ptr<SixFringeProcessor>  m_processContext; //  Main Context : Runs on UI thread
-  unique_ptr<IStreamContext>	  m_streamContext;
-
+  
 public:
   MainController();
   void Init(QString initScriptFilename);

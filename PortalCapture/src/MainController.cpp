@@ -1,6 +1,6 @@
 #include "MainController.h"
 
-MainController::MainController() : QObject(), m_processContext(nullptr), m_captureContext(nullptr)
+MainController::MainController() : QObject(), m_processContext(nullptr)
 { }
 
 void MainController::Init(QString initScriptFilename)
@@ -24,11 +24,11 @@ void MainController::Init(QString initScriptFilename)
   wrench::Logger::logDebug("Using GLEW Version: %s", glewGetString( GLEW_VERSION ));
 
   //  Now that we are initalized (OpenGL, GLEW, etc) we can run our init script
+  wrench::Logger::logDebug("Loading scripting interface");
   m_interface = unique_ptr<ScriptInterface>( new ScriptInterface() );
   m_interface->AddObject(this, "Main");
   m_interface->AddObject(m_interface.get(), "Global");
   m_interface->AddObject(m_processContext.get(), "Process");
-  wrench::Logger::logDebug("Loading scripting interface");
   m_interface->RunScript(initScriptFilename);
 
   wrench::Logger::logDebug("Initialization complete");
@@ -67,7 +67,7 @@ void MainController::AddMultiBuffer( QString bufferName, bool makeReadContext, b
 {
   // Make the buffer then add it to the scripting interface
   auto buffer = make_shared<MultiOpenGLBuffer>( bufferCount, makeReadContext, makeWriteContext, this );
-  m_buffers.insert( pair<QString, shared_ptr<ITripleBuffer>>(
+  m_buffers.insert( pair<QString, shared_ptr<MultiOpenGLBuffer>>(
 	bufferName, buffer ) );
 
   m_interface->AddObject(buffer.get(), bufferName);
@@ -75,34 +75,33 @@ void MainController::AddMultiBuffer( QString bufferName, bool makeReadContext, b
 
 void MainController::AddCaptureContext( QString contextName, QString outputBufferName )
 {
-    // Init our output context
+  // Init our output context
   wrench::Logger::logDebug("Loading (%s) context", contextName.toLocal8Bit().data()); 
-  auto buffer = m_buffers.at(outputBufferName);
+  auto buffer = dynamic_pointer_cast<IWriteBuffer>(m_buffers.at(outputBufferName));
   Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
-
+  
   auto context = make_shared<CameraCapture>( buffer );
   m_contexts.insert(
-	pair<QString, shared_ptr<IContext>>(
-	  contextName, context) );
-
+	pair<QString, shared_ptr<IContext>>(contextName, context) );
+	  
   // Add our object to the script interface
   m_interface->AddObject(context.get(), contextName);
 }
 
 void MainController::InitProcessContext( QString inputBufferName, QString outputBufferName)
 {
-  auto inputBuffer = m_buffers.at(inputBufferName);
-  auto outputBuffer = m_buffers.at(outputBufferName);
+  auto inputBuffer = dynamic_pointer_cast<MultiOpenGLBuffer>(m_buffers.at(inputBufferName));
+  auto outputBuffer = dynamic_pointer_cast<IWriteBuffer>(m_buffers.at(outputBufferName));
   Utils::AssertOrThrowIfFalse(nullptr != inputBuffer, "Unknown buffer");
   Utils::AssertOrThrowIfFalse(nullptr != outputBuffer, "Unknown buffer");
-
+  
   m_processContext->Init( inputBuffer, outputBuffer );
 }
 
 void MainController::AddStreamContext( QString contextName, int port, QString inputBufferName )
 {
   wrench::Logger::logDebug("Loading (%s) context", contextName.toLocal8Bit().data());  
-  auto buffer = m_buffers.at(inputBufferName);
+  auto buffer = dynamic_pointer_cast<IReadBuffer>(m_buffers.at(inputBufferName));
   Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
   
   // Create our object and add to the list of contexts

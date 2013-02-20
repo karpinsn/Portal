@@ -4,7 +4,7 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap)
 { }
 
-void SixFringeProcessor::Init( shared_ptr<IReadBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer )
+void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer )
 {
   m_inputBuffer	  = inputBuffer;
   m_outputBuffer  = outputBuffer;
@@ -121,6 +121,12 @@ void SixFringeProcessor::paintGL( void )
   //  Make sure we are the current OpenGL Context
   makeCurrent( );
 
+  // This will swap to the newest read buffer
+  for ( auto itr = m_inputBuffer->ReadBuffersBegin() ; itr != m_inputBuffer->ReadBuffersEnd( ); ++itr)
+  { 
+	(*itr)->StartRead();
+  }
+
   // Our actual decoding is done here
   m_imageProcessor.bind();
   {
@@ -137,7 +143,7 @@ void SixFringeProcessor::paintGL( void )
 	_calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap1 );
 	_holoEncode( GL_COLOR_ATTACHMENT4 );
 
-	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->WriteBuffer( ), GL_COLOR_ATTACHMENT5 );
+	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT5 );
 	_outputTexture( GL_COLOR_ATTACHMENT5 );
   }
   m_imageProcessor.unbind();
@@ -150,7 +156,13 @@ void SixFringeProcessor::_calculatePhase(GLenum drawBuffer)
   m_imageProcessor.bindDrawBuffer( drawBuffer );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_fringe2Phase.bind( );
-  m_inputBuffer->BindBuffer( GL_TEXTURE0 );
+
+  //  Bind all our fringe images
+  int texNumber = 0;
+  for ( auto itr = m_inputBuffer->ReadBuffersBegin() ; itr != m_inputBuffer->ReadBuffersEnd( ); ++itr)
+  { 
+	(*itr)->ReadTexture().bind( GL_TEXTURE0 + texNumber++ );
+  }
   m_imageProcessor.process( );
 }
 
@@ -191,11 +203,12 @@ void SixFringeProcessor::_outputTexture( GLenum drawBuffer )
   // If our outputTexture is null then it means output the fringe
   if(nullptr == m_outputTexture)
   {
-	// TODO - This is a hack
-	// Unfortainetly this will trigger a swap 
-	// so do it twice to remove the effect
-	m_inputBuffer->BindBuffer( GL_TEXTURE0 ); 
-	m_inputBuffer->BindBuffer( GL_TEXTURE0 ); 
+	//	Only need to bind the first one since at most we can only output 1 image
+	auto itr = m_inputBuffer->ReadBuffersBegin();
+	if ( itr != m_inputBuffer->ReadBuffersEnd() )
+	{
+	  (*itr)->ReadTexture().bind( GL_TEXTURE0 );
+	}
   }
   else
 	{ m_outputTexture->bind( GL_TEXTURE0 ); }

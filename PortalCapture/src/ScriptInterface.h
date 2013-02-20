@@ -54,8 +54,8 @@ public:
   ScriptInterface( void );
 
 public slots:
-  void AddObject(QObject* object, QString name);
-  void RunScript(QString filename);
+  void			AddObject(QObject* object, QString name);
+  void			RunScript(QString filename);
 };
 
 #endif	// _PORTAL_CAPTURE_SCRIPT_INTERFACE_H_

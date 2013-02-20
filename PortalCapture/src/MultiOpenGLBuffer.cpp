@@ -1,7 +1,7 @@
 #include "MultiOpenGLBuffer.h"
 
-MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, bool makeReadContext, bool makeWriteContext, ISharedGLContextFactory* contextFactory) :
-  m_currentBufferIndex(0)
+MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, bool makeReadContext, bool makeWriteContext, ISharedGLContextFactory* contextFactory) : 
+QObject( ), m_currentBufferIndex(0)
 { 
   // Make all of the buffers that we need
   for ( ::size_t buffer = 0; buffer < bufferCount; ++buffer )
@@ -37,7 +37,7 @@ void MultiOpenGLBuffer::Write(const IplImage* data)
   }
 }
 
-Texture& MultiOpenGLBuffer::WriteBuffer( void )
+Texture& MultiOpenGLBuffer::StartWriteTexture( void )
 {
   throw "UNIMPLEMENTED!!!!";
 }
@@ -45,12 +45,6 @@ Texture& MultiOpenGLBuffer::WriteBuffer( void )
 void MultiOpenGLBuffer::WriteFinished( void )
 {
   throw "UNIMPLEMENTED!!!!";
-}
-
-const shared_ptr<IplImage> MultiOpenGLBuffer::ReadBuffer( void )
-{
-  throw "UNIMPLEMENTED!!!!";
-  return nullptr;
 }
 
 int MultiOpenGLBuffer::GetWidth( void )
@@ -63,10 +57,12 @@ int MultiOpenGLBuffer::GetHeight( void )
   return m_buffers[0]->GetHeight();
 }
 
-void MultiOpenGLBuffer::BindBuffer(GLenum texture)
+::vector<shared_ptr<OpenGLTripleBuffer>>::const_iterator MultiOpenGLBuffer::ReadBuffersBegin( void )
 {
-  for ( ::size_t buffer = 0; buffer < m_buffers.size(); ++buffer )
-  {
-	m_buffers[buffer]->BindBuffer(GL_TEXTURE0 + buffer);
-  }
+  return m_buffers.begin( );
+}
+
+::vector<shared_ptr<OpenGLTripleBuffer>>::const_iterator MultiOpenGLBuffer::ReadBuffersEnd( void )
+{
+  return m_buffers.end( );
 }
