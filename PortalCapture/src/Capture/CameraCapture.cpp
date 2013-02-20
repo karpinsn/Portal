@@ -41,7 +41,6 @@ void CameraCaptureWorker::Capture()
 {
   while(m_running)
   {
-	Sleep(10);
 	//	Grab our image
 	IplImage* frame = m_camera->getFrame();
 	

@@ -29,6 +29,7 @@
 
 #include <wrench/gl/OGLStatus.h>
 #include <wrench/gl/ShaderProgram.h>
+#include <Wrench/gl/GaussProgram.h>
 #include <wrench/gl/Shader.h>
 #include <wrench/gl/Texture.h>
 #include <wrench/gl/FBO.h>
@@ -58,6 +59,7 @@ private:
 
   ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
+  GaussProgram m_gaussFilter;
   ShaderProgram m_phase2Depth;
   ShaderProgram m_depth2Holo;
   ShaderProgram m_renderTexture;

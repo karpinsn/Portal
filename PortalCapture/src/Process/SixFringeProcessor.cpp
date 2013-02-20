@@ -1,7 +1,7 @@
 #include "SixFringeProcessor.h"
 
 SixFringeProcessor::SixFringeProcessor( void ) :
-  m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap)
+  m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap), m_gaussFilter(11)
 { }
 
 void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer )
@@ -23,8 +23,8 @@ void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
   m_fringe2Phase.uniform("gammaCutoff", 0.0f);
-  m_fringe2Phase.uniform("pitch1", 74.0f);
-  m_fringe2Phase.uniform("pitch2", 79.0f);
+  m_fringe2Phase.uniform("pitch1", 60.0f);
+  m_fringe2Phase.uniform("pitch2", 63.0f);
 
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -37,6 +37,9 @@ void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared
   m_phaseFilter.uniform("width", ( float )inputBuffer->GetWidth( ) );
   m_phaseFilter.uniform("height", ( float )inputBuffer->GetHeight( ) );
 	
+  m_gaussFilter.init();
+  m_gaussFilter.setImageDimensions( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ) );
+
   m_phase2Depth.init();
   m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_phase2Depth.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Phase2Depth.frag"));
