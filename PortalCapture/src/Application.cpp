@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
   // Set the logger level
-  wrench::Logger::setLogLevel(wrench::LogLevel::All);
+  wrench::Logger::setLogLevel(wrench::Logger::All);
 
   // Setup our console application with an event loop. Needs to be a QApplication
   // so that we can fake windows for headless running
