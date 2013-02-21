@@ -116,6 +116,8 @@ void MainController::AddCaptureContext( QString contextName, QString outputBuffe
 void MainController::AddStreamContext( QString contextName, int port, QString inputBufferName )
 {
   wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data());  
+  auto buffer1 = m_interface->template ResolveObject<OpenGLTripleBuffer>(inputBufferName);
+  
   auto buffer = dynamic_pointer_cast<IReadBuffer>(m_buffers.at(inputBufferName));
   Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
   

@@ -52,10 +52,21 @@ private:
   
 public:
   ScriptInterface( void );
+  
+  template <typename T>
+	T*				ResolveObject(QString name)
+  {
+	auto object = m_scriptEngine.globalObject().property(name);
+	Utils::AssertOrThrowIfFalse(object.isNull(), "Unable to resolve object" + name.toStdString() );
+
+	auto requestedObject = dynamic_cast<T*>(object);
+	Utils::AssertOrThrowIfFalse(nullptr != object, "Unable to resolve type of object:" + name.toLocal8Bit().data() );
+
+	return requestedObject;
+  }
 
 public slots:
   void			AddObject(QObject* object, QString name);
   void			RunScript(QString filename);
 };
-
 #endif	// _PORTAL_CAPTURE_SCRIPT_INTERFACE_H_

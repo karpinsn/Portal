@@ -103,7 +103,8 @@ set(SOURCES
 
     Capture/CameraCapture.cpp
     Process/SixFringeProcessor.cpp
-	Stream/WebsocketStream.cpp
+	Process/CalibrationData.cpp
+    Stream/WebsocketStream.cpp
 	
     Application.h
     Utils.h
@@ -119,6 +120,7 @@ set(SOURCES
 
     Capture/CameraCapture.h
     Process/SixFringeProcessor.h
+    Process/CalibrationData.h
 	Stream/WebsocketStream.h
     )	
 

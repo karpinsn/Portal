@@ -23,10 +23,14 @@ void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared
   int width = m_captureBuffers[0]->GetWidth();
   int height = m_captureBuffers[0]->GetHeight();
 
-  //  Make sure we are the current OpenGL Context
+  // Make sure we are the current OpenGL Context
   makeCurrent( );
   m_outputBuffer = outputBuffer;
   m_outputBuffer->InitWrite( width, height );
+
+  // Make sure we are the current OpenGL Context again. 
+  // Buffers might have allocated their own contexts
+  makeCurrent( );
 
   //  Initialize our shaders
   m_fringe2Phase.init();
