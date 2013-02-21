@@ -32,9 +32,10 @@ ScriptInterface::ScriptInterface( void )
   m_workerThread->start();
 }
 
-void ScriptInterface::AddObject(QObject* object, QString name)
+void ScriptInterface::AddObject(shared_ptr<QObject> object, QString name)
 {
-  QScriptValue value = m_scriptEngine.newQObject(object);
+  m_scriptObjects.insert(make_pair(name, object));
+  QScriptValue value = m_scriptEngine.newQObject(object.get());
   m_scriptEngine.globalObject().setProperty(name, value);
 }
 

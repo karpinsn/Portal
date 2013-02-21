@@ -55,11 +55,10 @@ class MainController : public QObject, public ISharedGLContextFactory
 private:
   DISALLOW_COPY_AND_ASSIGN(MainController);
 
-  map<QString, shared_ptr<QObject>>	  m_buffers;
   map<QString, shared_ptr<IContext>>  m_contexts;
 
-  unique_ptr<ScriptInterface>	  m_interface;
-  unique_ptr<SixFringeProcessor>  m_processContext; //  Main Context : Runs on UI thread
+  shared_ptr<ScriptInterface>			m_interface;
+  shared_ptr<SixFringeProcessor>  m_processContext; //  Main Context : Runs on UI thread
   
 public:
   MainController();
@@ -69,14 +68,16 @@ public:
 public slots:
   void Start(void);
   void Close(void);
-  // Buffer adding slots
-  void AddBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
-  void AddMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
 
-  // Stream adding slots
-  void AddCaptureContext( QString contextName, QString outputBufferName );
-  void InitProcessContext( QString inputBufferName, QString outputBufferName);
-  void AddStreamContext( QString contextName, int port, QString inputBufferName );
+	// Process Initalizing methods
+	void AddCaptureBufferToProcess( QString bufferName );
+	void InitProcessContext( QString outputBufferName);
+
+  // Factory methods
+  void NewBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
+  void NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
+  void NewCaptureContext( QString contextName, QString outputBufferName );
+  void NewStreamContext( QString contextName, int port, QString inputBufferName );
 
 private slots:
   void StartSystem(void);

@@ -24,7 +24,7 @@ private:
 public:
   // TODO - Figure out what we need for constructors.
   // Thinking either explicictly construct the data, or serialize it in
-  //CalibrationData(void);
+  CalibrationData(void);
 };
 
 #endif  // _PORTAL_PROCESS_CALIBRATION_DATA_

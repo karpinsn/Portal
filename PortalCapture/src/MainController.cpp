@@ -10,7 +10,7 @@ void MainController::Init(QString initScriptFilename)
   // we must have an actual screen though (X Session or Explorer session)
   // so that we can get a window and graphics context.
   wrench::Logger::logDebug("Loading (Process) context");
-  m_processContext = unique_ptr<SixFringeProcessor>( new SixFringeProcessor( ) );  
+  m_processContext = shared_ptr<SixFringeProcessor>( new SixFringeProcessor( ) );  
   Utils::AssertOrThrowIfFalse(m_processContext->isValid(), "OpenGL context is not valid");
   
   //  Calling updateGL will initialize our context so that 
@@ -25,10 +25,10 @@ void MainController::Init(QString initScriptFilename)
 
   //  Now that we are initalized (OpenGL, GLEW, etc) we can run our init script
   wrench::Logger::logDebug("Loading scripting interface");
-  m_interface = unique_ptr<ScriptInterface>( new ScriptInterface() );
-  m_interface->AddObject(this, "Main");
-  m_interface->AddObject(m_interface.get(), "Global");
-  m_interface->AddObject(m_processContext.get(), "Process");
+  m_interface = shared_ptr<ScriptInterface>( new ScriptInterface() );
+  m_interface->AddObject(shared_ptr<MainController>(this), "Main");
+  m_interface->AddObject(m_interface, "Global");
+  m_interface->AddObject(m_processContext, "Process");
   m_interface->RunScript(initScriptFilename);
 
   wrench::Logger::logDebug("Initialization complete");
@@ -37,7 +37,6 @@ void MainController::Init(QString initScriptFilename)
 shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
 {
   Utils::AssertOrThrowIfFalse(nullptr != m_processContext, "Need to have a main context to make the shared from");
-
   shared_ptr<QGLWidget> sharedContext( new QGLWidget( m_processContext.get( ), m_processContext.get( ) ) );
 
   //  Make sure that we created the context and that it is properly sharing
@@ -60,71 +59,66 @@ void MainController::Close(void)
   emit( Finished( ) );
 }
 
-void MainController::InitProcessContext( QString inputBufferName, QString outputBufferName)
-{
-  auto inputBuffer = dynamic_pointer_cast<MultiOpenGLBuffer>(m_buffers.at(inputBufferName));
-  auto outputBuffer = dynamic_pointer_cast<IWriteBuffer>(m_buffers.at(outputBufferName));
-  Utils::AssertOrThrowIfFalse(nullptr != inputBuffer, "Unknown buffer");
-  Utils::AssertOrThrowIfFalse(nullptr != outputBuffer, "Unknown buffer");
-  
-  m_processContext->Init( inputBuffer, outputBuffer );
-}
-
 void MainController::StartSystem(void)
 {
   for(auto context = m_contexts.begin(); context != m_contexts.end(); ++context)
   {
-	context->second->Start( );
+		context->second->Start( );
   }
   wrench::Logger::logDebug("Started");
 }
 
+void MainController::AddCaptureBufferToProcess( QString bufferName )
+{
+  auto buffer = m_interface->ResolveObject<MultiOpenGLBuffer>(bufferName);
+	m_processContext->AddCapture( buffer, unique_ptr<CalibrationData>( new CalibrationData ) );
+}
+	
+void MainController::InitProcessContext( QString outputBufferName)
+{
+	auto outputBuffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
+  
+  m_processContext->Init( outputBuffer );
+}
+
 // ---------------------- Factory Methods for the scripting interface
 
-void MainController::AddBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext )
+void MainController::NewBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext )
 {
   // Make the buffer then add it to the scripting interface
   auto buffer = make_shared<OpenGLTripleBuffer>( this, makeReadContext, makeWriteContext );
-  
-  m_buffers.insert( pair<QString, shared_ptr<ITripleBuffer>>( bufferName, buffer ) );
-  m_interface->AddObject(buffer.get(), bufferName);
+  m_interface->AddObject(buffer, bufferName);
 }
 
-void MainController::AddMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount)
+void MainController::NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount)
 {
   // Make the buffer then add it to the scripting interface
   auto buffer = make_shared<MultiOpenGLBuffer>( bufferCount, makeReadContext, makeWriteContext, this );
-  
-  m_buffers.insert( pair<QString, shared_ptr<MultiOpenGLBuffer>>( bufferName, buffer ) );
-  m_interface->AddObject(buffer.get(), bufferName);
+  m_interface->AddObject(buffer, bufferName);
 }
 
-void MainController::AddCaptureContext( QString contextName, QString outputBufferName )
+void MainController::NewCaptureContext( QString contextName, QString outputBufferName )
 {
   // Init our output context
   wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data()); 
-  auto buffer = dynamic_pointer_cast<IWriteBuffer>(m_buffers.at(outputBufferName));
-  Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
+  auto buffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
   
   auto context = make_shared<CameraCapture>( buffer );
-  m_contexts.insert( pair<QString, shared_ptr<IContext>>(contextName, context) );
+  m_contexts.insert( make_pair<QString, shared_ptr<IContext>>( contextName, context) );
 	  
   // Add our object to the script interface
-  m_interface->AddObject(context.get(), contextName);
+  m_interface->AddObject(context, contextName);
 }
 
-void MainController::AddStreamContext( QString contextName, int port, QString inputBufferName )
+void MainController::NewStreamContext( QString contextName, int port, QString inputBufferName )
 {
   wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data());  
-  auto buffer1 = m_interface->template ResolveObject<OpenGLTripleBuffer>(inputBufferName);
-  
-  auto buffer = dynamic_pointer_cast<IReadBuffer>(m_buffers.at(inputBufferName));
-  Utils::AssertOrThrowIfFalse(nullptr != buffer, "Unknown buffer");
-  
+  auto buffer = m_interface->ResolveObject<IReadBuffer>(inputBufferName);
+ 
   // Create our object and add to the list of contexts
   auto context = make_shared<WebsocketStream> ( port, buffer );
-  m_contexts.insert(pair<QString, shared_ptr<IContext>>(contextName, context) );
+  m_contexts.insert( make_pair<QString, shared_ptr<IContext>>(contextName, context) );
 
   // Add our object to the script interface
-  m_interface->AddObject(context.get(), contextName);
+  m_interface->AddObject(context, contextName);
 }

@@ -12,6 +12,7 @@
 #include <QFile>
 #include <QTextStream>
 
+#include <map>
 #include <memory>
 #include <iostream>
 
@@ -46,6 +47,7 @@ class ScriptInterface : public QObject
   friend ConsoleWorker;
 
 private:
+  map<QString, shared_ptr<QObject>> m_scriptObjects;
   QScriptEngine m_scriptEngine;
   ConsoleWorker* m_worker;
   QThread* m_workerThread;
@@ -54,19 +56,19 @@ public:
   ScriptInterface( void );
   
   template <typename T>
-	T*				ResolveObject(QString name)
+	shared_ptr<T> ResolveObject(QString name)
   {
-	auto object = m_scriptEngine.globalObject().property(name);
-	Utils::AssertOrThrowIfFalse(object.isNull(), "Unable to resolve object" + name.toStdString() );
+	auto object = m_scriptObjects.at(name);
+	Utils::AssertOrThrowIfFalse(nullptr != object, "Unable to resolve object" );
 
-	auto requestedObject = dynamic_cast<T*>(object);
-	Utils::AssertOrThrowIfFalse(nullptr != object, "Unable to resolve type of object:" + name.toLocal8Bit().data() );
+	auto requestedObject = dynamic_pointer_cast<T>( object );
+	Utils::AssertOrThrowIfFalse(nullptr != requestedObject, "Unable to resolve type of object");
 
 	return requestedObject;
   }
 
 public slots:
-  void			AddObject(QObject* object, QString name);
+  void			AddObject(shared_ptr<QObject> object, QString name);
   void			RunScript(QString filename);
 };
 #endif	// _PORTAL_CAPTURE_SCRIPT_INTERFACE_H_

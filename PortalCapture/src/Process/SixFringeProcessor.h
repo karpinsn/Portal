@@ -35,6 +35,8 @@
 #include <wrench/gl/Texture.h>
 #include <wrench/gl/FBO.h>
 
+#include "CalibrationData.h"
+
 #include "../IWriteBuffer.h"
 #include "../MultiOpenGLBuffer.h"
 
@@ -46,7 +48,8 @@ using namespace wrench::gl;
 class IProcessContext
 {
 public:
-  virtual void Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer ) = 0;
+  virtual void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, unique_ptr<CalibrationData> calibrationData ) = 0;
+  virtual void Init( shared_ptr<IWriteBuffer> outputBuffer ) = 0;
 };
 
 class SixFringeProcessor : public QGLWidget, public IProcessContext
@@ -57,8 +60,8 @@ private:
   DISALLOW_COPY_AND_ASSIGN(SixFringeProcessor);
 
   //  This should be a vector of pairs <MultiOpenGLBuffer, ICalibrationData>
-  vector<shared_ptr<MultiOpenGLBuffer>> m_captureBuffers;
-  shared_ptr<MultiOpenGLBuffer> m_inputBuffer;
+  vector<pair<shared_ptr<MultiOpenGLBuffer>, unique_ptr<CalibrationData>>> m_captureBuffers;
+  
   shared_ptr<IWriteBuffer> m_outputBuffer;
 
   ShaderProgram m_fringe2Phase;
@@ -85,8 +88,8 @@ private:
 public:
   SixFringeProcessor(void);
   // TODO, each capture is going to need its own calibration data
-  void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer );
-  void Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer );
+  void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, unique_ptr<CalibrationData> calibrationData );
+  void Init( shared_ptr<IWriteBuffer> outputBuffer );
 
 public slots:
   void SetScale( float scale );
@@ -103,7 +106,7 @@ protected:
   void paintGL( void );
 
 private:
-  void _calculatePhase( GLenum drawBuffer );
+  void _calculatePhase( GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer );
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
   void _calculateDepth( GLenum drawBuffer, Texture& phase );
   void _holoEncode( GLenum drawBuffer );

@@ -4,24 +4,20 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap), m_gaussFilter(11)
 { }
 
-void SixFringeProcessor::AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer )
+void SixFringeProcessor::AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, unique_ptr<CalibrationData> calibrationData )
 {
-  //  TODO - Complete this method
-  m_captureBuffers.push_back(inputBuffer);
+  // Remember, due to move semantics this function will take ownership of the calibrationData
+  m_captureBuffers.push_back(make_pair(inputBuffer, ::move(calibrationData)));
 }
 
-void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer )
+void SixFringeProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 {
-  //  TODO - Remove this when you take the inputBuffer off the init
-  m_captureBuffers.push_back(inputBuffer);
-  m_inputBuffer = inputBuffer;
-
   Utils::AssertOrThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
   Utils::AssertOrThrowIfFalse(0 < m_captureBuffers.size(), "Must have an input capture buffer");
 
   //  All the buffers should be the same size. Just grab the first one
-  int width = m_captureBuffers[0]->GetWidth();
-  int height = m_captureBuffers[0]->GetHeight();
+  int width = m_captureBuffers[0].first->GetWidth();
+  int height = m_captureBuffers[0].first->GetHeight();
 
   // Make sure we are the current OpenGL Context
   makeCurrent( );
@@ -53,8 +49,8 @@ void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared
   m_phaseFilter.link();
   m_phaseFilter.uniform("image", 0);
   //  In the shader these are floating point, so ensure that they are with a cast
-  m_phaseFilter.uniform("width", ( float )inputBuffer->GetWidth( ) );
-  m_phaseFilter.uniform("height", ( float )inputBuffer->GetHeight( ) );
+  m_phaseFilter.uniform("width", ( float )width );
+  m_phaseFilter.uniform("height", ( float )height );
 	
   m_gaussFilter.init();
   m_gaussFilter.setImageDimensions( width, height );
@@ -143,8 +139,11 @@ void SixFringeProcessor::paintGL( void )
   //  Make sure we are the current OpenGL Context
   makeCurrent( );
 
+	// TODO Comeback and fix this
+	auto inputBuffer = m_captureBuffers[0].first;
+
   // This will swap to the newest read buffer
-  for ( auto itr = m_inputBuffer->ReadBuffersBegin() ; itr != m_inputBuffer->ReadBuffersEnd( ); ++itr)
+  for ( auto itr = inputBuffer->ReadBuffersBegin() ; itr != inputBuffer->ReadBuffersEnd( ); ++itr)
   { 
 	(*itr)->StartRead();
   }
@@ -152,7 +151,7 @@ void SixFringeProcessor::paintGL( void )
   // Our actual decoding is done here
   m_imageProcessor.bind();
   {
-	_calculatePhase( GL_COLOR_ATTACHMENT0 );
+	_calculatePhase( GL_COLOR_ATTACHMENT0, inputBuffer );
 	_filterPhase( GL_COLOR_ATTACHMENT1, m_phaseMap0 );
 
 	//	If we are capturing reference phase, just filter into the reference phase
@@ -173,7 +172,7 @@ void SixFringeProcessor::paintGL( void )
   m_outputBuffer->WriteFinished( );
 }
 
-void SixFringeProcessor::_calculatePhase(GLenum drawBuffer)
+void SixFringeProcessor::_calculatePhase(GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer)
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -181,7 +180,7 @@ void SixFringeProcessor::_calculatePhase(GLenum drawBuffer)
 
   //  Bind all our fringe images
   int texNumber = 0;
-  for ( auto itr = m_inputBuffer->ReadBuffersBegin() ; itr != m_inputBuffer->ReadBuffersEnd( ); ++itr)
+  for ( auto itr = fringeBuffer->ReadBuffersBegin() ; itr != fringeBuffer->ReadBuffersEnd( ); ++itr)
   { 
 	(*itr)->ReadTexture().bind( GL_TEXTURE0 + texNumber++ );
   }
@@ -225,9 +224,11 @@ void SixFringeProcessor::_outputTexture( GLenum drawBuffer )
   // If our outputTexture is null then it means output the fringe
   if(nullptr == m_outputTexture)
   {
+
+	// TODO - Comeback and revisit this
 	//	Only need to bind the first one since at most we can only output 1 image
-	auto itr = m_inputBuffer->ReadBuffersBegin();
-	if ( itr != m_inputBuffer->ReadBuffersEnd() )
+	auto itr = m_captureBuffers[0].first->ReadBuffersBegin();
+	if ( itr != m_captureBuffers[0].first->ReadBuffersEnd() )
 	{
 	  (*itr)->ReadTexture().bind( GL_TEXTURE0 );
 	}
