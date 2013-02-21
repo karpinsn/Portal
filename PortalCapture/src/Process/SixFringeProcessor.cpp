@@ -4,14 +4,29 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap), m_gaussFilter(11)
 { }
 
+void SixFringeProcessor::AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer )
+{
+  //  TODO - Complete this method
+  m_captureBuffers.push_back(inputBuffer);
+}
+
 void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer )
 {
-  m_inputBuffer	  = inputBuffer;
-  m_outputBuffer  = outputBuffer;
-  m_outputBuffer->InitWrite( m_inputBuffer->GetWidth( ), m_inputBuffer->GetHeight( ) );
+  //  TODO - Remove this when you take the inputBuffer off the init
+  m_captureBuffers.push_back(inputBuffer);
+  m_inputBuffer = inputBuffer;
+
+  Utils::AssertOrThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
+  Utils::AssertOrThrowIfFalse(0 < m_captureBuffers.size(), "Must have an input capture buffer");
+
+  //  All the buffers should be the same size. Just grab the first one
+  int width = m_captureBuffers[0]->GetWidth();
+  int height = m_captureBuffers[0]->GetHeight();
 
   //  Make sure we are the current OpenGL Context
   makeCurrent( );
+  m_outputBuffer = outputBuffer;
+  m_outputBuffer->InitWrite( width, height );
 
   //  Initialize our shaders
   m_fringe2Phase.init();
@@ -38,7 +53,7 @@ void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared
   m_phaseFilter.uniform("height", ( float )inputBuffer->GetHeight( ) );
 	
   m_gaussFilter.init();
-  m_gaussFilter.setImageDimensions( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ) );
+  m_gaussFilter.setImageDimensions( width, height );
 
   m_phase2Depth.init();
   m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -64,13 +79,13 @@ void SixFringeProcessor::Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared
   m_renderTexture.link();
   m_renderTexture.uniform("image", 0);
 
-  m_phaseMap0.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
-  m_phaseMap1.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
-  m_referencePhase.init	( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
-  m_depthMap.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
-  m_encodedMap.init		( inputBuffer->GetWidth( ), inputBuffer->GetHeight( ), GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_phaseMap0.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_phaseMap1.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_referencePhase.init	( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_depthMap.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_encodedMap.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 
-  m_imageProcessor.init(inputBuffer->GetWidth( ), inputBuffer->GetHeight( ) );
+  m_imageProcessor.init( width, height );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap0,		GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,		GL_COLOR_ATTACHMENT1 );
   m_imageProcessor.setTextureAttachPoint( m_referencePhase,	GL_COLOR_ATTACHMENT2 );

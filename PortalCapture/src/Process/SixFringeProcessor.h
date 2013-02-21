@@ -22,6 +22,7 @@
 #endif
 
 #include <memory>
+#include <vector>
 
 #include <QObject>
 #include <QGLWidget>
@@ -54,6 +55,9 @@ class SixFringeProcessor : public QGLWidget, public IProcessContext
 	
 private:
   DISALLOW_COPY_AND_ASSIGN(SixFringeProcessor);
+
+  //  This should be a vector of pairs <MultiOpenGLBuffer, ICalibrationData>
+  vector<shared_ptr<MultiOpenGLBuffer>> m_captureBuffers;
   shared_ptr<MultiOpenGLBuffer> m_inputBuffer;
   shared_ptr<IWriteBuffer> m_outputBuffer;
 
@@ -80,6 +84,8 @@ private:
 
 public:
   SixFringeProcessor(void);
+  // TODO, each capture is going to need its own calibration data
+  void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer );
   void Init( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<IWriteBuffer> outputBuffer );
 
 public slots:
