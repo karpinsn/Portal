@@ -102,6 +102,7 @@ set(SOURCES
 	ScriptInterface.cpp
 
     Capture/CameraCapture.cpp
+    Process/PortalProcessor.cpp
     Process/SixFringeProcessor.cpp
 	Process/CalibrationData.cpp
     Stream/WebsocketStream.cpp
@@ -119,6 +120,7 @@ set(SOURCES
     ITripleBuffer.h
 
     Capture/CameraCapture.h
+    Process/PortalProcessor.h
     Process/SixFringeProcessor.h
     Process/CalibrationData.h
 	Stream/WebsocketStream.h
@@ -132,6 +134,7 @@ set(MOCS
 	MultiOpenGLBuffer.h
     ScriptInterface.h
     Capture/CameraCapture.h
+    Process/PortalProcessor.h
     Process/SixFringeProcessor.h
 	Process/CalibrationData.h
 	Stream/WebsocketStream.h)

@@ -10,7 +10,7 @@ void MainController::Init(QString initScriptFilename)
   // we must have an actual screen though (X Session or Explorer session)
   // so that we can get a window and graphics context.
   wrench::Logger::logDebug("Loading (Process) context");
-  m_processContext = shared_ptr<SixFringeProcessor>( new SixFringeProcessor( ) );  
+  m_processContext = make_shared<PortalProcessor>( );  
   Utils::AssertOrThrowIfFalse(m_processContext->isValid(), "OpenGL context is not valid");
   
   //  Calling updateGL will initialize our context so that 
@@ -68,16 +68,9 @@ void MainController::StartSystem(void)
   wrench::Logger::logDebug("Started");
 }
 
-void MainController::AddCaptureBufferToProcess( QString bufferName, QString calibrationName )
-{
-  auto buffer = m_interface->ResolveObject<MultiOpenGLBuffer>( bufferName );
-  auto calibration = m_interface->ResolveObject<CalibrationData>( calibrationName );
-  m_processContext->AddCapture( buffer, calibration );
-}
-	
 void MainController::InitProcessContext( QString outputBufferName)
 {
-	auto outputBuffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
+  auto outputBuffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
   
   m_processContext->Init( outputBuffer );
 }
@@ -107,6 +100,19 @@ void MainController::NewCaptureContext( QString contextName, QString outputBuffe
   auto context = make_shared<CameraCapture>( buffer );
   m_contexts.insert( make_pair<QString, shared_ptr<IContext>>( contextName, context) );
 	  
+  // Add our object to the script interface
+  m_interface->AddObject(context, contextName);
+}
+
+void MainController::NewSixFringeProcessor( QString contextName, QString inputBufferName, QString calibrationName )
+{
+  wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data()); 
+  auto buffer = m_interface->ResolveObject<MultiOpenGLBuffer>( inputBufferName );
+  auto calibration = m_interface->ResolveObject<CalibrationData>( calibrationName );
+  auto context = make_shared<SixFringeProcessor>(buffer, calibration);
+  
+  m_processContext->AddProcessContext(context);
+
   // Add our object to the script interface
   m_interface->AddObject(context, contextName);
 }

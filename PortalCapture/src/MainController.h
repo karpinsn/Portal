@@ -43,6 +43,7 @@
 #include "Utils.h"
 
 #include "Capture\CameraCapture.h"
+#include "Process\PortalProcessor.h"
 #include "Process\SixFringeProcessor.h"
 #include "Stream\WebsocketStream.h"
 
@@ -57,8 +58,8 @@ private:
 
   map<QString, shared_ptr<IContext>>  m_contexts;
 
-  shared_ptr<ScriptInterface>			m_interface;
-  shared_ptr<SixFringeProcessor>  m_processContext; //  Main Context : Runs on UI thread
+  shared_ptr<ScriptInterface>		  m_interface;
+  shared_ptr<PortalProcessor>		  m_processContext; //  Main Context : Runs on UI thread
   
 public:
   MainController();
@@ -69,14 +70,14 @@ public slots:
   void Start(void);
   void Close(void);
 
-	// Process Initalizing methods
-	void AddCaptureBufferToProcess( QString bufferName, QString calibrationName );
-	void InitProcessContext( QString outputBufferName);
+  // Process Initalizing methods
+  void InitProcessContext( QString outputBufferName);
 
   // Factory methods
   void NewBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
   void NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
   void NewCaptureContext( QString contextName, QString outputBufferName );
+  void NewSixFringeProcessor( QString contextName, QString inputBufferName, QString calibrationName );
   void NewStreamContext( QString contextName, int port, QString inputBufferName );
   void NewCalibrationData( QString calibrationObjectName, QString configScriptFilePath );
 
