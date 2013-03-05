@@ -96,8 +96,6 @@ const Texture& OpenGLTripleBuffer::ReadTexture( void )
   if( nullptr != m_readContext )
 	{ m_readContext->makeCurrent(); }
 
-  _swapReadBuffer();
-
   return *( m_readBuffer.get( ) );
 }
 

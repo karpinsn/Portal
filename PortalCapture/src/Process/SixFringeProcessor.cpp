@@ -71,6 +71,11 @@ void SixFringeProcessor::BindDepthMap( GLenum texture )
   m_depthMap.bind(texture);
 }
 
+void SixFringeProcessor::BindFringeImage( GLenum texture )
+{
+  ( *m_inputBuffer->ReadBuffersBegin( ) )->ReadTexture( ).bind( texture );
+}
+
 void SixFringeProcessor::SetScale( float scale )
 {
   m_scale = scale;
@@ -89,6 +94,11 @@ void SixFringeProcessor::Process( void )
 
   OGLStatus::logOGLErrors("SixFringeProcessor - Process( )");
 
+  for( auto itr = m_inputBuffer->ReadBuffersBegin(); itr != m_inputBuffer->ReadBuffersEnd(); ++itr )
+  {
+	(*itr)->StartRead();
+  }
+
   // Our actual decoding is done here
   m_imageProcessor.bind();
   {
@@ -106,6 +116,11 @@ void SixFringeProcessor::CaptureReference( void )
 	{ return; }
 
   OGLStatus::logOGLErrors("SixFringeProcessor - Process( )");
+
+  for( auto itr = m_inputBuffer->ReadBuffersBegin(); itr != m_inputBuffer->ReadBuffersEnd(); ++itr )
+  {
+	(*itr)->StartRead();
+  }
 
   // Our actual decoding is done here
   m_imageProcessor.bind();

@@ -52,6 +52,13 @@ class PortalProcessor : public QGLWidget
 private:
   DISALLOW_COPY_AND_ASSIGN(PortalProcessor);
 
+  enum OutputMode
+  {
+	Fringe,
+	Depth,
+	Holo
+  };
+
   vector<shared_ptr<IProcessContext>> m_captureProcessors;
   shared_ptr<IWriteBuffer> m_outputBuffer;
 
@@ -59,11 +66,14 @@ private:
   ShaderProgram m_renderTexture;
 
   Texture	m_encodedMap;
-  Texture*	m_outputTexture;
 
   FBO m_imageProcessor;
   bool m_isInit;
   bool m_captureReference;
+
+  // Used for specifying a display mode and number (which processor)
+  OutputMode  m_displayMode;
+  int		  m_displayNumber;
 
 public:
   PortalProcessor(void);
@@ -71,6 +81,9 @@ public:
   void Init( shared_ptr<IWriteBuffer> outputBuffer );
 
 public slots:
+  void OutputFringe( int processorNumber );
+  void OutputDepth( int processorNumber );
+  void OutputHolo( void );
   void CaptureReference( void );
 
 signals:
@@ -82,6 +95,7 @@ protected:
 private:
   void _CaptureReference( void );
   void _Process( void );
+  void _Output( void );
 };
 
 #endif	// _PORTAL_PORTAL_PROCESSOR_H_

@@ -1,7 +1,7 @@
 #include "PortalProcessor.h"
 
 PortalProcessor::PortalProcessor( void ) :
-  m_isInit(false), m_captureReference(true), m_outputTexture(&m_encodedMap)
+  m_isInit(false), m_captureReference(true)
 { }
 
 void PortalProcessor::AddProcessContext( shared_ptr<IProcessContext> processContext )
@@ -58,6 +58,41 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 
   m_isInit = true;
   OGLStatus::logOGLErrors("PortalProcessor - Init( shared_ptr<IOpenGLReadBuffer> )");
+}
+
+void PortalProcessor::OutputFringe( int processorNumber )
+{
+  if(processorNumber > m_captureProcessors.size())
+  {
+	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
+	m_displayNumber = processorNumber;
+  }
+  else
+  {
+	m_displayNumber = 0;
+  }
+
+  m_displayMode = Fringe;
+}
+
+void PortalProcessor::OutputDepth( int processorNumber )
+{
+  if(processorNumber > m_captureProcessors.size())
+  {
+	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
+	m_displayNumber = processorNumber;
+  }
+  else
+  {
+	m_displayNumber = 0;
+  }
+
+  m_displayMode = Depth;
+}
+
+void PortalProcessor::OutputHolo( void )
+{
+  m_displayMode = Holo;
 }
 
 void PortalProcessor::CaptureReference( void )
@@ -121,14 +156,32 @@ void PortalProcessor::_Process( void )
 
 	m_imageProcessor.process( );
 
-	// Output results
-	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT1 );
-	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT1 );
-	m_renderTexture.bind( );
-	m_encodedMap.bind( GL_TEXTURE0 );
-	m_imageProcessor.process( );
+	_Output( );
   }
   m_imageProcessor.unbind();
 
   m_outputBuffer->WriteFinished( );
+}
+
+void PortalProcessor::_Output( void )
+{
+  // Output results
+  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT1 );
+  m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT1 );
+  m_renderTexture.bind( );
+
+  switch (m_displayMode)
+  {
+	case Fringe:
+	  m_captureProcessors[m_displayNumber]->BindFringeImage( GL_TEXTURE0 ); //TODO - Fix this
+	  break;
+	case Depth:
+	  m_captureProcessors[m_displayNumber]->BindDepthMap( GL_TEXTURE0 ); //TODO - Fix this
+	  break;
+	case Holo:
+	  m_encodedMap.bind( GL_TEXTURE0 );
+	  break;
+  }
+  
+  m_imageProcessor.process( );
 }

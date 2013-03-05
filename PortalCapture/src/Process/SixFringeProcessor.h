@@ -50,6 +50,7 @@ class IProcessContext
 public:
   virtual void Init( void ) = 0;
   virtual void BindDepthMap( GLenum texture ) = 0;
+  virtual void BindFringeImage( GLenum texture ) = 0;
   virtual void Process( void ) = 0;
   virtual void CaptureReference( void ) = 0;
 };
@@ -85,6 +86,7 @@ public:
   SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> calibrationData );
   void Init( void );
   void BindDepthMap( GLenum texture );
+  void BindFringeImage( GLenum texture );
   void Process( void );
   void CaptureReference( void );
 
