@@ -20,6 +20,11 @@ void ConsoleWorker::ProcessInput( void )
 
 ScriptInterface::ScriptInterface( void )
 {
+  // Save the original global object so we can still search for
+  // objects, even if the global object is changed.
+  m_global = m_scriptEngine.globalObject( );
+  
+  // Setup our console thread
   m_workerThread = new QThread();
   m_worker = new ConsoleWorker(*this);
   m_worker->moveToThread(m_workerThread);
@@ -32,6 +37,20 @@ ScriptInterface::ScriptInterface( void )
   m_workerThread->start();
 }
 
+void ScriptInterface::PushThis( QString thisName )
+{
+  //  Find our object, then set it as 'this' in our new context
+  auto thisObject = m_global.property( thisName );
+  QScriptContext* context = m_scriptEngine.pushContext( );
+  context->setThisObject( thisObject );
+}
+
+void ScriptInterface::PopThis( void )
+{
+  //  Pop the current context and restore the 'this' object
+  m_scriptEngine.popContext( );
+}
+
 void ScriptInterface::AddObject(shared_ptr<QObject> object, QString name)
 {
   m_scriptObjects.insert(make_pair(name, object));
@@ -41,7 +60,6 @@ void ScriptInterface::AddObject(shared_ptr<QObject> object, QString name)
 
 void ScriptInterface::RunScript(QString filename)
 {
-  // TODO: Could have problems if we are already processing input
   QFile scriptFile(filename);
   if ( !scriptFile.open( QIODevice::ReadOnly ) )
   {

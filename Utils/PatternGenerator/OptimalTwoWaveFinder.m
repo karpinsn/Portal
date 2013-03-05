@@ -30,7 +30,7 @@ for i = 1:length(lambda1s),
     phi12 = phiAbs3(phi1, phi2, lambda1, lambda2);
     error(i,j) = rms(phi12 - x)/(950 - 100);
     
-    if (error(i,j) < 0.001),
+    if (error(i,j) < 0.0005),
         fprintf('\n%3d \t%3d \t%1.5f', lambda1, lambda2, error(i,j))
     end 
     end

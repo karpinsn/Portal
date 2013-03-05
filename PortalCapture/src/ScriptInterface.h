@@ -47,7 +47,9 @@ class ScriptInterface : public QObject
   friend ConsoleWorker;
 
 private:
+  QScriptValue						m_global;
   map<QString, shared_ptr<QObject>> m_scriptObjects;
+
   QScriptEngine m_scriptEngine;
   ConsoleWorker* m_worker;
   QThread* m_workerThread;
@@ -66,6 +68,9 @@ public:
 
 	return requestedObject;
   }
+
+  void PushThis( QString thisName );
+  void PopThis( void );
 
 public slots:
   void			AddObject(shared_ptr<QObject> object, QString name);

@@ -122,3 +122,17 @@ void MainController::NewStreamContext( QString contextName, int port, QString in
   // Add our object to the script interface
   m_interface->AddObject(context, contextName);
 }
+
+void MainController::NewCalibrationData( QString calibrationObjectName, QString configScriptFilePath )
+{
+  wrench::Logger::logDebug( "Creating (%s) calibration data", calibrationObjectName.toLocal8Bit().data() );  
+  
+  // Create our calibration data and then set it to the new 'this' object
+  auto calibrationData = make_shared<CalibrationData>( );
+  m_interface->AddObject( calibrationData, calibrationObjectName );
+  m_interface->PushThis( calibrationObjectName );
+  m_interface->RunScript( configScriptFilePath );
+
+  // Restore 'this' object once we are done
+  m_interface->PopThis( );
+}

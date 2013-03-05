@@ -78,6 +78,7 @@ public slots:
   void NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
   void NewCaptureContext( QString contextName, QString outputBufferName );
   void NewStreamContext( QString contextName, int port, QString inputBufferName );
+  void NewCalibrationData( QString calibrationObjectName, QString configScriptFilePath );
 
 private slots:
   void StartSystem(void);

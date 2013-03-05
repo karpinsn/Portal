@@ -133,6 +133,7 @@ set(MOCS
     ScriptInterface.h
     Capture/CameraCapture.h
     Process/SixFringeProcessor.h
+	Process/CalibrationData.h
 	Stream/WebsocketStream.h)
 
 #   ---------------------------------------------------------------------------------------
