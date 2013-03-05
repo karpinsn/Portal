@@ -4,7 +4,7 @@ SixFringeProcessor::SixFringeProcessor( void ) :
   m_isInit(false), m_captureReference(true), m_shift(0.0f), m_scale(1.0), m_outputTexture(&m_encodedMap), m_gaussFilter(11)
 { }
 
-void SixFringeProcessor::AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, unique_ptr<CalibrationData> calibrationData )
+void SixFringeProcessor::AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> calibrationData )
 {
   // Remember, due to move semantics this function will take ownership of the calibrationData
   m_captureBuffers.push_back(make_pair(inputBuffer, ::move(calibrationData)));
@@ -139,8 +139,8 @@ void SixFringeProcessor::paintGL( void )
   //  Make sure we are the current OpenGL Context
   makeCurrent( );
 
-	// TODO Comeback and fix this
-	auto inputBuffer = m_captureBuffers[0].first;
+  // TODO Comeback and fix this
+  auto inputBuffer = m_captureBuffers[0].first;
 
   // This will swap to the newest read buffer
   for ( auto itr = inputBuffer->ReadBuffersBegin() ; itr != inputBuffer->ReadBuffersEnd( ); ++itr)

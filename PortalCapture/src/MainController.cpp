@@ -68,10 +68,11 @@ void MainController::StartSystem(void)
   wrench::Logger::logDebug("Started");
 }
 
-void MainController::AddCaptureBufferToProcess( QString bufferName )
+void MainController::AddCaptureBufferToProcess( QString bufferName, QString calibrationName )
 {
-  auto buffer = m_interface->ResolveObject<MultiOpenGLBuffer>(bufferName);
-	m_processContext->AddCapture( buffer, unique_ptr<CalibrationData>( new CalibrationData ) );
+  auto buffer = m_interface->ResolveObject<MultiOpenGLBuffer>( bufferName );
+  auto calibration = m_interface->ResolveObject<CalibrationData>( calibrationName );
+  m_processContext->AddCapture( buffer, calibration );
 }
 	
 void MainController::InitProcessContext( QString outputBufferName)

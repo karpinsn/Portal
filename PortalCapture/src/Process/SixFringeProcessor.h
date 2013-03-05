@@ -48,7 +48,7 @@ using namespace wrench::gl;
 class IProcessContext
 {
 public:
-  virtual void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, unique_ptr<CalibrationData> calibrationData ) = 0;
+  virtual void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> calibrationData ) = 0;
   virtual void Init( shared_ptr<IWriteBuffer> outputBuffer ) = 0;
 };
 
@@ -60,7 +60,7 @@ private:
   DISALLOW_COPY_AND_ASSIGN(SixFringeProcessor);
 
   //  This should be a vector of pairs <MultiOpenGLBuffer, ICalibrationData>
-  vector<pair<shared_ptr<MultiOpenGLBuffer>, unique_ptr<CalibrationData>>> m_captureBuffers;
+  vector<pair<shared_ptr<MultiOpenGLBuffer>, shared_ptr<CalibrationData>>> m_captureBuffers;
   
   shared_ptr<IWriteBuffer> m_outputBuffer;
 
@@ -87,8 +87,7 @@ private:
 
 public:
   SixFringeProcessor(void);
-  // TODO, each capture is going to need its own calibration data
-  void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, unique_ptr<CalibrationData> calibrationData );
+  void AddCapture( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> calibrationData );
   void Init( shared_ptr<IWriteBuffer> outputBuffer );
 
 public slots:

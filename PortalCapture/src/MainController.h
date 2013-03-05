@@ -70,7 +70,7 @@ public slots:
   void Close(void);
 
 	// Process Initalizing methods
-	void AddCaptureBufferToProcess( QString bufferName );
+	void AddCaptureBufferToProcess( QString bufferName, QString calibrationName );
 	void InitProcessContext( QString outputBufferName);
 
   // Factory methods
