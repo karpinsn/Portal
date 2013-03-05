@@ -27,6 +27,7 @@ void MainController::Init(QString initScriptFilename)
   wrench::Logger::logDebug("Loading scripting interface");
   m_interface = shared_ptr<ScriptInterface>( new ScriptInterface() );
   m_interface->AddObject(shared_ptr<MainController>(this), "Main");
+  m_interface->PushThis("Main");  // We are now the new 'this'
   m_interface->AddObject(m_interface, "Global");
   m_interface->AddObject(m_processContext, "Process");
   m_interface->RunScript(initScriptFilename);

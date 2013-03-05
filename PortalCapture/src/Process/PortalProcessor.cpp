@@ -1,7 +1,8 @@
 #include "PortalProcessor.h"
 
 PortalProcessor::PortalProcessor( void ) :
-  m_isInit(false), m_captureReference(true)
+  m_isInit(false), m_captureReference(true), 
+  m_displayMode(Holo), m_displayNumber(0)
 { }
 
 void PortalProcessor::AddProcessContext( shared_ptr<IProcessContext> processContext )
