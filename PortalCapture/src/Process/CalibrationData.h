@@ -37,13 +37,16 @@ public:
 
 public slots:
   void SetIntrinsic(QVariantList intrinsicMatrixList);
-  QVariantList GetIntrinsicAsVariant( );
+  QVariantList		  GetIntrinsicAsVariant( void );
+  const glm::mat3x4&  GetIntrinsicAsMat( void ) const;
 
   void SetDistortion(QVariantList coefficients);
-  QVariantList GetDistortionAsVariant( );
+  QVariantList GetDistortionAsVariant( void );
+  const float* GetDistortionAsFloatArray( void ) const;
 
   void SetExtrinsic(QVariantList extrinsicMatrixList);
-  QVariantList GetExtrinsicAsVariant( );
+  QVariantList GetExtrinsicAsVariant( void );
+  const glm::mat4& GetExtrinsicAsMat( void ) const;
 };
 
 #endif  // _PORTAL_PROCESS_CALIBRATION_DATA_

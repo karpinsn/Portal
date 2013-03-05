@@ -24,10 +24,21 @@ void CalibrationData::SetIntrinsic(QVariantList intrinsicMatrixList)
   m_intrinsic = glm::transpose(glm::make_mat4x3(intrinsic));
 }
 
-QVariantList CalibrationData::GetIntrinsicAsVariant( )
+QVariantList CalibrationData::GetIntrinsicAsVariant( void )
 {
-  // TODO: Comeback and fix this
-  return QVariantList();
+  auto intrinsics = QVariantList();
+  auto flippedIntrinsics = glm::transpose(m_intrinsic);
+  for( int valueLoc = 0; valueLoc < 12; ++valueLoc )
+  {
+	intrinsics.push_back( QVariant( glm::value_ptr( flippedIntrinsics )[valueLoc] ) );
+  }
+
+  return intrinsics;
+}
+
+const glm::mat3x4& CalibrationData::GetIntrinsicAsMat( void ) const
+{
+  return m_intrinsic;
 }
 
 void CalibrationData::SetDistortion(QVariantList coefficients)
@@ -43,8 +54,18 @@ void CalibrationData::SetDistortion(QVariantList coefficients)
 
 QVariantList CalibrationData::GetDistortionAsVariant( )
 {
-  //  TODO - Fix this
-  return QVariantList( );
+  auto distortionCoefs = QVariantList();
+  for( int valueLoc = 0; valueLoc < 5; ++valueLoc )
+  {
+	distortionCoefs.push_back( QVariant( m_distortionCoefficients[valueLoc] ) );
+  }
+
+  return distortionCoefs;
+}
+
+const float* CalibrationData::GetDistortionAsFloatArray( void ) const
+{
+  return m_distortionCoefficients;
 }
 
 void CalibrationData::SetExtrinsic(QVariantList extrinsicMatrixList)
@@ -64,6 +85,17 @@ void CalibrationData::SetExtrinsic(QVariantList extrinsicMatrixList)
 
 QVariantList CalibrationData::GetExtrinsicAsVariant( )
 {
-  //  TODO - Fix this
-  return QVariantList( );
+  auto extrinsics = QVariantList();
+  auto flippedExtrinsics = glm::transpose(m_extrinsic);
+  for( int valueLoc = 0; valueLoc < 16; ++valueLoc )
+  {
+	extrinsics.push_back( QVariant( glm::value_ptr( flippedExtrinsics )[valueLoc] ) );
+  }
+
+  return extrinsics;
+}
+
+const glm::mat4& CalibrationData::GetExtrinsicAsMat( void ) const
+{
+  return m_extrinsic;
 }

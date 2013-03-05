@@ -2,7 +2,7 @@
 
 SixFringeProcessor::SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> calibrationData ) :
   m_isInit(false), m_captureReference(true), 
-  m_shift(0.0f), m_scale(.01), 
+  m_shift(0.0f), m_scale(.01f), 
   m_gaussFilter(11), m_inputBuffer(inputBuffer), 
   m_calibrationData(calibrationData)
 { }

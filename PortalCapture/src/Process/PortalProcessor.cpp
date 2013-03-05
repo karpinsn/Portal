@@ -63,7 +63,7 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 
 void PortalProcessor::OutputFringe( int processorNumber )
 {
-  if(processorNumber > m_captureProcessors.size())
+  if(processorNumber > (int)m_captureProcessors.size())
   {
 	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
 	m_displayNumber = processorNumber;
@@ -78,7 +78,7 @@ void PortalProcessor::OutputFringe( int processorNumber )
 
 void PortalProcessor::OutputDepth( int processorNumber )
 {
-  if(processorNumber > m_captureProcessors.size())
+  if(processorNumber > (int)m_captureProcessors.size())
   {
 	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
 	m_displayNumber = processorNumber;
@@ -152,7 +152,7 @@ void PortalProcessor::_Process( void )
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_depth2Holo.bind();
 	
-	for ( int processor = 0; processor < m_captureProcessors.size(); ++processor )
+	for ( int processor = 0; processor < (int)m_captureProcessors.size(); ++processor )
 	  { m_captureProcessors[processor]->BindDepthMap( GL_TEXTURE0 + processor ); }
 
 	m_imageProcessor.process( );
