@@ -20,7 +20,8 @@ void CalibrationData::SetIntrinsic(QVariantList intrinsicMatrixList)
 	intrinsic[valueLoc] = intrinsicMatrixList[valueLoc].toFloat( );
   }
 
-  m_intrinsic = glm::make_mat3x4(intrinsic);
+  // The vector we are reading in is row major, glm is col major, transpose fixes this
+  m_intrinsic = glm::transpose(glm::make_mat4x3(intrinsic));
 }
 
 QVariantList CalibrationData::GetIntrinsicAsVariant( )
@@ -57,7 +58,8 @@ void CalibrationData::SetExtrinsic(QVariantList extrinsicMatrixList)
 	extrinsic[valueLoc] = extrinsicMatrixList[valueLoc].toFloat( );
   }
 
-  m_extrinsic = glm::make_mat4x4(extrinsic);
+  // The vector we are reading in is row major, glm is col major, transpose fixes this
+  m_extrinsic = glm::transpose(glm::make_mat4x4(extrinsic));
 }
 
 QVariantList CalibrationData::GetExtrinsicAsVariant( )
