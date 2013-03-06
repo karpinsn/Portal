@@ -174,10 +174,10 @@ void PortalProcessor::_Output( void )
   switch (m_displayMode)
   {
 	case Fringe:
-	  m_captureProcessors[m_displayNumber]->BindFringeImage( GL_TEXTURE0 ); //TODO - Fix this
+	  m_captureProcessors[m_displayNumber]->BindFringeImage( GL_TEXTURE0 );
 	  break;
 	case Depth:
-	  m_captureProcessors[m_displayNumber]->BindDepthMap( GL_TEXTURE0 ); //TODO - Fix this
+	  m_captureProcessors[m_displayNumber]->BindDepthMap( GL_TEXTURE0 );
 	  break;
 	case Holo:
 	  m_encodedMap.bind( GL_TEXTURE0 );

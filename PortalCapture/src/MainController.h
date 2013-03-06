@@ -76,6 +76,7 @@ public slots:
   // Factory methods
   void NewBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
   void NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
+  void NewCamera( QString cameraName, QString cameraType, QString configScript );
   void NewCaptureContext( QString contextName, QString outputBufferName );
   void NewSixFringeProcessor( QString contextName, QString inputBufferName, QString calibrationName );
   void NewStreamContext( QString contextName, int port, QString inputBufferName );

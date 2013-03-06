@@ -69,7 +69,7 @@ void MainController::StartSystem(void)
   wrench::Logger::logDebug("Started");
 }
 
-void MainController::InitProcessContext( QString outputBufferName)
+void MainController::InitProcessContext( QString outputBufferName )
 {
   auto outputBuffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
   
@@ -90,6 +90,14 @@ void MainController::NewMultiBuffer( QString bufferName, bool makeReadContext, b
   // Make the buffer then add it to the scripting interface
   auto buffer = make_shared<MultiOpenGLBuffer>( bufferCount, makeReadContext, makeWriteContext, this );
   m_interface->AddObject(buffer, bufferName);
+}
+
+void MainController::NewCamera( QString cameraName, QString cameraType, QString configScript )
+{
+  if( 0 == cameraType.compare( QString("PointGrey") ) )
+  {
+	//	Create a point grey camera and instance it
+  }
 }
 
 void MainController::NewCaptureContext( QString contextName, QString outputBufferName )

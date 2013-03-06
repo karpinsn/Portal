@@ -17,7 +17,6 @@ void CameraCaptureWorker::Init( void )
   m_camera->init();
   //m_camera->open();
 
-  //  TODO: Not sure how we want to know we want a 3 channel image
   m_packFrame = shared_ptr<IplImage>(
 	cvCreateImage( cvSize( m_camera->getWidth( ), m_camera->getHeight( ) ), IPL_DEPTH_8U, 3 ), 
 	[]( IplImage* ptr ) { cvReleaseImage( &ptr ); } );
@@ -51,7 +50,7 @@ void CameraCaptureWorker::Capture()
 	  continue; 
 	} 
 
-	// PROFILE-TODO: Copying is a "hot point" in the code. 
+	// PROFILE: Copying is a "hot point" in the code. 
 	//	Pack our camera image
 	//_OpenCVPack(frame);
 	_FastPack(frame);
