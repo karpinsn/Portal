@@ -1,7 +1,7 @@
 //	Create our new camera, its configuration, and its buffer
-//this.NewCamera("Cam1", "PointGrey", "PointGreyConfig.qs");
-this.NewCamera("Cam1", "FileCamera", "");
-Cam1.open();
+this.NewCamera("Cam1", "PointGrey", "PointGreyConfig.qs");
+//this.NewCamera("Cam1", "FileCamera", "");
+//Cam1.open();
 this.NewCalibrationData("Cam1Config", "Camera1.qs");
 this.NewMultiBuffer("Cam1Buffer", false, true, 2); // 2 since we are using six fringe
 
