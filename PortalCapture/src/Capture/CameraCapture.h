@@ -15,10 +15,10 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include <Lens\ICamera.h>
 #include <Lens\FileCamera.h>
 //#include <Lens\PointGreyCamera.h>
 #include <Lens\OpenCVCamera.h>
-#include <Lens\CameraObserver.h>
 
 #include "../IContext.h"
 #include "../Utils.h"
@@ -47,7 +47,7 @@ private:
   bool m_dropFrame;
 
   shared_ptr<IWriteBuffer> m_outputBuffer;
-  shared_ptr<lens::Camera> m_camera;
+  shared_ptr<lens::ICamera> m_camera;
   shared_ptr<IplImage> m_packFrame;
 
 public:

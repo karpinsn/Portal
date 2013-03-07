@@ -14,8 +14,7 @@ void CameraCaptureWorker::Init( void )
   //m_camera = make_shared<lens::OpenCVCamera>();
   m_camera = make_shared<lens::FileCamera>();
   //m_camera = make_shared<lens::PointGreyCamera>();
-  m_camera->init();
-  //m_camera->open();
+  m_camera->open();
 
   m_packFrame = shared_ptr<IplImage>(
 	cvCreateImage( cvSize( m_camera->getWidth( ), m_camera->getHeight( ) ), IPL_DEPTH_8U, 3 ), 
