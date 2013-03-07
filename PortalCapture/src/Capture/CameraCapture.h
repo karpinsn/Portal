@@ -16,9 +16,6 @@
 #include <highgui.h>
 
 #include <Lens\ICamera.h>
-#include <Lens\FileCamera.h>
-//#include <Lens\PointGreyCamera.h>
-#include <Lens\OpenCVCamera.h>
 
 #include "../IContext.h"
 #include "../Utils.h"
@@ -39,19 +36,18 @@ class CameraCaptureWorker : public QObject
 {
   Q_OBJECT
   
-
 private:
   DISALLOW_COPY_AND_ASSIGN(CameraCaptureWorker);
-  bool m_running;
-  int m_currentChannelLoad;
-  bool m_dropFrame;
+  bool	m_running;
+  int	m_currentChannelLoad;
+  bool	m_dropFrame;
 
-  shared_ptr<IWriteBuffer> m_outputBuffer;
+  shared_ptr<IWriteBuffer>	m_outputBuffer;
   shared_ptr<lens::ICamera> m_camera;
-  shared_ptr<IplImage> m_packFrame;
+  shared_ptr<IplImage>		m_packFrame;
 
 public:
-  CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer);
+  CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera);
   bool IsRunning( void );
 
 signals:
@@ -80,7 +76,7 @@ private:
   CameraCaptureWorker* m_worker;
 
 public:
-  CameraCapture( shared_ptr<IWriteBuffer> outputBuffer );
+  CameraCapture( shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera );
 
 public slots:
   void Start( );

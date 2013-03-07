@@ -34,6 +34,10 @@
 #include <assert.h>
 #include <map>
 
+#include <Lens\ICamera.h>
+#include <Lens\FileCamera.h>
+#include <Lens\PointGreyCamera.h>
+
 #include "IContext.h"
 #include "ITripleBuffer.h"
 
@@ -77,7 +81,7 @@ public slots:
   void NewBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
   void NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
   void NewCamera( QString cameraName, QString cameraType, QString configScript );
-  void NewCaptureContext( QString contextName, QString outputBufferName );
+  void NewCaptureContext( QString contextName, QString cameraName, QString outputBufferName );
   void NewSixFringeProcessor( QString contextName, QString inputBufferName, QString calibrationName );
   void NewStreamContext( QString contextName, int port, QString inputBufferName );
   void NewCalibrationData( QString calibrationObjectName, QString configScriptFilePath );

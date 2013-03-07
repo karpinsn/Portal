@@ -1,7 +1,9 @@
 #include "CameraCapture.h"
 
-CameraCaptureWorker::CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer) : 
-  m_running(false), m_currentChannelLoad(0), m_outputBuffer(outputBuffer), m_dropFrame(false)
+CameraCaptureWorker::CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera) : 
+  m_running(false), m_currentChannelLoad(0), 
+  m_outputBuffer(outputBuffer), m_dropFrame(false),
+  m_camera(camera)
 { }
 
 bool CameraCaptureWorker::IsRunning( void )
@@ -11,11 +13,6 @@ bool CameraCaptureWorker::IsRunning( void )
 
 void CameraCaptureWorker::Init( void )
 {
-  //m_camera = make_shared<lens::OpenCVCamera>();
-  m_camera = make_shared<lens::FileCamera>();
-  //m_camera = make_shared<lens::PointGreyCamera>();
-  m_camera->open();
-
   m_packFrame = shared_ptr<IplImage>(
 	cvCreateImage( cvSize( m_camera->getWidth( ), m_camera->getHeight( ) ), IPL_DEPTH_8U, 3 ), 
 	[]( IplImage* ptr ) { cvReleaseImage( &ptr ); } );
@@ -101,10 +98,10 @@ void CameraCaptureWorker::_FastPack(IplImage* src)
   }
 }
 
-CameraCapture::CameraCapture(shared_ptr<IWriteBuffer> outputBuffer)
+CameraCapture::CameraCapture(shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera)
 {
   m_workerThread = new QThread();
-  m_worker = new CameraCaptureWorker( outputBuffer );
+  m_worker = new CameraCaptureWorker( outputBuffer, camera );
   m_worker->moveToThread(m_workerThread);
 
   m_worker->Init( );

@@ -94,19 +94,38 @@ void MainController::NewMultiBuffer( QString bufferName, bool makeReadContext, b
 
 void MainController::NewCamera( QString cameraName, QString cameraType, QString configScript )
 {
+  shared_ptr<lens::ICamera> camera;
+
   if( 0 == cameraType.compare( QString("PointGrey") ) )
   {
 	//	Create a point grey camera and instance it
+	camera = make_shared<lens::PointGreyCamera>( );
+  }
+  else if( 0 == cameraType.compare( QString("FileCamera") ) )
+  {
+	camera = make_shared<lens::FileCamera>( );
+  }
+
+  m_interface->AddObject( camera, cameraName );
+
+  if( !configScript.isNull( ) && !configScript.isEmpty( ) )
+  {
+	m_interface->PushThis( cameraName );
+	m_interface->RunScript( configScript );
+
+	// Restore 'this' object once we are done
+	m_interface->PopThis( );
   }
 }
 
-void MainController::NewCaptureContext( QString contextName, QString outputBufferName )
+void MainController::NewCaptureContext( QString contextName, QString cameraName, QString outputBufferName )
 {
   // Init our output context
   wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data()); 
-  auto buffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
-  
-  auto context = make_shared<CameraCapture>( buffer );
+  auto buffer = m_interface->ResolveObject<IWriteBuffer>( outputBufferName );
+  auto camera = m_interface->ResolveObject<lens::ICamera>( cameraName );
+
+  auto context = make_shared<CameraCapture>( buffer, camera );
   m_contexts.insert( make_pair<QString, shared_ptr<IContext>>( contextName, context) );
 	  
   // Add our object to the script interface
