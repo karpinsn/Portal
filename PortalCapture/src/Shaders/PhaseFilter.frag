@@ -32,14 +32,16 @@ void main(void)
   float twoPi = 2.0 * 3.14159;
   float v[9];
   float t;
-
+  vec4 originalTexture = texture(image, fragTexCoord);
+  
   for(int dX = -1; dX <= 1; ++dX)
   {
     for(int dY = -1; dY <= 1; ++dY)
     {
       vec2 offset = vec2(float(dX), float(dY));
 
-      v[dX * 3 + dY + 4] = texture(image, fragTexCoord + vec2(float(dX) * step_w, float(dY) * step_h)).x;
+	  // Grab the third as that is where phi12 is
+      v[dX * 3 + dY + 4] = texture(image, fragTexCoord + vec2(float(dX) * step_w, float(dY) * step_h)).z;
     }
   }
 
@@ -53,5 +55,5 @@ void main(void)
   float phaseJump = (v[4] - originalValue) / twoPi;
   int jumps = phaseJump < 0 ? int(phaseJump - .5) : int(phaseJump + .5); 
 
-  filteredImage = vec4(originalValue + (jumps * twoPi), 0.0, 0.0, 0.0);
+  filteredImage = vec4(originalTexture.r, originalTexture.g, originalValue + (jumps * twoPi), originalTexture.a);
 }

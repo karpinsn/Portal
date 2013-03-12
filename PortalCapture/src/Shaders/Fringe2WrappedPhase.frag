@@ -21,6 +21,6 @@ void main(void)
 	float phi2 = atan( sqrt( 3.0 ) * ( fringe2.r - fringe2.b ), ( 2.0 * fringe2.g ) - fringe2.r - fringe2.b );
 	float phi12 = mod( phi1 - phi2, 2.0 * pi );
 	
-	float k = floor( ( phi12 * ( pitch12 / pitch1 ) - phi1 ) / ( 2.0 * pi ) );
-	phase = vec4( phi1 + k * 2.0 * pi );
+	phase = vec4(phi1, phi2, phi12, 0.0);
+	//phase = vec4(0.0, 1.0, 0.0, 0.0);
 }

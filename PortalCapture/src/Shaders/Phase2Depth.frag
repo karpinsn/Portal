@@ -14,5 +14,5 @@ void main()
 	float aPhase = texture(actualPhase, fragTexCoord).r;
 	float rPhase = texture(referencePhase, fragTexCoord).r;
 
-	depthMap = vec4( vec3( ( ( aPhase - rPhase ) * scale ) + shift ), 1.0);
+	depthMap = vec4( ( ( aPhase - rPhase ) * scale ) + shift );
 }

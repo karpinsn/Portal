@@ -16,7 +16,7 @@ void SixFringeProcessor::Init( )
   //  Initialize our shaders
   m_fringe2Phase.init();
   m_fringe2Phase.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
-  m_fringe2Phase.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2Phase.frag"));
+  m_fringe2Phase.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2WrappedPhase.frag"));
   m_fringe2Phase.bindAttributeLocation("vert", 0);
   m_fringe2Phase.bindAttributeLocation("vertTexCoord", 1);
   m_fringe2Phase.link();
@@ -28,7 +28,7 @@ void SixFringeProcessor::Init( )
 
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
-  m_phaseFilter.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/PhaseFilter.frag"));
+  m_phaseFilter.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/HorizontalMedianFilter.frag"));
   m_phaseFilter.bindAttributeLocation("vert", 0);
   m_phaseFilter.bindAttributeLocation("vertTexCoord", 1);
   m_phaseFilter.link();
@@ -39,6 +39,17 @@ void SixFringeProcessor::Init( )
 	
   m_gaussFilter.init();
   m_gaussFilter.setImageDimensions( width, height );
+
+  m_wrapped2Unwrapped.init();
+  m_wrapped2Unwrapped.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
+  m_wrapped2Unwrapped.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Wrapped2Unwrapped.frag"));
+  m_wrapped2Unwrapped.bindAttributeLocation("vert", 0);
+  m_wrapped2Unwrapped.bindAttributeLocation("vertTexCoord", 1);
+  m_wrapped2Unwrapped.link();
+  m_wrapped2Unwrapped.uniform("unfilteredPhase", 0);
+  m_wrapped2Unwrapped.uniform("filteredPhase", 1);
+  m_wrapped2Unwrapped.uniform("pitch1", 60.0f);
+  m_wrapped2Unwrapped.uniform("pitch2", 63.0f);
 
   m_phase2Depth.init();
   m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -53,14 +64,16 @@ void SixFringeProcessor::Init( )
 
   m_phaseMap0.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_phaseMap2.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_referencePhase.init	( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_depthMap.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 
   m_imageProcessor.init( width, height );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap0,		GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,		GL_COLOR_ATTACHMENT1 );
-  m_imageProcessor.setTextureAttachPoint( m_referencePhase,	GL_COLOR_ATTACHMENT2 );
-  m_imageProcessor.setTextureAttachPoint( m_depthMap,		GL_COLOR_ATTACHMENT3 );
+  m_imageProcessor.setTextureAttachPoint( m_phaseMap2,		GL_COLOR_ATTACHMENT2 );
+  m_imageProcessor.setTextureAttachPoint( m_referencePhase,	GL_COLOR_ATTACHMENT3 );
+  m_imageProcessor.setTextureAttachPoint( m_depthMap,		GL_COLOR_ATTACHMENT4 );
   m_imageProcessor.unbind( );
 
   m_isInit = true;
@@ -103,9 +116,11 @@ void SixFringeProcessor::Process( void )
   // Our actual decoding is done here
   m_imageProcessor.bind();
   {
-	_calculatePhase( GL_COLOR_ATTACHMENT0, m_inputBuffer );
+	_wrapPhase( GL_COLOR_ATTACHMENT0, m_inputBuffer );
 	_filterPhase( GL_COLOR_ATTACHMENT1, m_phaseMap0 );
-	_calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap1 );
+	_gaussianFilter( GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT1, m_phaseMap1, m_phaseMap2);
+	_unwrapPhase(GL_COLOR_ATTACHMENT2, m_phaseMap0, m_phaseMap1);
+	_calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap2 );
   }
   m_imageProcessor.unbind();
 }
@@ -126,15 +141,16 @@ void SixFringeProcessor::CaptureReference( void )
   // Our actual decoding is done here
   m_imageProcessor.bind();
   {
-	_calculatePhase( GL_COLOR_ATTACHMENT0, m_inputBuffer );
+	_wrapPhase( GL_COLOR_ATTACHMENT0, m_inputBuffer );
 	_filterPhase( GL_COLOR_ATTACHMENT1, m_phaseMap0 );
-	_filterPhase( GL_COLOR_ATTACHMENT2, m_phaseMap1 ); 
+	_gaussianFilter( GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT1, m_phaseMap1, m_phaseMap2);
+	_unwrapPhase(GL_COLOR_ATTACHMENT3, m_phaseMap0, m_phaseMap1);
 	m_captureReference = false;
   }
   m_imageProcessor.unbind();
 }
 
-void SixFringeProcessor::_calculatePhase(GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer)
+void SixFringeProcessor::_wrapPhase(GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer)
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -155,6 +171,33 @@ void SixFringeProcessor::_filterPhase( GLenum drawBuffer, Texture& phase2Filter 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_phaseFilter.bind( );
   phase2Filter.bind( GL_TEXTURE0 );
+  m_imageProcessor.process( );
+}
+
+void SixFringeProcessor::_gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer )
+{
+  // 1st dimension
+  m_imageProcessor.bindDrawBuffer( pass1DrawBuffer );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  m_gaussFilter.bind( );
+  pass1ReadBuffer.bind( GL_TEXTURE0 );
+  m_imageProcessor.process( );
+
+  // 2nd dimension
+  m_imageProcessor.bindDrawBuffer( pass2DrawBuffer );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  m_gaussFilter.flipFilter( );
+  pass2ReadBuffer.bind( GL_TEXTURE0 );
+  m_imageProcessor.process( );
+}
+
+void SixFringeProcessor::_unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase )
+{
+  m_imageProcessor.bindDrawBuffer( drawBuffer );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  m_wrapped2Unwrapped.bind( );
+  unfilteredPhase.bind( GL_TEXTURE0 );
+  filteredPhase.bind( GL_TEXTURE1 );
   m_imageProcessor.process( );
 }
 

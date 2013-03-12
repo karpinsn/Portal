@@ -10,9 +10,11 @@ set(SHADER_VERT_SOURCES
 
 set(SHADER_FRAG_SOURCES
 	MedianFilter3x3.frag
-	Phase2Depth.frag
-	Fringe2Phase.frag
+	Fringe2WrappedPhase.frag
+	HorizontalMedianFilter.frag
 	PhaseFilter.frag
+	Wrapped2Unwrapped.frag
+	Phase2Depth.frag
 	Depth2Holo.frag
 	RenderTexture.frag
 )

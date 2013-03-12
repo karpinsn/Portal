@@ -67,11 +67,13 @@ private:
   
   ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
-  GaussProgram m_gaussFilter;
+  GaussProgram	m_gaussFilter;
+  ShaderProgram m_wrapped2Unwrapped;
   ShaderProgram m_phase2Depth;
 
   Texture	m_phaseMap0;
   Texture	m_phaseMap1;
+  Texture	m_phaseMap2;
   Texture	m_referencePhase;
   Texture	m_depthMap;
 
@@ -98,8 +100,10 @@ signals:
   void ProcessedFrame( void );
 
 private:
-  void _calculatePhase( GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer );
+  void _wrapPhase( GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer );
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
+  void _gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer );
+  void _unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase );
   void _calculateDepth( GLenum drawBuffer, Texture& phase );
 };
 
