@@ -15,7 +15,8 @@ set(SHADER_FRAG_SOURCES
 	PhaseFilter.frag
 	Wrapped2Unwrapped.frag
 	Phase2Depth.frag
-	Depth2Holo.frag
+    Phase2Coordinate.frag
+    Depth2Holo.frag
 	RenderTexture.frag
 )
 
