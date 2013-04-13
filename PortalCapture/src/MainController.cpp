@@ -132,12 +132,13 @@ void MainController::NewCaptureContext( QString contextName, QString cameraName,
   m_interface->AddObject(context, contextName);
 }
 
-void MainController::NewSixFringeProcessor( QString contextName, QString inputBufferName, QString calibrationName )
+void MainController::NewSixFringeProcessor( QString contextName, QString inputBufferName, QString cameraCalibrationName, QString projectorCalibrationName )
 {
   wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data()); 
   auto buffer = m_interface->ResolveObject<MultiOpenGLBuffer>( inputBufferName );
-  auto calibration = m_interface->ResolveObject<CalibrationData>( calibrationName );
-  auto context = make_shared<SixFringeProcessor>(buffer, calibration);
+  auto cameraCalibration = m_interface->ResolveObject<CalibrationData>( cameraCalibrationName );
+  auto projectorCalibration = m_interface->ResolveObject<CalibrationData>( projectorCalibrationName );
+  auto context = make_shared<SixFringeProcessor>(buffer, cameraCalibration, projectorCalibration);
   
   m_processContext->AddProcessContext(context);
 

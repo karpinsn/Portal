@@ -1,8 +1,7 @@
 #include "PortalProcessor.h"
 
 PortalProcessor::PortalProcessor( void ) :
-  m_isInit(false), m_captureReference(true), 
-  m_displayMode(Holo), m_displayNumber(0)
+  m_isInit(false), m_displayMode(Holo), m_displayNumber(0)
 { }
 
 void PortalProcessor::AddProcessContext( shared_ptr<IProcessContext> processContext )
@@ -96,12 +95,6 @@ void PortalProcessor::OutputHolo( void )
   m_displayMode = Holo;
 }
 
-void PortalProcessor::CaptureReference( void )
-{
-  wrench::Logger::logDebug("Capturing a reference plane");
-  m_captureReference = true;
-}
-
 void PortalProcessor::paintGL( void )
 {
   // If we are not init then just return
@@ -112,28 +105,7 @@ void PortalProcessor::paintGL( void )
 
   //  Make sure we are the current OpenGL Context
   makeCurrent( );
-
-  if (m_captureReference)
-  {
-	_CaptureReference( );
-  }
-  else
-  {
-	_Process( );
-  }
-}
-
-void PortalProcessor::_CaptureReference( void )
-{
-  OGLStatus::logOGLErrors("PortalProcessor - _CaptureReference( )");
-
-  // Process input on each capture processor
-  for ( auto itr = m_captureProcessors.begin( ); itr != m_captureProcessors.end( ); ++itr )
-  {
-	(*itr)->CaptureReference( );
-  }
-
-  m_captureReference = false;
+  _Process( );
 }
 
 void PortalProcessor::_Process( void )

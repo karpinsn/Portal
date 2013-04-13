@@ -69,7 +69,6 @@ private:
 
   FBO m_imageProcessor;
   bool m_isInit;
-  bool m_captureReference;
 
   // Used for specifying a display mode and number (which processor)
   OutputMode  m_displayMode;
@@ -84,7 +83,6 @@ public slots:
   void OutputFringe( int processorNumber );
   void OutputDepth( int processorNumber );
   void OutputHolo( void );
-  void CaptureReference( void );
 
 signals:
   void ProcessedFrame( void );
@@ -93,7 +91,6 @@ protected:
   void paintGL( void );
 
 private:
-  void _CaptureReference( void );
   void _Process( void );
   void _Output( void );
 };

@@ -82,7 +82,7 @@ public slots:
   void NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
   void NewCamera( QString cameraName, QString cameraType, QString configScript );
   void NewCaptureContext( QString contextName, QString cameraName, QString outputBufferName );
-  void NewSixFringeProcessor( QString contextName, QString inputBufferName, QString calibrationName );
+  void NewSixFringeProcessor( QString contextName, QString inputBufferName, QString cameraCalibrationName, QString projectorCalibrationName );
   void NewStreamContext( QString contextName, int port, QString inputBufferName );
   void NewCalibrationData( QString calibrationObjectName, QString configScriptFilePath );
 

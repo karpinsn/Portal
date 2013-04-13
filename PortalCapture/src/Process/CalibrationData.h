@@ -29,7 +29,7 @@ private:
   DISALLOW_COPY_AND_ASSIGN(CalibrationData);
 
   glm::mat4	  m_extrinsic;
-  glm::mat3x4 m_intrinsic;
+  glm::mat4x3 m_intrinsic;
   float		  m_distortionCoefficients[5];
 
 public:
@@ -38,7 +38,7 @@ public:
 public slots:
   void SetIntrinsic(QVariantList intrinsicMatrixList);
   QVariantList		  GetIntrinsicAsVariant( void );
-  const glm::mat3x4&  GetIntrinsicAsMat( void ) const;
+  const glm::mat4x3&  GetIntrinsicAsMat( void ) const;
 
   void SetDistortion(QVariantList coefficients);
   QVariantList GetDistortionAsVariant( void );

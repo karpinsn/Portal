@@ -21,7 +21,7 @@ void CalibrationData::SetIntrinsic(QVariantList intrinsicMatrixList)
   }
 
   // The vector we are reading in is row major, glm is col major, transpose fixes this
-  m_intrinsic = glm::transpose(glm::make_mat4x3(intrinsic));
+  m_intrinsic = glm::transpose(glm::make_mat3x4(intrinsic));
 }
 
 QVariantList CalibrationData::GetIntrinsicAsVariant( void )
@@ -36,7 +36,7 @@ QVariantList CalibrationData::GetIntrinsicAsVariant( void )
   return intrinsics;
 }
 
-const glm::mat3x4& CalibrationData::GetIntrinsicAsMat( void ) const
+const glm::mat4x3& CalibrationData::GetIntrinsicAsMat( void ) const
 {
   return m_intrinsic;
 }

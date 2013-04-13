@@ -18,6 +18,7 @@ set(SHADER_FRAG_SOURCES
     Phase2Coordinate.frag
     Depth2Holo.frag
 	RenderTexture.frag
+	Rectifier.frag
 )
 
 set(SHADER_SOURCES ${SHADER_VERT_SOURCES} ${SHADER_FRAG_SOURCES})

@@ -52,7 +52,6 @@ public:
   virtual void BindDepthMap( GLenum texture ) = 0;
   virtual void BindFringeImage( GLenum texture ) = 0;
   virtual void Process( void ) = 0;
-  virtual void CaptureReference( void ) = 0;
 };
 
 class SixFringeProcessor : public QObject, public IProcessContext
@@ -63,38 +62,32 @@ private:
   DISALLOW_COPY_AND_ASSIGN(SixFringeProcessor);
 
   shared_ptr<MultiOpenGLBuffer> m_inputBuffer;
-  shared_ptr<CalibrationData>	m_calibrationData;
+  shared_ptr<CalibrationData>	m_cameraCalibration;
+  shared_ptr<CalibrationData>	m_projectorCalibration;
   
   ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
   GaussProgram	m_gaussFilter;
   ShaderProgram m_wrapped2Unwrapped;
   ShaderProgram m_phase2Depth;
+  ShaderProgram m_rectifier;
 
   Texture	m_phaseMap0;
   Texture	m_phaseMap1;
   Texture	m_phaseMap2;
-  Texture	m_referencePhase;
   Texture	m_depthMap;
 
   FBO m_imageProcessor;
   bool m_isInit;
-  bool m_captureReference;
-
-  float m_shift;
-  float m_scale;
 
 public:
-  SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> calibrationData );
+  SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, 
+					  shared_ptr<CalibrationData> cameraCalibration, 
+					  shared_ptr<CalibrationData> projectorCalibration );
   void Init( void );
   void BindDepthMap( GLenum texture );
   void BindFringeImage( GLenum texture );
   void Process( void );
-  void CaptureReference( void );
-
-public slots:
-  void SetScale( float scale );
-  void SetShift( float shift );
 
 signals:
   void ProcessedFrame( void );
@@ -105,6 +98,7 @@ private:
   void _gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer );
   void _unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase );
   void _calculateDepth( GLenum drawBuffer, Texture& phase );
+  void _rectify( GLenum drawBuffer, Texture& image2Rectify);
 };
 
 #endif	// _PORTAL_PROCESS_SIX_FRINGE_PROCESSOR_H_
