@@ -88,8 +88,12 @@ add_subdirectory(src)
 #   ---------------------------------------------------------------------------
 option(PortalCapture_UNIT_TESTS "Generate PortalCapture unit tests" OFF)
 if(PortalCapture_UNIT_TESTS)
-    add_subdirectory(../Libraries/GTest)
+    # Fixes a bug with VS 2012 compiler and varadic templates
+    add_definitions(-D_VARIADIC_MAX=10)
+
+    add_subdirectory(../Libraries/GTest "${PROJECT_BINARY_DIR}/src/GTest")
     include_directories("${gtest_SOURCE_DIR}/include" "${gtest_SOURCE_DIR}")
+    include_directories(src)
     add_subdirectory(test)
 endif()
 

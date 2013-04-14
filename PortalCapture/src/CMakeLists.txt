@@ -19,7 +19,9 @@ set(SOURCES
     Process/SixFringeProcessor.cpp
 	Process/CalibrationData.cpp
     Stream/WebsocketStream.cpp
-	
+	)
+
+set(HEADERS
     Application.h
     Utils.h
     MainController.h
@@ -67,7 +69,8 @@ source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 # Build and link the app!
 add_executable(${PROJECT_NAME}
 	MACOSX_BUNDLE
-	${SOURCES}
+    ${SOURCES}
+    ${HEADERS}
 	${SHADERS_QUALIFIED}
     ${MOCS}
     ${GENERATED_SOURCES})
