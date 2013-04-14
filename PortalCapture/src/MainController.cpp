@@ -96,15 +96,24 @@ void MainController::NewCamera( QString cameraName, QString cameraType, QString 
 {
   shared_ptr<lens::ICamera> camera;
 
-  if( 0 == cameraType.compare( QString("PointGrey") ) )
+  if( 0 == cameraType.compare( QString("OpenCV") ) )
   {
-	//	Create a point grey camera and instance it
-	camera = make_shared<lens::PointGreyCamera>( );
+	camera = make_shared<lens::OpenCVCamera>( );
   }
+  // Add possibilities of more cameras based on config
+  #ifdef USE_FILE_CAMERA
   else if( 0 == cameraType.compare( QString("FileCamera") ) )
   {
 	camera = make_shared<lens::FileCamera>( );
   }
+  #endif
+  #ifdef USE_POINT_GREY_CAMERA
+  else if( 0 == cameraType.compare( QString("PointGrey") ) )
+  {
+	//	Create a point grey camera and instance it
+	camera = make_shared<lens::PointGreyCamera>( );
+  }
+  #endif //USE_POINT_GREY_CAMERA
 
   m_interface->AddObject( camera, cameraName );
 
@@ -126,7 +135,7 @@ void MainController::NewCaptureContext( QString contextName, QString cameraName,
   auto camera = m_interface->ResolveObject<lens::ICamera>( cameraName );
 
   auto context = make_shared<CameraCapture>( buffer, camera );
-  m_contexts.insert( make_pair<QString, shared_ptr<IContext>>( contextName, context) );
+  m_contexts.insert( make_pair( contextName, context) );
 	  
   // Add our object to the script interface
   m_interface->AddObject(context, contextName);
@@ -153,7 +162,7 @@ void MainController::NewStreamContext( QString contextName, int port, QString in
  
   // Create our object and add to the list of contexts
   auto context = make_shared<WebsocketStream> ( port, buffer );
-  m_contexts.insert( make_pair<QString, shared_ptr<IContext>>(contextName, context) );
+  m_contexts.insert( make_pair(contextName, context) );
 
   // Add our object to the script interface
   m_interface->AddObject(context, contextName);

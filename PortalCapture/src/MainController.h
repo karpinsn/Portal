@@ -35,8 +35,15 @@
 #include <map>
 
 #include <Lens\ICamera.h>
+#include <Lens\OpenCVCamera.h>
+
+#ifdef USE_FILE_CAMERA
 #include <Lens\FileCamera.h>
-#include <Lens\PointGreyCamera.h>
+#endif
+
+#ifdef USE_POINT_GREY_CAMERA
+  #include <Lens\PointGreyCamera.h>
+#endif // USE_POINT_GREY_CAMERA
 
 #include "IContext.h"
 #include "ITripleBuffer.h"
