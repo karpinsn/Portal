@@ -7,22 +7,21 @@
 #	---------------------------------------------------------------------------------------
 
 set(SOURCES	
-	Application.cpp
     Utils.cpp
     MainController.cpp
     MultiOpenGLBuffer.cpp
     OpenGLTripleBuffer.cpp
 	ScriptInterface.cpp
 
-    Capture/CameraCapture.cpp
-    Process/PortalProcessor.cpp
-    Process/SixFringeProcessor.cpp
-	Process/CalibrationData.cpp
-    Stream/WebsocketStream.cpp
+    CameraCapture.cpp
+    PortalProcessor.cpp
+    SixFringeProcessor.cpp
+	CalibrationData.cpp
+    WebsocketStream.cpp
 	)
 
+
 set(HEADERS
-    Application.h
     Utils.h
     MainController.h
     OpenGLTripleBuffer.h
@@ -43,16 +42,16 @@ set(HEADERS
 
 #   Qt Files
 set(MOCS
-    MainController.h
-    IReadBuffer.h
-	OpenGLTripleBuffer.h
-	MultiOpenGLBuffer.h
-    ScriptInterface.h
-    Capture/CameraCapture.h
-    Process/PortalProcessor.h
-    Process/SixFringeProcessor.h
-	Process/CalibrationData.h
-	Stream/WebsocketStream.h)
+    ../include/MainController.h
+    ../include/IReadBuffer.h
+	../include/OpenGLTripleBuffer.h
+	../include/MultiOpenGLBuffer.h
+    ../include/ScriptInterface.h
+    ../include/CameraCapture.h
+    ../include/PortalProcessor.h
+    ../include/SixFringeProcessor.h
+	../include/CalibrationData.h
+	../include/WebsocketStream.h)
 
 #   ---------------------------------------------------------------------------------------
 #                           Qt Generation
@@ -62,31 +61,10 @@ qt4_wrap_cpp(GENERATED_SOURCES ${MOCS})
 
 source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 
-#	---------------------------------------------------------------------------------------
-#							Build the app
-#	---------------------------------------------------------------------------------------
-
-# Build and link the app!
-add_executable(${PROJECT_NAME}
-	MACOSX_BUNDLE
-    ${SOURCES}
-    ${HEADERS}
-	${SHADERS_QUALIFIED}
-    ${MOCS}
-    ${GENERATED_SOURCES})
-
-add_dependencies(${PROJECT_NAME} wrench)
-add_dependencies(${PROJECT_NAME} antenna)
-
-target_link_libraries(${PROJECT_NAME} ${LIBS})
-
-#	---------------------------------------------------------------------------------------
-#							Install
-#	---------------------------------------------------------------------------------------
-
-install (TARGETS ${PROJECT_NAME}
-		RUNTIME DESTINATION bin/
-		BUNDLE DESTINATION ./ )
+#
+#   Add the library
+#
+add_library("${PROJECT_NAME}_LIB" ${SOURCES} ${GENERATED_SOURCES} ${MOCS})
 
 #	---------------------------------------------------------------------------------------
 #							Copy Shaders to build

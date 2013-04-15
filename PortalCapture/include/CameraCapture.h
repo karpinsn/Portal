@@ -17,9 +17,9 @@
 
 #include <Lens\ICamera.h>
 
-#include "../IContext.h"
-#include "../Utils.h"
-#include "../IWriteBuffer.h"
+#include "IContext.h"
+#include "Utils.h"
+#include "IWriteBuffer.h"
 
 using namespace std;
 

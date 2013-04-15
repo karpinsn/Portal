@@ -53,10 +53,10 @@
 #include "ISharedGLContextFactory.h"
 #include "Utils.h"
 
-#include "Capture\CameraCapture.h"
-#include "Process\PortalProcessor.h"
-#include "Process\SixFringeProcessor.h"
-#include "Stream\WebsocketStream.h"
+#include "CameraCapture.h"
+#include "PortalProcessor.h"
+#include "SixFringeProcessor.h"
+#include "WebsocketStream.h"
 
 using namespace std;
 

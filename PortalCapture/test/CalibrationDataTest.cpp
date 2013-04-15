@@ -2,12 +2,13 @@
 
 #include "gtest/gtest.h"
 
-//#include "CalibrationData.h"
+#include "CalibrationData.h"
 
-TEST(CalibrationData, GenerateFringe_CorrectN)
+TEST(CalibrationData, CheckCalibrationDataDefault)
 {
-  //NFringeStructuredLight structuredLight(5);
-  //auto fringe = structuredLight.GenerateFringe(cv::Size(128,128), 70, IStructuredLight::Horizontal);
-
-  EXPECT_EQ(5, 5);
+  CalibrationData data;
+  
+  // Check that we start as the identity
+  EXPECT_EQ(data.GetExtrinsicAsMat(), glm::mat4());
+  EXPECT_EQ(data.GetIntrinsicAsMat(), glm::mat4x3());
 }

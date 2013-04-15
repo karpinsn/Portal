@@ -30,5 +30,4 @@ set(SHADER_SOURCES "${SHADER_SOURCES}" PARENT_SCOPE)
 set(SHADER_OUTPUT "${EXECUTABLE_OUTPUT_PATH}/Shaders")
 message(STATUS "Copying shaders to: " ${SHADER_OUTPUT})
 
-add_file_copy_target(MainShaders ${SHADER_OUTPUT} ${SHADER_SOURCES})
-add_dependencies(${PROJECT_NAME} MainShaders)
+add_file_copy_target(Shaders ${SHADER_OUTPUT} ${SHADER_SOURCES})

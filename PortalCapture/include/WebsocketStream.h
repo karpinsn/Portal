@@ -25,10 +25,10 @@
 #include <cv.h>
 #include <highgui.h>
 
-#include "../IContext.h"
-#include "../Utils.h"
-#include "../IReadBuffer.h"
-#include "../OpenGLTripleBuffer.h"
+#include "IContext.h"
+#include "Utils.h"
+#include "IReadBuffer.h"
+#include "OpenGLTripleBuffer.h"
 
 using namespace std;
 

@@ -37,10 +37,10 @@
 #include "SixFringeProcessor.h"
 #include "CalibrationData.h"
 
-#include "../IWriteBuffer.h"
-#include "../MultiOpenGLBuffer.h"
+#include "IWriteBuffer.h"
+#include "MultiOpenGLBuffer.h"
 
-#include "../Utils.h"
+#include "Utils.h"
 
 using namespace std;
 using namespace wrench::gl;

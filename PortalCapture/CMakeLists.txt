@@ -81,7 +81,10 @@ endif(PortalCapture_GENERATE_DOC)
 #   ---------------------------------------------------------------------------
 #   Add the source
 #   ---------------------------------------------------------------------------
+include_directories("include")
 add_subdirectory(src)
+
+set(LIBS ${LIBS} "${PROJECT_NAME}_LIB")
 
 #   ---------------------------------------------------------------------------
 #   Add Unit tests
@@ -92,8 +95,29 @@ if(PortalCapture_UNIT_TESTS)
     add_definitions(-D_VARIADIC_MAX=10)
 
     add_subdirectory(../Libraries/GTest "${PROJECT_BINARY_DIR}/src/GTest")
-    include_directories("${gtest_SOURCE_DIR}/include" "${gtest_SOURCE_DIR}")
-    include_directories(src)
+    include_directories("${gtest_SOURCE_DIR}/include" "${gtest_SOURCE_DIR}") 
     add_subdirectory(test)
 endif()
 
+#   ---------------------------------------------------------------------------
+#   Build and link the app!
+#   ---------------------------------------------------------------------------
+add_executable(${PROJECT_NAME}
+	MACOSX_BUNDLE
+    src/Application.cpp    
+	${SHADERS_QUALIFIED})
+
+add_dependencies(${PROJECT_NAME} wrench)
+add_dependencies(${PROJECT_NAME} antenna)
+add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_LIB")
+add_dependencies(${PROJECT_NAME} Shaders)
+
+target_link_libraries(${PROJECT_NAME} ${LIBS})
+
+#	---------------------------------------------------------------------------
+#	Install
+#	---------------------------------------------------------------------------
+
+install (TARGETS ${PROJECT_NAME}
+		RUNTIME DESTINATION bin/
+		BUNDLE DESTINATION ./ )
