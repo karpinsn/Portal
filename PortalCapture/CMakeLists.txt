@@ -10,6 +10,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/../CMakeModule
 # 	Set package properties
 #	---------------------------------------------------------------------------
 project(PortalCapture)
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}")
 
 #   ---------------------------------------------------------------------------
 # Configure Dependencies
@@ -106,6 +107,8 @@ add_executable(${PROJECT_NAME}
 	MACOSX_BUNDLE
     src/Application.cpp    
 	${SHADERS_QUALIFIED})
+
+set(LIBS ${LIBS} "${PROJECT_NAME}_LIB")
 
 add_dependencies(${PROJECT_NAME} wrench)
 add_dependencies(${PROJECT_NAME} antenna)

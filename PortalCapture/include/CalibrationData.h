@@ -28,8 +28,8 @@ class CalibrationData : public QObject, protected QScriptable
 private:
   DISALLOW_COPY_AND_ASSIGN(CalibrationData);
 
-  glm::mat4	  m_extrinsic;
-  glm::mat4x3 m_intrinsic;
+  glm::mat4x3 m_extrinsic;
+  glm::mat3	  m_intrinsic;
   float		  m_distortionCoefficients[5];
 
 public:
@@ -38,15 +38,15 @@ public:
 public slots:
   void SetIntrinsic(QVariantList intrinsicMatrixList);
   QVariantList		  GetIntrinsicAsVariant( void );
-  const glm::mat4x3&  GetIntrinsicAsMat( void ) const;
+  const glm::mat3&	  GetIntrinsicAsMat( void ) const;
 
   void SetDistortion(QVariantList coefficients);
   QVariantList GetDistortionAsVariant( void );
   const float* GetDistortionAsFloatArray( void ) const;
 
   void SetExtrinsic(QVariantList extrinsicMatrixList);
-  QVariantList GetExtrinsicAsVariant( void );
-  const glm::mat4& GetExtrinsicAsMat( void ) const;
+  QVariantList		  GetExtrinsicAsVariant( void );
+  const glm::mat4x3&  GetExtrinsicAsMat( void ) const;
 };
 
 #endif  // _PORTAL_PROCESS_CALIBRATION_DATA_

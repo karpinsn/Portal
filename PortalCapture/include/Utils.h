@@ -16,6 +16,9 @@ using namespace std;
 
 class Utils
 {
+private:
+  static bool m_useAssertions;
+
 public:
   static void AssertOrThrowIfFalse(bool condition, string errorMessage);
 };

@@ -11,9 +11,9 @@ CalibrationData::CalibrationData(void)
 
 void CalibrationData::SetIntrinsic(QVariantList intrinsicMatrixList)
 {
-  Utils::AssertOrThrowIfFalse( 12 == intrinsicMatrixList.count(), "Invalid number of intrinsic matrix coefficients specified" );
+  Utils::AssertOrThrowIfFalse( 9 == intrinsicMatrixList.count(), "Invalid number of intrinsic matrix coefficients specified" );
 
-  float intrinsic[12];
+  float intrinsic[9];
   for( int valueLoc = 0; valueLoc < intrinsicMatrixList.count(); ++valueLoc )
   {
 	Utils::AssertOrThrowIfFalse( intrinsicMatrixList[valueLoc].canConvert<float>(), "Invalid intrinsic matrix coefficient type specified" );
@@ -21,7 +21,7 @@ void CalibrationData::SetIntrinsic(QVariantList intrinsicMatrixList)
   }
 
   // The vector we are reading in is row major, glm is col major, transpose fixes this
-  m_intrinsic = glm::transpose(glm::make_mat3x4(intrinsic));
+  m_intrinsic = glm::transpose(glm::make_mat3(intrinsic));
 }
 
 QVariantList CalibrationData::GetIntrinsicAsVariant( void )
@@ -36,7 +36,7 @@ QVariantList CalibrationData::GetIntrinsicAsVariant( void )
   return intrinsics;
 }
 
-const glm::mat4x3& CalibrationData::GetIntrinsicAsMat( void ) const
+const glm::mat3& CalibrationData::GetIntrinsicAsMat( void ) const
 {
   return m_intrinsic;
 }
@@ -70,9 +70,9 @@ const float* CalibrationData::GetDistortionAsFloatArray( void ) const
 
 void CalibrationData::SetExtrinsic(QVariantList extrinsicMatrixList)
 {
-  Utils::AssertOrThrowIfFalse( 16 == extrinsicMatrixList.count(), "Invalid number of extrinsic matrix coefficients specified" );
+  Utils::AssertOrThrowIfFalse( 12 == extrinsicMatrixList.count(), "Invalid number of extrinsic matrix coefficients specified" );
 
-  float extrinsic[16];
+  float extrinsic[12];
   for( int valueLoc = 0; valueLoc < extrinsicMatrixList.count(); ++valueLoc )
   {
 	Utils::AssertOrThrowIfFalse( extrinsicMatrixList[valueLoc].canConvert<float>(), "Invalid extrinsic matrix coefficient type specified" );
@@ -80,7 +80,7 @@ void CalibrationData::SetExtrinsic(QVariantList extrinsicMatrixList)
   }
 
   // The vector we are reading in is row major, glm is col major, transpose fixes this
-  m_extrinsic = glm::transpose(glm::make_mat4x4(extrinsic));
+  m_extrinsic = glm::transpose(glm::make_mat3x4(extrinsic));
 }
 
 QVariantList CalibrationData::GetExtrinsicAsVariant( )
@@ -95,7 +95,7 @@ QVariantList CalibrationData::GetExtrinsicAsVariant( )
   return extrinsics;
 }
 
-const glm::mat4& CalibrationData::GetExtrinsicAsMat( void ) const
+const glm::mat4x3& CalibrationData::GetExtrinsicAsMat( void ) const
 {
   return m_extrinsic;
 }

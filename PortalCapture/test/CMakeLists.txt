@@ -4,6 +4,8 @@ enable_testing()
 # Add our tests
 set(TESTS
     CalibrationDataTest.cpp
+    MainControllerTest.cpp
+    ShaderTest.cpp
     )
 
 add_executable(RunUnitTests

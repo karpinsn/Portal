@@ -73,7 +73,7 @@ private:
   shared_ptr<PortalProcessor>		  m_processContext; //  Main Context : Runs on UI thread
   
 public:
-  MainController();
+  MainController( shared_ptr<ScriptInterface> scriptInterface );
   void Init(QString initScriptFilename);
   shared_ptr<QGLWidget> MakeSharedContext(void);
 

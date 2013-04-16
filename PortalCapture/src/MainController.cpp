@@ -1,6 +1,7 @@
 #include "MainController.h"
 
-MainController::MainController() : QObject(), m_processContext(nullptr)
+MainController::MainController( shared_ptr<ScriptInterface> scriptInterface ) : 
+  QObject( ), m_processContext(nullptr), m_interface(scriptInterface)
 { }
 
 void MainController::Init(QString initScriptFilename)
@@ -25,12 +26,16 @@ void MainController::Init(QString initScriptFilename)
 
   //  Now that we are initalized (OpenGL, GLEW, etc) we can run our init script
   wrench::Logger::logDebug("Loading scripting interface");
-  m_interface = shared_ptr<ScriptInterface>( new ScriptInterface() );
-  m_interface->AddObject(shared_ptr<MainController>(this), "Main");
-  m_interface->PushThis("Main");  // We are now the new 'this'
-  m_interface->AddObject(m_interface, "Global");
-  m_interface->AddObject(m_processContext, "Process");
-  m_interface->RunScript(initScriptFilename);
+  
+  // If we have a scripting interface then add ourselves and run the init script
+  if(nullptr != m_interface)
+  {
+	m_interface->AddObject(shared_ptr<MainController>(this), "Main");
+	m_interface->PushThis("Main");  // We are now the new 'this'
+	m_interface->AddObject(m_interface, "Global");
+	m_interface->AddObject(m_processContext, "Process");
+	m_interface->RunScript(initScriptFilename);
+  }
 
   wrench::Logger::logDebug("Initialization complete");
 }
@@ -114,16 +119,21 @@ void MainController::NewCamera( QString cameraName, QString cameraType, QString 
 	camera = make_shared<lens::PointGreyCamera>( );
   }
   #endif //USE_POINT_GREY_CAMERA
+ 
+  Utils::AssertOrThrowIfFalse(nullptr != camera, "Unknown camera requested, unable to instantiate");
 
-  m_interface->AddObject( camera, cameraName );
-
-  if( !configScript.isNull( ) && !configScript.isEmpty( ) )
+  if(nullptr != m_interface)
   {
-	m_interface->PushThis( cameraName );
-	m_interface->RunScript( configScript );
+	m_interface->AddObject( camera, cameraName );
 
-	// Restore 'this' object once we are done
-	m_interface->PopThis( );
+	if( !configScript.isNull( ) && !configScript.isEmpty( ) )
+	{
+	  m_interface->PushThis( cameraName );
+	  m_interface->RunScript( configScript );
+
+	  // Restore 'this' object once we are done
+	  m_interface->PopThis( );
+	}
   }
 }
 

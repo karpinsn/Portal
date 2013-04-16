@@ -42,7 +42,8 @@ int main(int argc, char **argv)
   QApplication::setApplicationName("PortalCapture");
 
   // Create and initialize our controller
-  MainController controller;
+  auto scriptInterface = make_shared<ScriptInterface>( );
+  MainController controller(scriptInterface);
   controller.Init("SingleCam.qs");
   QObject::connect(&controller, SIGNAL( Finished() ), &app, SLOT( quit() ), Qt::QueuedConnection);
 

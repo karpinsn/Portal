@@ -20,24 +20,10 @@ set(SOURCES
     WebsocketStream.cpp
 	)
 
-
-set(HEADERS
-    Utils.h
-    MainController.h
-    OpenGLTripleBuffer.h
-    MultiOpenGLBuffer.h
-    IReadBuffer.h
-    IWriteBuffer.h
-    ISharedGLContextFactory.h
-	ScriptInterface.h
-	IContext.h
-    ITripleBuffer.h
-
-    Capture/CameraCapture.h
-    Process/PortalProcessor.h
-    Process/SixFringeProcessor.h
-    Process/CalibrationData.h
-	Stream/WebsocketStream.h
+# Glob our headers together so that they are included in the project
+file(GLOB
+    HEADERS
+    ../include/*.h 
     )	
 
 #   Qt Files
@@ -58,13 +44,12 @@ set(MOCS
 #   ---------------------------------------------------------------------------------------
 
 qt4_wrap_cpp(GENERATED_SOURCES ${MOCS})
-
 source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 
 #
 #   Add the library
 #
-add_library("${PROJECT_NAME}_LIB" ${SOURCES} ${GENERATED_SOURCES} ${MOCS})
+add_library("${PROJECT_NAME}_LIB" ${SOURCES} ${HEADERS} ${GENERATED_SOURCES} ${MOCS})
 
 #	---------------------------------------------------------------------------------------
 #							Copy Shaders to build
