@@ -60,7 +60,6 @@ protected:
 
 TEST_F(ShadersTest, Wrapped2Unwrapped)
 {
-  
   wrench::gl::ShaderProgram shader;
   shader.init();
   shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -103,7 +102,6 @@ TEST_F(ShadersTest, Wrapped2Unwrapped)
 
 TEST_F(ShadersTest, Phase2Depth)
 {
-  
   wrench::gl::ShaderProgram shader;
   shader.init();
   shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -140,6 +138,59 @@ TEST_F(ShadersTest, Phase2Depth)
   checkValue(cv::Scalar(4.0), cv::Scalar(2.0), 8.0);
   checkValue(cv::Scalar(2.0), cv::Scalar(1.0), 5.0);
   checkValue(cv::Scalar(6.0), cv::Scalar(2.0), 14.0);
+}
+
+TEST_F(ShadersTest, Phase2Coordinate)
+{
+  wrench::gl::ShaderProgram shader;
+  shader.init();
+  shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
+  shader.attachShader(new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Phase2Coordinate.frag"));
+  shader.bindAttributeLocation("vert", 0);
+  shader.bindAttributeLocation("vertTexCoord", 1);
+  shader.link();
+  shader.uniform("actualPhase", 0);
+  
+  // Camera properties
+  glm::mat4x3 cameraMatrix(2053.340885098, -96.319507896, -0.423394, 3.9470993885, -2465.782916025, -0.0173105, -1415.44646598, -232.26932152, -0.90578, 275718.130302, 427396.406563, 1090.39);
+  shader.uniform("cameraWidth", 800);
+  shader.uniform("cameraHeight", 600);
+  shader.uniform("cameraMatrix", cameraMatrix);
+
+  // Projector properties
+  glm::mat4x3 projectorMatrix(-4789.23545076463, -144.35441948414, -0.00185357, -119.1250566882, 4769.1063090524, 0.0714162, -361.81377941068, 60.912146885, -0.997445, 1660295.92904, 888222.6923, 1806.64);
+  shader.uniform("Phi0", -5.1313f);
+  shader.uniform("fringePitch", 60);
+  shader.uniform("projectorMatrix", projectorMatrix);
+
+  // Now do the actual shader pass to see if we get the expected output
+  shaderProcessor.bind( );
+  shader.bind( );
+
+  auto checkValue = [this] ( float actualPhase, cv::Scalar expectedCoordinate ) 
+  {
+	EXPECT_TRUE( inputTexture0Float.transferToTexture( cv::Mat(width, height, CV_32FC4, actualPhase) ) );
+
+
+	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	
+	inputTexture0Float.bind( GL_TEXTURE0 );
+	
+	// Process and check our output
+	shaderProcessor.process( );
+	IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
+	EXPECT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
+	
+	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(0,0);
+
+	EXPECT_FLOAT_EQ(expectedCoordinate(0), actual(0));
+	EXPECT_FLOAT_EQ(expectedCoordinate(1), actual(1));
+	EXPECT_FLOAT_EQ(expectedCoordinate(2), actual(2));
+  };
+
+  checkValue(2.0, cv::Scalar(281.01715, 105.57656, 602.74893));
+  checkValue(5.0, cv::Scalar(274.27292, 106.76128, 592.96862));
 }
 
 int main(int argc, char **argv)

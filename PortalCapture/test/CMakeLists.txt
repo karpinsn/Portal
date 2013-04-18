@@ -16,3 +16,6 @@ target_link_libraries(RunUnitTests gtest gtest_main ${LIBS})
 
 add_test(NAME RunUnitTests
     COMMAND RunUnitTests)
+
+create_target_launcher(RunUnitTests
+	WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")

@@ -5,6 +5,7 @@
 # Set CMake Stuff
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/../CMakeModules")
+include(CreateLaunchers)
 
 #	---------------------------------------------------------------------------
 # 	Set package properties
@@ -124,3 +125,7 @@ target_link_libraries(${PROJECT_NAME} ${LIBS})
 install (TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION bin/
 		BUNDLE DESTINATION ./ )
+		
+create_target_launcher(${PROJECT_NAME}
+	WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
+		
