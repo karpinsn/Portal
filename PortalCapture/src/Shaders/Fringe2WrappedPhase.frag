@@ -2,8 +2,8 @@
 
 uniform sampler2D fringeImage1;
 uniform sampler2D fringeImage2;
-uniform float pitch1;
-uniform float pitch2;
+uniform int pitch1;
+uniform int pitch2;
 
 in vec2 fragTexCoord;
 

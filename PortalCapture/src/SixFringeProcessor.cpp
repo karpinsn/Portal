@@ -21,8 +21,8 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
   m_fringe2Phase.uniform("gammaCutoff", 0.0f);
-  m_fringe2Phase.uniform("pitch1", 60.0f);
-  m_fringe2Phase.uniform("pitch2", 63.0f);
+  m_fringe2Phase.uniform("pitch1", 60);
+  m_fringe2Phase.uniform("pitch2", 63);
 
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -57,11 +57,14 @@ void SixFringeProcessor::Init( )
   m_phase2Depth.link();
   m_phase2Depth.uniform("actualPhase", 0);
   // TODO - Remove this hardcoding
-  m_phase2Depth.uniform("fringePitch", 60);
-  m_phase2Depth.uniform("Phi0", -1.8f);
-  m_phase2Depth.uniform("width", width);
-  m_phase2Depth.uniform("height", height);
+  // Camera Properties
+  m_phase2Depth.uniform("cameraWidth", width);
+  m_phase2Depth.uniform("cameraHeight", height);
   m_phase2Depth.uniform("cameraMatrix", m_cameraCalibration->GetIntrinsicAsMat() * m_cameraCalibration->GetExtrinsicAsMat());
+  
+  // Projector properties
+  m_phase2Depth.uniform("fringePitch", 60);
+  m_phase2Depth.uniform("Phi0", -5.1313f);
   m_phase2Depth.uniform("projectorMatrix", m_projectorCalibration->GetIntrinsicAsMat() * m_projectorCalibration->GetExtrinsicAsMat());
   // projectorMatrix
 

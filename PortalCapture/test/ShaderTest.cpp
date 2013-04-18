@@ -30,8 +30,8 @@
 class ShadersTest : public ::testing::Test
 {
 protected:
-  const static int width = 64;
-  const static int height = 64;
+  const static int	  width = 64;
+  const static int	  height = 64;
   QGLWidget			  glContext;
   wrench::gl::FBO	  shaderProcessor;
   
@@ -56,6 +56,28 @@ protected:
 	shaderProcessor.init( width, height );
 	shaderProcessor.setTextureAttachPoint( outputTextureFloat, GL_COLOR_ATTACHMENT0 );
   }
+
+  virtual void CheckValue(cv::Scalar ExpectedOut, cv::Scalar texture0 = cv::Scalar(0.0), cv::Scalar texture1 = cv::Scalar(0.0))
+  {
+	// Transfer to the texture, then bind
+	EXPECT_TRUE( inputTexture0Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture0)) );
+	EXPECT_TRUE( inputTexture1Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture1)) );
+
+	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+	inputTexture0Float.bind( GL_TEXTURE0 );
+	inputTexture1Float.bind( GL_TEXTURE1 );
+	
+	shaderProcessor.process( );
+	IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
+	EXPECT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
+
+	// Check the rgba value at 0,0
+	auto actual = cv::Mat(outputImage).at<cv::Vec4f>(0,0);
+	for(int i = 0; i < 4; ++i)
+	  { EXPECT_FLOAT_EQ(ExpectedOut(i), actual(i)); }
+  }
 };
 
 TEST_F(ShadersTest, Wrapped2Unwrapped)
@@ -76,28 +98,10 @@ TEST_F(ShadersTest, Wrapped2Unwrapped)
   shaderProcessor.bind( );
   shader.bind( );
 
-  auto checkValue = [this] (cv::Scalar unfiltered, cv::Scalar filtered, float expected) {
-	 // Transfer to the texture, then bind
-	EXPECT_TRUE( inputTexture0Float.transferToTexture(cv::Mat(width, height, CV_32FC4, unfiltered)) );
-	EXPECT_TRUE( inputTexture1Float.transferToTexture(cv::Mat(width, height, CV_32FC4, filtered)) );
-
-	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	inputTexture0Float.bind( GL_TEXTURE0 );
-	inputTexture1Float.bind( GL_TEXTURE1 );
-
-	// Process and check our output
-	shaderProcessor.process( );
-	IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
-	EXPECT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
-	EXPECT_FLOAT_EQ(expected, cv::Mat(outputImage).at<float>(0,0));
-  };
-
   // Now check some values!
-  checkValue(cv::Scalar(.4f, 0.0, 0.0, 0.0), cv::Scalar(0.0f, 0.0, 5.6832, 0.0), 113.497335529f);
-  checkValue(cv::Scalar(2.0f, 0.0, 0.0, 0.0), cv::Scalar(0.0f, 0.0, .2, 0.0), 2.0f);
-  checkValue(cv::Scalar(.8f, 0.0, 0.0, 0.0), cv::Scalar(0.0f, 0.0, 4.7832, 0.0), 95.0477796076f); 
+  CheckValue( cv::Scalar(113.497335529f), cv::Scalar(.4f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 5.6832, 0.0));
+  CheckValue( cv::Scalar(2.0f),			  cv::Scalar(2.0f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, .2, 0.0));
+  CheckValue( cv::Scalar(95.0477796076f), cv::Scalar(.8f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 4.7832, 0.0)); 
 }
 
 TEST_F(ShadersTest, Phase2Depth)
@@ -116,28 +120,33 @@ TEST_F(ShadersTest, Phase2Depth)
   shaderProcessor.bind( );
   shader.bind( );
 
-  auto checkValue = [this] (cv::Scalar actualPhase, cv::Scalar referencePhase, float expected) {
-	 // Transfer to the texture, then bind
-	EXPECT_TRUE( inputTexture0Float.transferToTexture(cv::Mat(width, height, CV_32FC4, actualPhase)) );
-	EXPECT_TRUE( inputTexture1Float.transferToTexture(cv::Mat(width, height, CV_32FC4, referencePhase)) );
+  // Now check some values!
+  CheckValue( cv::Scalar(8.0), cv::Scalar(4.0), cv::Scalar(2.0) );
+  CheckValue( cv::Scalar(5.0), cv::Scalar(2.0), cv::Scalar(1.0) );
+  CheckValue( cv::Scalar(14.0), cv::Scalar(6.0), cv::Scalar(2.0) );
+}
 
-	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
-	inputTexture0Float.bind( GL_TEXTURE0 );
-	inputTexture1Float.bind( GL_TEXTURE1 );
+TEST_F(ShadersTest, Fringe2WrappedPhase)
+{
+  wrench::gl::ShaderProgram shader;
+  shader.init();
+  shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
+  shader.attachShader(new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2WrappedPhase.vert"));
+  shader.bindAttributeLocation("vert", 0);
+  shader.bindAttributeLocation("vertTexCoord", 1);
+  shader.link();
+  shader.uniform("fringeImage1", 0);
+  shader.uniform("fringeImage2", 1);
+  shader.uniform("pitch1", 60);
+  shader.uniform("pitch2", 63);
 
-	// Process and check our output
-	shaderProcessor.process( );
-	IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
-	EXPECT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
-	EXPECT_FLOAT_EQ(expected, cv::Mat(outputImage).at<float>(0,0));
-  };
+  shaderProcessor.bind( );
+  shader.bind( );
 
   // Now check some values!
-  checkValue(cv::Scalar(4.0), cv::Scalar(2.0), 8.0);
-  checkValue(cv::Scalar(2.0), cv::Scalar(1.0), 5.0);
-  checkValue(cv::Scalar(6.0), cv::Scalar(2.0), 14.0);
+  CheckValue( cv::Scalar(-2.5134, 2.2197, 1.5501), cv::Scalar(0.2078, 0.1020, 0.3608), cv::Scalar(0.3686, 0.1373, 0.1686) );
+  CheckValue( cv::Scalar(2.8450, 1.2323, 1.6127), cv::Scalar(0.2431, 0.0863, 0.1961), cv::Scalar(0.2392, 0.2078, 0.0784) );
+  CheckValue( cv::Scalar(2.2570, -0.0890, 2.3461), cv::Scalar(0.3294, 0.1255, 0.1608), cv::Scalar(0.1333, 0.3333, 0.1529) );
 }
 
 TEST_F(ShadersTest, Phase2Coordinate)
@@ -167,30 +176,9 @@ TEST_F(ShadersTest, Phase2Coordinate)
   shaderProcessor.bind( );
   shader.bind( );
 
-  auto checkValue = [this] ( float actualPhase, cv::Scalar expectedCoordinate ) 
-  {
-	EXPECT_TRUE( inputTexture0Float.transferToTexture( cv::Mat(width, height, CV_32FC4, actualPhase) ) );
-
-
-	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
-	inputTexture0Float.bind( GL_TEXTURE0 );
-	
-	// Process and check our output
-	shaderProcessor.process( );
-	IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
-	EXPECT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
-	
-	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(0,0);
-
-	EXPECT_FLOAT_EQ(expectedCoordinate(0), actual(0));
-	EXPECT_FLOAT_EQ(expectedCoordinate(1), actual(1));
-	EXPECT_FLOAT_EQ(expectedCoordinate(2), actual(2));
-  };
-
-  checkValue(2.0, cv::Scalar(281.01715, 105.57656, 602.74893));
-  checkValue(5.0, cv::Scalar(274.27292, 106.76128, 592.96862));
+  // Now check some values!
+  CheckValue( cv::Scalar(281.01715, 105.57656, 602.74893), cv::Scalar(2.0) );
+  CheckValue( cv::Scalar(274.27292, 106.76128, 592.96862), cv::Scalar(5.0) );
 }
 
 int main(int argc, char **argv)
