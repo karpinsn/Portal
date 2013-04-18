@@ -74,9 +74,12 @@ protected:
 	EXPECT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
 
 	// Check the rgba value at 0,0
-	auto actual = cv::Mat(outputImage).at<cv::Vec4f>(0,0);
+	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(0,0);
 	for(int i = 0; i < 4; ++i)
-	  { EXPECT_FLOAT_EQ(ExpectedOut(i), actual(i)); }
+	{ 
+	  //EXPECT_FLOAT_EQ(ExpectedOut(i), actual(i));
+	  EXPECT_NEAR(ExpectedOut(i), actual(i), .0001f); 
+	}
   }
 };
 
@@ -99,9 +102,9 @@ TEST_F(ShadersTest, Wrapped2Unwrapped)
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(113.497335529f), cv::Scalar(.4f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 5.6832, 0.0));
-  CheckValue( cv::Scalar(2.0f),			  cv::Scalar(2.0f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, .2, 0.0));
-  CheckValue( cv::Scalar(95.0477796076f), cv::Scalar(.8f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 4.7832, 0.0)); 
+  CheckValue( cv::Scalar(113.4973f, 113.4973f, 113.4973f, 113.4973f), cv::Scalar(.4f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 5.6832, 0.0));
+  CheckValue( cv::Scalar(2.0f, 2.0f, 2.0f, 2.0f),					  cv::Scalar(2.0f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, .2, 0.0));
+  CheckValue( cv::Scalar(95.04777f, 95.04777f, 95.04777f, 95.04777f), cv::Scalar(.8f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 4.7832, 0.0)); 
 }
 
 TEST_F(ShadersTest, Phase2Depth)
@@ -121,9 +124,9 @@ TEST_F(ShadersTest, Phase2Depth)
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(8.0), cv::Scalar(4.0), cv::Scalar(2.0) );
-  CheckValue( cv::Scalar(5.0), cv::Scalar(2.0), cv::Scalar(1.0) );
-  CheckValue( cv::Scalar(14.0), cv::Scalar(6.0), cv::Scalar(2.0) );
+  CheckValue( cv::Scalar(8.0, 8.0, 8.0, 8.0),	  cv::Scalar(4.0), cv::Scalar(2.0) );
+  CheckValue( cv::Scalar(5.0, 5.0, 5.0, 5.0),	  cv::Scalar(2.0), cv::Scalar(1.0) );
+  CheckValue( cv::Scalar(14.0, 14.0, 14.0, 14.0), cv::Scalar(6.0), cv::Scalar(2.0) );
 }
 
 TEST_F(ShadersTest, Fringe2WrappedPhase)
@@ -131,7 +134,7 @@ TEST_F(ShadersTest, Fringe2WrappedPhase)
   wrench::gl::ShaderProgram shader;
   shader.init();
   shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
-  shader.attachShader(new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2WrappedPhase.vert"));
+  shader.attachShader(new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2WrappedPhase.frag"));
   shader.bindAttributeLocation("vert", 0);
   shader.bindAttributeLocation("vertTexCoord", 1);
   shader.link();
@@ -144,9 +147,9 @@ TEST_F(ShadersTest, Fringe2WrappedPhase)
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(-2.5134, 2.2197, 1.5501), cv::Scalar(0.2078, 0.1020, 0.3608), cv::Scalar(0.3686, 0.1373, 0.1686) );
-  CheckValue( cv::Scalar(2.8450, 1.2323, 1.6127), cv::Scalar(0.2431, 0.0863, 0.1961), cv::Scalar(0.2392, 0.2078, 0.0784) );
-  CheckValue( cv::Scalar(2.2570, -0.0890, 2.3461), cv::Scalar(0.3294, 0.1255, 0.1608), cv::Scalar(0.1333, 0.3333, 0.1529) );
+  CheckValue( cv::Scalar(-2.5131, 2.2194, 1.5507),	cv::Scalar(0.2078, 0.1020, 0.3608), cv::Scalar(0.3686, 0.1373, 0.1686) );
+  CheckValue( cv::Scalar(2.8452, 1.2324, 1.6127),	cv::Scalar(0.2431, 0.0863, 0.1961), cv::Scalar(0.2392, 0.2078, 0.0784) );
+  CheckValue( cv::Scalar(2.2570, -0.0890, 2.3461),	cv::Scalar(0.3294, 0.1255, 0.1608), cv::Scalar(0.1333, 0.3333, 0.1529) );
 }
 
 TEST_F(ShadersTest, Phase2Coordinate)
@@ -177,8 +180,8 @@ TEST_F(ShadersTest, Phase2Coordinate)
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(281.01715, 105.57656, 602.74893), cv::Scalar(2.0) );
-  CheckValue( cv::Scalar(274.27292, 106.76128, 592.96862), cv::Scalar(5.0) );
+  CheckValue( cv::Scalar(281.01715f, 105.57656f, 602.74893f), cv::Scalar(2.0f) );
+  CheckValue( cv::Scalar(274.27292f, 106.76128f, 592.96862f), cv::Scalar(5.0f) );
 }
 
 int main(int argc, char **argv)
