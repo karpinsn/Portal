@@ -66,23 +66,6 @@ void SixFringeProcessor::Init( )
   m_phase2Depth.uniform("fringePitch", 60);
   m_phase2Depth.uniform("Phi0", -5.1313f);
   m_phase2Depth.uniform("projectorMatrix", m_projectorCalibration->GetIntrinsicAsMat() * m_projectorCalibration->GetExtrinsicAsMat());
-  // projectorMatrix
-
-  //m_phase2Depth.uniform("referencePhase", 1);
-  //m_phase2Depth.uniform("scale", m_scale);
-  //m_phase2Depth.uniform("shift", m_shift);
-  //m_phase2Depth.
-
-  m_rectifier.init();
-  m_rectifier.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
-  m_rectifier.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Rectifier.frag"));
-  m_rectifier.bindAttributeLocation("vert", 0);
-  m_rectifier.bindAttributeLocation("vertTexCoord", 1);
-  m_rectifier.link();
-  m_rectifier.uniform("image", 0);
-  //  In the shader these are floating point, so ensure that they are with a cast
-  m_rectifier.uniform("width", ( float )width );
-  m_rectifier.uniform("height", ( float )height );
 
   m_phaseMap0.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
@@ -192,14 +175,5 @@ void SixFringeProcessor::_calculateDepth( GLenum drawBuffer, Texture& phase )
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_phase2Depth.bind( );
   phase.bind( GL_TEXTURE0 );
-  m_imageProcessor.process( );
-}
-
-void SixFringeProcessor::_rectify( GLenum drawBuffer, Texture& image2Rectify)
-{
-  m_imageProcessor.bindDrawBuffer( drawBuffer );
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-  m_rectifier.bind( );
-  image2Rectify.bind( GL_TEXTURE0 );
   m_imageProcessor.process( );
 }

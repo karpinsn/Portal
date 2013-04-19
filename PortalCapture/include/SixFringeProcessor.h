@@ -70,7 +70,6 @@ private:
   GaussProgram	m_gaussFilter;
   ShaderProgram m_wrapped2Unwrapped;
   ShaderProgram m_phase2Depth;
-  ShaderProgram m_rectifier;
 
   Texture	m_phaseMap0;
   Texture	m_phaseMap1;
@@ -98,7 +97,6 @@ private:
   void _gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer );
   void _unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase );
   void _calculateDepth( GLenum drawBuffer, Texture& phase );
-  void _rectify( GLenum drawBuffer, Texture& image2Rectify);
 };
 
 #endif	// _PORTAL_PROCESS_SIX_FRINGE_PROCESSOR_H_

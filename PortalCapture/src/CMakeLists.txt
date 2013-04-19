@@ -49,7 +49,7 @@ source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 #
 #   Add the library
 #
-add_library("${PROJECT_NAME}_LIB" ${SOURCES} ${HEADERS} ${GENERATED_SOURCES} ${MOCS})
+add_library("${PROJECT_NAME}" ${SOURCES} ${HEADERS} ${GENERATED_SOURCES} ${MOCS})
 
 #	---------------------------------------------------------------------------------------
 #							Copy Shaders to build

@@ -86,7 +86,7 @@ endif(PortalCapture_GENERATE_DOC)
 include_directories("include")
 add_subdirectory(src)
 
-set(LIBS ${LIBS} "${PROJECT_NAME}_LIB")
+set(LIBS ${LIBS} "${PROJECT_NAME}")
 
 #   ---------------------------------------------------------------------------
 #   Add Unit tests
@@ -99,33 +99,34 @@ if(PortalCapture_UNIT_TESTS)
     add_subdirectory(../Libraries/GTest "${PROJECT_BINARY_DIR}/src/GTest")
     include_directories("${gtest_SOURCE_DIR}/include" "${gtest_SOURCE_DIR}") 
     add_subdirectory(test)
+
+    create_target_launcher("${PROJECT_UNIT_TEST_NAME}"
+        WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
 endif()
 
 #   ---------------------------------------------------------------------------
 #   Build and link the app!
 #   ---------------------------------------------------------------------------
-add_executable(${PROJECT_NAME}
+add_executable("${PROJECT_NAME}Launcher"
 	MACOSX_BUNDLE
     src/Application.cpp    
 	${SHADERS_QUALIFIED})
 
-set(LIBS ${LIBS} "${PROJECT_NAME}_LIB")
+add_dependencies("${PROJECT_NAME}Launcher" wrench)
+add_dependencies("${PROJECT_NAME}Launcher" antenna)
+add_dependencies("${PROJECT_NAME}Launcher" Shaders)
+add_dependencies("${PROJECT_NAME}Launcher" ${PROJECT_NAME})
 
-add_dependencies(${PROJECT_NAME} wrench)
-add_dependencies(${PROJECT_NAME} antenna)
-add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_LIB")
-add_dependencies(${PROJECT_NAME} Shaders)
-
-target_link_libraries(${PROJECT_NAME} ${LIBS})
+target_link_libraries("${PROJECT_NAME}Launcher" ${LIBS})
 
 #	---------------------------------------------------------------------------
 #	Install
 #	---------------------------------------------------------------------------
 
-install (TARGETS ${PROJECT_NAME}
+install (TARGETS "${PROJECT_NAME}Launcher"
 		RUNTIME DESTINATION bin/
 		BUNDLE DESTINATION ./ )
 		
-create_target_launcher(${PROJECT_NAME}
+    create_target_launcher("${PROJECT_NAME}Launcher"
 	WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
 		
