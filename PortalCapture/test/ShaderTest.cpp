@@ -184,6 +184,11 @@ TEST_F(ShadersTest, Phase2Coordinate)
   CheckValue( cv::Scalar(274.27292f, 106.76128f, 592.96862f), cv::Scalar(5.0f) );
 }
 
+TEST_F(ShadersTest, Coordinate2Holo)
+{
+
+}
+
 int main(int argc, char **argv)
 {
   // Needs to be made so that we can create headless OpenGL stuffs

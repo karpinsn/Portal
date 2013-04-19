@@ -9,6 +9,7 @@ set(TESTS
     CalibrationDataTest.cpp
     MainControllerTest.cpp
     ShaderTest.cpp
+    SixFringeProcessorTest.cpp
     )
 
 add_executable("${PROJECT_UNIT_TEST_NAME}"

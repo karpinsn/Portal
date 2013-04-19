@@ -6,6 +6,7 @@ include(FileCopyTargets)
 
 set(SHADER_VERT_SOURCES
 	PassThrough.vert
+    Coordinate2Holo.vert
 )
 
 set(SHADER_FRAG_SOURCES
@@ -19,6 +20,7 @@ set(SHADER_FRAG_SOURCES
     Depth2Holo.frag
 	RenderTexture.frag
 	Rectifier.frag
+    Coordinate2Holo.frag
 )
 
 set(SHADER_SOURCES ${SHADER_VERT_SOURCES} ${SHADER_FRAG_SOURCES})
