@@ -99,9 +99,6 @@ if(PortalCapture_UNIT_TESTS)
     add_subdirectory(../Libraries/GTest "${PROJECT_BINARY_DIR}/src/GTest")
     include_directories("${gtest_SOURCE_DIR}/include" "${gtest_SOURCE_DIR}") 
     add_subdirectory(test)
-
-    create_target_launcher("${PROJECT_UNIT_TEST_NAME}"
-        WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
 endif()
 
 #   ---------------------------------------------------------------------------
@@ -122,11 +119,12 @@ target_link_libraries("${PROJECT_NAME}Launcher" ${LIBS})
 #	---------------------------------------------------------------------------
 #	Install
 #	---------------------------------------------------------------------------
-
 install (TARGETS "${PROJECT_NAME}Launcher"
 		RUNTIME DESTINATION bin/
 		BUNDLE DESTINATION ./ )
 		
-    create_target_launcher("${PROJECT_NAME}Launcher"
+#	---------------------------------------------------------------------------
+#	Create the launchers for the project
+#	---------------------------------------------------------------------------
+create_target_launcher("${PROJECT_NAME}Launcher"
 	WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
-		

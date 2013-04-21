@@ -21,5 +21,7 @@ target_link_libraries("${PROJECT_UNIT_TEST_NAME}" gtest gtest_main ${LIBS})
 add_test(NAME "${PROJECT_UNIT_TEST_NAME}"
     COMMAND "${PROJECT_UNIT_TEST_NAME}")
 
-# Make sure the parent script can find us so that it can create launchers
+create_target_launcher("${PROJECT_UNIT_TEST_NAME}"
+	WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
+	
 set(PROJECT_UNIT_TEST_NAME "${PROJECT_UNIT_TEST_NAME}" PARENT_SCOPE)
