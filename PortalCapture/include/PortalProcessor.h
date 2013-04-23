@@ -28,6 +28,9 @@
 #include <QGLWidget>
 #include <QThread>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <wrench/gl/OGLStatus.h>
 #include <wrench/gl/ShaderProgram.h>
 #include <wrench/gl/Shader.h>
@@ -35,6 +38,7 @@
 #include <wrench/gl/FBO.h>
 
 #include "SixFringeProcessor.h"
+#include "TriMesh.h"
 #include "CalibrationData.h"
 
 #include "IWriteBuffer.h"
@@ -59,10 +63,11 @@ private:
 	Holo
   };
 
-  vector<shared_ptr<IProcessContext>> m_captureProcessors;
+  vector<pair<shared_ptr<IProcessContext>, shared_ptr<TriMesh>>> m_captureProcessors;
+ 
   shared_ptr<IWriteBuffer> m_outputBuffer;
 
-  ShaderProgram m_depth2Holo;
+  ShaderProgram m_coordinate2Holo;
   ShaderProgram m_renderTexture;
 
   Texture	m_encodedMap;

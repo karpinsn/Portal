@@ -83,6 +83,16 @@ void SixFringeProcessor::Init( )
   OGLStatus::logOGLErrors("SixFringeProcessor - Init( shared_ptr<IOpenGLReadBuffer> )");
 }
 
+int SixFringeProcessor::GetWidth( void )
+{
+  return m_depthMap.getWidth( );
+}
+
+int SixFringeProcessor::GetHeight( void )
+{
+  return m_depthMap.getHeight( );
+}
+
 void SixFringeProcessor::BindDepthMap( GLenum texture )
 {
   m_depthMap.bind(texture);

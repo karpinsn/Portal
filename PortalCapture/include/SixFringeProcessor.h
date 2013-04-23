@@ -49,6 +49,8 @@ class IProcessContext
 {
 public:
   virtual void Init( void ) = 0;
+  virtual int  GetWidth( void ) = 0;
+  virtual int  GetHeight( void ) = 0;
   virtual void BindDepthMap( GLenum texture ) = 0;
   virtual void BindFringeImage( GLenum texture ) = 0;
   virtual void Process( void ) = 0;
@@ -84,6 +86,8 @@ public:
 					  shared_ptr<CalibrationData> cameraCalibration, 
 					  shared_ptr<CalibrationData> projectorCalibration );
   void Init( void );
+  int  GetWidth( void );
+  int  GetHeight( void );
   void BindDepthMap( GLenum texture );
   void BindFringeImage( GLenum texture );
   void Process( void );

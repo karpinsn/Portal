@@ -12,7 +12,7 @@ set(SOURCES
     MultiOpenGLBuffer.cpp
     OpenGLTripleBuffer.cpp
 	ScriptInterface.cpp
-
+    TriMesh.cpp
     CameraCapture.cpp
     PortalProcessor.cpp
     SixFringeProcessor.cpp
