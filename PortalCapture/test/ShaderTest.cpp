@@ -20,6 +20,9 @@
 #include <QApplication>
 #include <QGLWidget>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <wrench/gl/OGLStatus.h>
 #include <wrench/gl/ShaderProgram.h>
 #include <Wrench/gl/GaussProgram.h>
@@ -27,11 +30,13 @@
 #include <wrench/gl/Texture.h>
 #include <wrench/gl/FBO.h>
 
+#include "TriMesh.h"
+
 class ShadersTest : public ::testing::Test
 {
 protected:
-  const static int	  width = 64;
-  const static int	  height = 64;
+  const static int	  width = 256;
+  const static int	  height = 256;
   QGLWidget			  glContext;
   wrench::gl::FBO	  shaderProcessor;
   
@@ -42,12 +47,12 @@ protected:
   virtual void SetUp()
   {
 	// This should create an OpenGL context for us
-	EXPECT_TRUE( glContext.isValid( ) );
+	ASSERT_TRUE( glContext.isValid( ) );
 	glContext.makeCurrent( );
 	glContext.updateGL( );
 
 	// Now need to init GLEW so we can do fancy OpenGL
-	EXPECT_EQ( GLEW_OK, glewInit( ) );
+	ASSERT_EQ( GLEW_OK, glewInit( ) );
 
 	inputTexture0Float.init( width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT );
 	inputTexture1Float.init( width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT );
@@ -60,8 +65,8 @@ protected:
   virtual void CheckValue(cv::Scalar ExpectedOut, cv::Scalar texture0 = cv::Scalar(0.0), cv::Scalar texture1 = cv::Scalar(0.0))
   {
 	// Transfer to the texture, then bind
-	EXPECT_TRUE( inputTexture0Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture0)) );
-	EXPECT_TRUE( inputTexture1Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture1)) );
+	ASSERT_TRUE( inputTexture0Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture0)) );
+	ASSERT_TRUE( inputTexture1Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture1)) );
 
 	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -71,7 +76,7 @@ protected:
 	
 	shaderProcessor.process( );
 	IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
-	EXPECT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
+	ASSERT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
 
 	// Check the rgba value at 0,0
 	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(0,0);
@@ -186,7 +191,63 @@ TEST_F(ShadersTest, Phase2Coordinate)
 
 TEST_F(ShadersTest, Coordinate2Holo)
 {
+  wrench::gl::ShaderProgram shader;
+  shader.init( );
+  shader.attachShader( new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/Coordinate2Holo.vert") );
+  shader.attachShader( new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Coordinate2Holo.frag") );
+  shader.bindAttributeLocation("vert", 0);
+  shader.bindAttributeLocation("vertTexCoord", 1);
+  shader.link( );
+  
+  
+  shader.uniform( "coordinateMap", 0 );
 
+  shader.uniform( "modelView", glm::mat4( ) ); // Just using the identity
+  shader.uniform( "projectorModelView", glm::rotate( glm::mat4( ), 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) );
+  shader.uniform( "projectionMatrix", glm::ortho( -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f ) );
+  shader.uniform( "fringeFrequency", 16.0f);
+
+  TriMesh mesh(256, 256);
+  mesh.initMesh( );
+  cv::Mat coordinateMap = cv::Mat(height, width, CV_32FC4);
+  for(int r = 0; r < height; ++r)
+  {
+	for(int c = 0; c < width; ++c)
+	{
+	  coordinateMap.at<cv::Vec4f>(0) = 2.0f * float(c) / float(width) - 1.0f;
+	  coordinateMap.at<cv::Vec4f>(1) = 2.0f * float(r) / float(height) - 1.0f;
+	  coordinateMap.at<cv::Vec4f>(2) = 0.0f;
+	  coordinateMap.at<cv::Vec4f>(3) = 0.0f;
+	}
+  }
+
+  ASSERT_TRUE( inputTexture0Float.transferToTexture( coordinateMap ) );
+
+  shaderProcessor.bind( );
+  shader.bind( );
+  shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  inputTexture0Float.bind( GL_TEXTURE0 );
+	
+  mesh.draw( );
+
+  IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
+  ASSERT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
+  cv::Mat holoImage = cv::Mat(width, height, CV_32FC4, cv::Scalar(0.0f) );
+
+  // Check that the images are close
+  for(int r = 0; r < height; ++r)
+  {
+	for(int c = 0; c < width; ++c)
+	{
+	  auto expected = holoImage.at<cv::Vec4f>(r,c);
+	  auto actual = cv::Mat(outputImage).at<cv::Vec4f>(r,c);
+	  for(int i = 0; i < 4; ++i)
+	  { 
+		EXPECT_NEAR(expected(i), actual(i), .0001f); 
+	  }
+	}
+  }
 }
 
 int main(int argc, char **argv)
