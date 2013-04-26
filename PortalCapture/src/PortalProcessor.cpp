@@ -6,7 +6,9 @@ PortalProcessor::PortalProcessor( void ) :
 
 void PortalProcessor::AddProcessContext( shared_ptr<IProcessContext> processContext )
 {
-  m_captureProcessors.push_back( make_pair( processContext, make_shared<TriMesh>( processContext->GetWidth( ), processContext->GetHeight( ) ) ) );
+	// TODO - Fix hardcoding
+  m_captureProcessors.push_back( make_pair( processContext, make_shared<TriMesh>( 800, 600 ) ) );
+	//m_captureProcessors.push_back( make_pair( processContext, make_shared<TriMesh>( processContext->GetWidth( ), processContext->GetHeight( ) ) ) );
 }
 
 void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )

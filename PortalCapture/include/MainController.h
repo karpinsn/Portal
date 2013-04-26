@@ -34,6 +34,7 @@
 #include <assert.h>
 #include <map>
 
+#include <Lens\config-lens.h>
 #include <Lens\ICamera.h>
 #include <Lens\OpenCVCamera.h>
 

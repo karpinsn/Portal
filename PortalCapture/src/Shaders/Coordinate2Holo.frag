@@ -18,7 +18,7 @@ void main()
 	float stairAngularFrequency = angularFrequency * (4.0 + .5);
 	
 	float b = floor(projectorPosition.x * fringeFrequency) * stepHeight + .5;
-   
+	
 	holoImage = vec4((1.0 - sin(angularFrequency * projectorPosition.x)) * .5, 
 						(1.0 - cos(angularFrequency * projectorPosition.x)) * .5, 
 						cos(stairAngularFrequency * (projectorPosition.x - (b * (1.0 / stepHeight) * stepWidth)) + pi) * (stepHeight / 3.0) + (stepHeight / 2.0) + b, 

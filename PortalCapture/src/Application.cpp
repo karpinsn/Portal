@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   // Create and initialize our controller
   auto scriptInterface = make_shared<ScriptInterface>( );
   MainController controller(scriptInterface);
-  controller.Init("SingleCam.qs");
+  controller.Init("SingleCam.js");
   QObject::connect(&controller, SIGNAL( Finished() ), &app, SLOT( quit() ), Qt::QueuedConnection);
 
   // Finally start up the event loop
