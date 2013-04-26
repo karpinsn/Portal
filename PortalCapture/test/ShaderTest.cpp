@@ -88,6 +88,78 @@ protected:
   }
 };
 
+
+TEST_F(ShadersTest, Coordinate2Holo)
+{
+  wrench::gl::ShaderProgram shader;
+  shader.init( );
+  shader.attachShader( new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/Coordinate2Holo.vert") );
+  shader.attachShader( new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Coordinate2Holo.frag") );
+  shader.bindAttributeLocation("vert", 0);
+  shader.bindAttributeLocation("vertTexCoord", 1);
+  shader.link( );
+  
+  shader.uniform( "coordinateMap", 0 );
+  shader.uniform( "modelView", glm::mat4( ) ); // Just using the identity
+  shader.uniform( "projectorModelView", glm::mat4( ) ); // Test data is set for identity
+  shader.uniform( "projectionMatrix", glm::ortho( 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f ) );
+  shader.uniform( "fringeFrequency", 2.0f);
+
+  TriMesh mesh(256, 256);
+  mesh.initMesh( );
+  cv::Mat coordinateMap = cv::Mat(height, width, CV_32FC4);
+  for(int r = 0; r < height; ++r)
+  {
+	float* pixelPointer = coordinateMap.ptr<float>(r);
+	for(int c = 0; c < width; ++c)
+	{
+	  pixelPointer[c * 4] = double(c) / double(width - 1);
+	  pixelPointer[c * 4 + 1] = float(r) / float(height - 1);
+	  pixelPointer[c * 4 + 2] = 0.0f;
+	  pixelPointer[c * 4 + 3] = 1.0f;
+	}
+  }
+
+  ASSERT_TRUE( inputTexture0Float.transferToTexture( coordinateMap ) );
+
+  glPushAttrib(GL_VIEWPORT_BIT);
+  {
+	glViewport (0, 0, width, height);
+	shaderProcessor.bind( );
+	shader.bind( );
+	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	inputTexture0Float.bind( GL_TEXTURE0 );
+	mesh.draw( );
+  }
+  glPopAttrib();
+
+  IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
+  ASSERT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
+
+  cv::Mat actualImage;
+  cv::Mat(outputImage).convertTo(actualImage, CV_8UC4, 255.0);
+  cv::Mat expectedImage = cv::imread("data/TestHolo1.png");
+  cv::cvtColor(expectedImage, expectedImage, CV_BGRA2RGBA);
+
+  cv::imwrite("expected.png", expectedImage);
+  cv::imwrite("actual.png", actualImage);
+
+  // Check that the images are close
+  for(int r = 0; r < height; ++r)
+  {
+	for(int c = 0; c < width; ++c)
+	{
+	  auto expected = expectedImage.at<cv::Vec3b>(r,c);
+	  auto actual = actualImage.at<cv::Vec3b>(r,c);
+	  for(int i = 0; i < 3; ++i)
+	  { 
+		EXPECT_EQ(expected(i), actual(i)); 
+	  }
+	}
+  }
+}
+
 TEST_F(ShadersTest, Wrapped2Unwrapped)
 {
   wrench::gl::ShaderProgram shader;
@@ -185,69 +257,8 @@ TEST_F(ShadersTest, Phase2Coordinate)
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(281.01715f, 105.57656f, 602.74893f), cv::Scalar(2.0f) );
-  CheckValue( cv::Scalar(274.27292f, 106.76128f, 592.96862f), cv::Scalar(5.0f) );
-}
-
-TEST_F(ShadersTest, Coordinate2Holo)
-{
-  wrench::gl::ShaderProgram shader;
-  shader.init( );
-  shader.attachShader( new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/Coordinate2Holo.vert") );
-  shader.attachShader( new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Coordinate2Holo.frag") );
-  shader.bindAttributeLocation("vert", 0);
-  shader.bindAttributeLocation("vertTexCoord", 1);
-  shader.link( );
-  
-  
-  shader.uniform( "coordinateMap", 0 );
-
-  shader.uniform( "modelView", glm::mat4( ) ); // Just using the identity
-  shader.uniform( "projectorModelView", glm::rotate( glm::mat4( ), 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) );
-  shader.uniform( "projectionMatrix", glm::ortho( -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f ) );
-  shader.uniform( "fringeFrequency", 16.0f);
-
-  TriMesh mesh(256, 256);
-  mesh.initMesh( );
-  cv::Mat coordinateMap = cv::Mat(height, width, CV_32FC4);
-  for(int r = 0; r < height; ++r)
-  {
-	for(int c = 0; c < width; ++c)
-	{
-	  coordinateMap.at<cv::Vec4f>(0) = 2.0f * float(c) / float(width) - 1.0f;
-	  coordinateMap.at<cv::Vec4f>(1) = 2.0f * float(r) / float(height) - 1.0f;
-	  coordinateMap.at<cv::Vec4f>(2) = 0.0f;
-	  coordinateMap.at<cv::Vec4f>(3) = 0.0f;
-	}
-  }
-
-  ASSERT_TRUE( inputTexture0Float.transferToTexture( coordinateMap ) );
-
-  shaderProcessor.bind( );
-  shader.bind( );
-  shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-  inputTexture0Float.bind( GL_TEXTURE0 );
-	
-  mesh.draw( );
-
-  IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
-  ASSERT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
-  cv::Mat holoImage = cv::Mat(width, height, CV_32FC4, cv::Scalar(0.0f) );
-
-  // Check that the images are close
-  for(int r = 0; r < height; ++r)
-  {
-	for(int c = 0; c < width; ++c)
-	{
-	  auto expected = holoImage.at<cv::Vec4f>(r,c);
-	  auto actual = cv::Mat(outputImage).at<cv::Vec4f>(r,c);
-	  for(int i = 0; i < 4; ++i)
-	  { 
-		EXPECT_NEAR(expected(i), actual(i), .0001f); 
-	  }
-	}
-  }
+  CheckValue( cv::Scalar(281.01715f, 105.57656f, 602.74893f, 1.0f), cv::Scalar(2.0f) );
+  CheckValue( cv::Scalar(274.27292f, 106.76128f, 592.96862f, 1.0f), cv::Scalar(5.0f) );
 }
 
 int main(int argc, char **argv)

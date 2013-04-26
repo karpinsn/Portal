@@ -1,8 +1,6 @@
 # Enable testing and find GTest
 enable_testing()
-
-set(PROJECT_UNIT_TEST_NAME "${PROJECT_NAME}UnitTests"
-    )
+set(PROJECT_UNIT_TEST_NAME "${PROJECT_NAME}UnitTests")
 
 # Add our tests
 set(TESTS
@@ -12,8 +10,18 @@ set(TESTS
     SixFringeProcessorTest.cpp
     )
 
+#
+# Grab any test data
+#
+add_subdirectory(data)
+
+#
+# Make our test executable
+#
 add_executable("${PROJECT_UNIT_TEST_NAME}"
     ${TESTS})
+
+add_dependencies("${PROJECT_UNIT_TEST_NAME}" TestData)
 
 # Link against GTest and GText Main
 target_link_libraries("${PROJECT_UNIT_TEST_NAME}" gtest gtest_main ${LIBS})
