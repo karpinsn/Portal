@@ -61,10 +61,10 @@ public:
 	shared_ptr<T> ResolveObject(QString name)
   {
 	auto object = m_scriptObjects.at(name);
-	Utils::AssertOrThrowIfFalse(nullptr != object, "Unable to resolve object" );
+	Utils::ThrowIfFalse(nullptr != object, "Unable to resolve object" );
 
 	auto requestedObject = dynamic_pointer_cast<T>( object );
-	Utils::AssertOrThrowIfFalse(nullptr != requestedObject, "Unable to resolve type of object");
+	Utils::ThrowIfFalse(nullptr != requestedObject, "Unable to resolve type of object");
 
 	return requestedObject;
   }

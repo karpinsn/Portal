@@ -8,8 +8,8 @@ SixFringeProcessor::SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffe
 void SixFringeProcessor::Init( )
 {
   //  All the buffers should be the same size. Just grab the first one
-  int width = m_inputBuffer->GetWidth();
-  int height = m_inputBuffer->GetHeight();
+  int width = m_inputBuffer->GetWidth( );
+  int height = m_inputBuffer->GetHeight( );
 
   //  Initialize our shaders
   m_fringe2Phase.init();
@@ -83,25 +83,17 @@ void SixFringeProcessor::Init( )
   OGLStatus::logOGLErrors("SixFringeProcessor - Init( shared_ptr<IOpenGLReadBuffer> )");
 }
 
-int SixFringeProcessor::GetWidth( void )
-{
-  return m_depthMap.getWidth( );
-}
+const int SixFringeProcessor::GetWidth( void )
+  { return m_depthMap.getWidth( ); }
 
-int SixFringeProcessor::GetHeight( void )
-{
-  return m_depthMap.getHeight( );
-}
+const int SixFringeProcessor::GetHeight( void )
+  { return m_depthMap.getHeight( ); }
 
 void SixFringeProcessor::BindDepthMap( GLenum texture )
-{
-  m_depthMap.bind(texture);
-}
+  { m_depthMap.bind(texture); }
 
 void SixFringeProcessor::BindFringeImage( GLenum texture )
-{
-  ( *m_inputBuffer->ReadBuffersBegin( ) )->ReadTexture( ).bind( texture );
-}
+  { ( *m_inputBuffer->ReadBuffersBegin( ) )->ReadTexture( ).bind( texture ); }
 
 void SixFringeProcessor::Process( void )
 {

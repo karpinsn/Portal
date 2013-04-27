@@ -14,13 +14,22 @@ using namespace std;
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
 
-class Utils
+class PortalsException
 {
 private:
-  static bool m_useAssertions;
+  string m_message;
 
 public:
-  static void AssertOrThrowIfFalse(bool condition, string errorMessage);
+  PortalsException(string message) : m_message(message) { };
+  const string GetMessage( ) { return m_message; };
+};
+
+// Utils Class
+// Has functions for common things such as checking for nullptr and bool conditions
+class Utils
+{
+public:
+  static void ThrowIfFalse(bool condition, string errorMessage);
 };
 
 #endif _PORTAL_CAPTURE_UTILS_H_

@@ -48,12 +48,12 @@ using namespace wrench::gl;
 class IProcessContext
 {
 public:
-  virtual void Init( void ) = 0;
-  virtual int  GetWidth( void ) = 0;
-  virtual int  GetHeight( void ) = 0;
-  virtual void BindDepthMap( GLenum texture ) = 0;
-  virtual void BindFringeImage( GLenum texture ) = 0;
-  virtual void Process( void ) = 0;
+  virtual void       Init( void ) = 0;
+  virtual const int  GetWidth( void ) = 0;
+  virtual const int  GetHeight( void ) = 0;
+  virtual void       BindDepthMap( GLenum texture ) = 0;
+  virtual void       BindFringeImage( GLenum texture ) = 0;
+  virtual void       Process( void ) = 0;
 };
 
 class SixFringeProcessor : public QObject, public IProcessContext
@@ -85,12 +85,12 @@ public:
   SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, 
 					  shared_ptr<CalibrationData> cameraCalibration, 
 					  shared_ptr<CalibrationData> projectorCalibration );
-  void Init( void );
-  int  GetWidth( void );
-  int  GetHeight( void );
-  void BindDepthMap( GLenum texture );
-  void BindFringeImage( GLenum texture );
-  void Process( void );
+  void      Init( void );
+  const int GetWidth( void );
+  const int GetHeight( void );
+  void      BindDepthMap( GLenum texture );
+  void      BindFringeImage( GLenum texture );
+  void      Process( void );
 
 signals:
   void ProcessedFrame( void );

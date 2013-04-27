@@ -24,7 +24,7 @@ void MultiOpenGLBuffer::InitWrite(int width, int height)
 
 void MultiOpenGLBuffer::Write(const IplImage* data)
 {
-  Utils::AssertOrThrowIfFalse(m_currentBufferIndex < m_buffers.size( ), "Trying to access a buffer that we dont have");
+  Utils::ThrowIfFalse(m_currentBufferIndex < m_buffers.size( ), "Trying to access a buffer that we dont have");
 
   //  Write to the current buffer
   m_buffers[m_currentBufferIndex]->Write(data);

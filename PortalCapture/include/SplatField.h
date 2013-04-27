@@ -34,21 +34,21 @@
 #include <wrench/gl/VBO.h>
 #include <wrench/gl/VAO.h>
 
+#include "Utils.h"
+
 using namespace wrench::gl;
 
 class SplatField
 {
+  DISALLOW_COPY_AND_ASSIGN(SplatField);
+
 private:	
     VAO m_field;
     VBO m_vertices;
     VBO m_texCoords;
-
-    unsigned int    m_width;
-    unsigned int    m_height;
 		
 public:
 	SplatField(int width, int height);
-	virtual void initMesh(void);
 	
 	void draw();
 };

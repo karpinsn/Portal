@@ -6,15 +6,13 @@ PortalProcessor::PortalProcessor( void ) :
 
 void PortalProcessor::AddProcessContext( shared_ptr<IProcessContext> processContext )
 {
-	// TODO - Fix hardcoding
-  m_captureProcessors.push_back( make_pair( processContext, make_shared<SplatField>( 800, 600 ) ) );
-	//m_captureProcessors.push_back( make_pair( processContext, make_shared<TriMesh>( processContext->GetWidth( ), processContext->GetHeight( ) ) ) );
+  m_captureProcessors.push_back( make_pair( processContext, nullptr ) );
 }
 
 void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 {
-  Utils::AssertOrThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
-  Utils::AssertOrThrowIfFalse(0 < m_captureProcessors.size(), "Must have an input capture buffer");
+  Utils::ThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
+  Utils::ThrowIfFalse(0 < m_captureProcessors.size(), "Must have an input capture buffer");
 
   // TODO - Fix this
   int width = 800;
@@ -29,11 +27,11 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   // Buffers might have allocated their own contexts
   makeCurrent( );
 
-  // Init all of our processors
+  // Init all of our processors and give them a splat field for rendering
   for ( auto itr = m_captureProcessors.begin( ); itr != m_captureProcessors.end( ); ++itr )
   {
 	(*itr).first->Init( );
-	(*itr).second->initMesh( );
+	(*itr).second = make_shared<SplatField>( (*itr).first->GetWidth(), (*itr).first->GetHeight() );
   }
 
   //  Initialize our shaders	
@@ -62,7 +60,7 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   m_renderTexture.link();
   m_renderTexture.uniform("image", 0);
 
-  m_encodedMap.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_encodedMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 
   m_imageProcessor.init( width, height );
   m_imageProcessor.setTextureAttachPoint( m_encodedMap,	GL_COLOR_ATTACHMENT0 );
@@ -74,14 +72,14 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 
 void PortalProcessor::OutputFringe( int processorNumber )
 {
-  if(processorNumber > (int)m_captureProcessors.size())
+  if(processorNumber > (int)m_captureProcessors.size() || processorNumber < 0)
   {
 	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
-	m_displayNumber = processorNumber;
+	m_displayNumber = 0;
   }
   else
   {
-	m_displayNumber = 0;
+	m_displayNumber = processorNumber;
   }
 
   m_displayMode = Fringe;
@@ -89,14 +87,14 @@ void PortalProcessor::OutputFringe( int processorNumber )
 
 void PortalProcessor::OutputDepth( int processorNumber )
 {
-  if(processorNumber > (int)m_captureProcessors.size())
+  if(processorNumber > (int)m_captureProcessors.size() || processorNumber < 0)
   {
 	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
-	m_displayNumber = processorNumber;
+	m_displayNumber = 0;
   }
   else
   {
-	m_displayNumber = 0;
+	m_displayNumber = processorNumber;
   }
 
   m_displayMode = Depth;
@@ -115,9 +113,10 @@ void PortalProcessor::paintGL( void )
 
   OGLStatus::logOGLErrors("PortalProcessor - paintGL( )");
 
-  //  Make sure we are the current OpenGL Context
-  makeCurrent( );
-  _Process( );
+  makeCurrent( );                   //  Make sure we are the current OpenGL Context
+  _Process( );                      // Process all of our capture processors
+  _Output( );                       // Now output whatever is selected as the output
+  m_outputBuffer->WriteFinished( ); // Inform the output buffer we are done and can swap
 }
 
 void PortalProcessor::_Process( void )
@@ -141,34 +140,33 @@ void PortalProcessor::_Process( void )
 	  m_captureProcessors[processor].first->BindDepthMap( GL_TEXTURE0 ); 
 	  m_captureProcessors[processor].second->draw( );
 	}
-
-	// Now output whatever is selected as the output
-	_Output( );
   }
   m_imageProcessor.unbind();
-
-  m_outputBuffer->WriteFinished( );
 }
 
 void PortalProcessor::_Output( void )
 {
   // Output results
-  m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT1 );
-  m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT1 );
-  m_renderTexture.bind( );
-
-  switch (m_displayMode)
+  m_imageProcessor.bind();
   {
-	case Fringe:
-	  m_captureProcessors[m_displayNumber].first->BindFringeImage( GL_TEXTURE0 );
-	  break;
-	case Depth:
-	  m_captureProcessors[m_displayNumber].first->BindDepthMap( GL_TEXTURE0 );
-	  break;
-	case Holo:
-	  m_encodedMap.bind( GL_TEXTURE0 );
-	  break;
+	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT1 );
+	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT1 );
+	m_renderTexture.bind( );
+
+	switch (m_displayMode)
+	{
+	  case Fringe:
+		m_captureProcessors[m_displayNumber].first->BindFringeImage( GL_TEXTURE0 );
+		break;
+	  case Depth:
+		m_captureProcessors[m_displayNumber].first->BindDepthMap( GL_TEXTURE0 );
+		break;
+	  case Holo:
+		m_encodedMap.bind( GL_TEXTURE0 );
+		break;
+	}
+	
+	// Now process into the output buffer
+	m_imageProcessor.process( );
   }
-  
-  m_imageProcessor.process( );
 }

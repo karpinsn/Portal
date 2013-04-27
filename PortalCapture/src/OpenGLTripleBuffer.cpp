@@ -6,8 +6,8 @@ OpenGLTripleBuffer::OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory, 
 
 void OpenGLTripleBuffer::InitWrite(int width, int height)
 {
-  Utils::AssertOrThrowIfFalse(width > 0, "Must have a valid width > 0 for the image buffer");
-  Utils::AssertOrThrowIfFalse(height > 0, "Must have a valid height > 0 for the image buffer");
+  Utils::ThrowIfFalse(width > 0, "Must have a valid width > 0 for the image buffer");
+  Utils::ThrowIfFalse(height > 0, "Must have a valid height > 0 for the image buffer");
 
   // If needed get a context for use to use with writes
   if ( nullptr != m_contextFactory )

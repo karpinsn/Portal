@@ -12,7 +12,7 @@ void MainController::Init(QString initScriptFilename)
   // so that we can get a window and graphics context.
   wrench::Logger::logDebug("Loading (Process) context");
   m_processContext = make_shared<PortalProcessor>( );  
-  Utils::AssertOrThrowIfFalse(m_processContext->isValid(), "OpenGL context is not valid");
+  Utils::ThrowIfFalse(m_processContext->isValid(), "OpenGL context is not valid");
   
   //  Calling updateGL will initialize our context so that 
   //  we can actually perform OpenGL calls
@@ -21,7 +21,7 @@ void MainController::Init(QString initScriptFilename)
 
   //  Init GLEW so that we can make fancy OpenGL calls
   GLenum status = glewInit();
-  Utils::AssertOrThrowIfFalse(GLEW_OK == status, "Failed to init GLEW:" );
+  Utils::ThrowIfFalse(GLEW_OK == status, "Failed to init GLEW" );
   wrench::Logger::logDebug("Using GLEW Version: %s", glewGetString( GLEW_VERSION ));
 
   //  Now that we are initalized (OpenGL, GLEW, etc) we can run our init script
@@ -42,12 +42,12 @@ void MainController::Init(QString initScriptFilename)
 
 shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
 {
-  Utils::AssertOrThrowIfFalse(nullptr != m_processContext, "Need to have a main context to make the shared from");
+  Utils::ThrowIfFalse(nullptr != m_processContext, "Need to have a main context to make the shared from");
   shared_ptr<QGLWidget> sharedContext( new QGLWidget( m_processContext.get( ), m_processContext.get( ) ) );
 
   //  Make sure that we created the context and that it is properly sharing
-  Utils::AssertOrThrowIfFalse(sharedContext->isSharing( ), "Unable to create a shared OpenGL context" );
-  Utils::AssertOrThrowIfFalse(QGLContext::areSharing( sharedContext->context( ), m_processContext->context( ) ), "Sharing between contexts failed" );
+  Utils::ThrowIfFalse(sharedContext->isSharing( ), "Unable to create a shared OpenGL context" );
+  Utils::ThrowIfFalse(QGLContext::areSharing( sharedContext->context( ), m_processContext->context( ) ), "Sharing between contexts failed" );
   
   return sharedContext;
 }
@@ -120,7 +120,7 @@ void MainController::NewCamera( QString cameraName, QString cameraType, QString 
   }
   #endif //USE_POINT_GREY_CAMERA
  
-  Utils::AssertOrThrowIfFalse(nullptr != camera, "Unknown camera requested, unable to instantiate");
+  Utils::ThrowIfFalse(nullptr != camera, "Unknown camera requested, unable to instantiate");
 
   if(nullptr != m_interface)
   {

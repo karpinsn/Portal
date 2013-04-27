@@ -1,33 +1,30 @@
 #include "SplatField.h"
 
-SplatField::SplatField(int width, int height) : m_width(width), m_height(height)
-{ }
+SplatField::SplatField(int width, int height) 
+{ 
+  auto verticies = unique_ptr<glm::vec3[]>( new glm::vec3[ width * height ] );
+  auto texCoords = unique_ptr<glm::vec2[]>( new glm::vec2[ width * height ] );
 
-void SplatField::initMesh(void)
-{
-  auto verticies = unique_ptr<glm::vec3[]>( new glm::vec3[ m_width * m_height ] );
-  auto texCoords = unique_ptr<glm::vec2[]>( new glm::vec2[ m_width * m_height ] );
-
-  for(int row = 0; row < m_height; ++row)
+  for(int row = 0; row < height; ++row)
   {
-      for(int col = 0; col < m_width; ++col)
+      for(int col = 0; col < width; ++col)
       {
-          verticies[row * m_width + col].x = float(col) / float(m_width);
-          verticies[row * m_width + col].y = float(row) / float(m_height);
-          verticies[row * m_width + col].z = 0.0f;
+          verticies[row * width + col].x = float(col) / float(width);
+          verticies[row * width + col].y = float(row) / float(height);
+          verticies[row * width + col].z = 0.0f;
           
-          texCoords[row * m_width + col].s = float(col) / float(m_width);
-          texCoords[row * m_width + col].t = float(row) / float(m_height);          
+          texCoords[row * width + col].s = float(col) / float(width);
+          texCoords[row * width + col].t = float(row) / float(height);          
       }
   }
 
-  m_field.init(GL_POINTS, m_width * m_height);
+  m_field.init(GL_POINTS, width * height);
   m_vertices.init(3, GL_FLOAT, GL_ARRAY_BUFFER);
-  m_vertices.bufferData(m_width * m_height, glm::value_ptr(verticies[0]), GL_STATIC_DRAW);
+  m_vertices.bufferData(width * height, glm::value_ptr(verticies[0]), GL_STATIC_DRAW);
   m_field.addVBO(m_vertices, "vert");
 
   m_texCoords.init(2, GL_FLOAT, GL_ARRAY_BUFFER);
-  m_texCoords.bufferData(m_width * m_height, glm::value_ptr(texCoords[0]), GL_STATIC_DRAW);
+  m_texCoords.bufferData(width * height, glm::value_ptr(texCoords[0]), GL_STATIC_DRAW);
   m_field.addVBO(m_texCoords, "vertTexCoord"); 
 }
 

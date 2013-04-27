@@ -11,12 +11,12 @@ CalibrationData::CalibrationData(void)
 
 void CalibrationData::SetIntrinsic(QVariantList intrinsicMatrixList)
 {
-  Utils::AssertOrThrowIfFalse( 9 == intrinsicMatrixList.count(), "Invalid number of intrinsic matrix coefficients specified" );
+  Utils::ThrowIfFalse( 9 == intrinsicMatrixList.count(), "Invalid number of intrinsic matrix coefficients specified" );
 
   float intrinsic[9];
   for( int valueLoc = 0; valueLoc < intrinsicMatrixList.count(); ++valueLoc )
   {
-	Utils::AssertOrThrowIfFalse( intrinsicMatrixList[valueLoc].canConvert<float>(), "Invalid intrinsic matrix coefficient type specified" );
+	Utils::ThrowIfFalse( intrinsicMatrixList[valueLoc].canConvert<float>(), "Invalid intrinsic matrix coefficient type specified" );
 	intrinsic[valueLoc] = intrinsicMatrixList[valueLoc].toFloat( );
   }
 
@@ -43,11 +43,11 @@ const glm::mat3& CalibrationData::GetIntrinsicAsMat( void ) const
 
 void CalibrationData::SetDistortion(QVariantList coefficients)
 {
-  Utils::AssertOrThrowIfFalse( 5 == coefficients.count(), "Invalid number of distortion coefficients specified" );
+  Utils::ThrowIfFalse( 5 == coefficients.count(), "Invalid number of distortion coefficients specified" );
 
   for( int coeffNum = 0; coeffNum < coefficients.count(); ++coeffNum )
   {
-	Utils::AssertOrThrowIfFalse( coefficients[coeffNum].canConvert<float>(), "Invalid distortion coefficient type specified" );
+	Utils::ThrowIfFalse( coefficients[coeffNum].canConvert<float>(), "Invalid distortion coefficient type specified" );
 	m_distortionCoefficients[coeffNum] = coefficients[coeffNum].toFloat( );
   }
 }
@@ -70,12 +70,12 @@ const float* CalibrationData::GetDistortionAsFloatArray( void ) const
 
 void CalibrationData::SetExtrinsic(QVariantList extrinsicMatrixList)
 {
-  Utils::AssertOrThrowIfFalse( 12 == extrinsicMatrixList.count(), "Invalid number of extrinsic matrix coefficients specified" );
+  Utils::ThrowIfFalse( 12 == extrinsicMatrixList.count(), "Invalid number of extrinsic matrix coefficients specified" );
 
   float extrinsic[12];
   for( int valueLoc = 0; valueLoc < extrinsicMatrixList.count(); ++valueLoc )
   {
-	Utils::AssertOrThrowIfFalse( extrinsicMatrixList[valueLoc].canConvert<float>(), "Invalid extrinsic matrix coefficient type specified" );
+	Utils::ThrowIfFalse( extrinsicMatrixList[valueLoc].canConvert<float>(), "Invalid extrinsic matrix coefficient type specified" );
 	extrinsic[valueLoc] = extrinsicMatrixList[valueLoc].toFloat( );
   }
 
