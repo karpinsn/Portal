@@ -39,6 +39,7 @@
 
 #include "SixFringeProcessor.h"
 #include "TriMesh.h"
+#include "SplatField.h"
 #include "CalibrationData.h"
 
 #include "IWriteBuffer.h"
@@ -63,7 +64,7 @@ private:
 	Holo
   };
 
-  vector<pair<shared_ptr<IProcessContext>, shared_ptr<TriMesh>>> m_captureProcessors;
+  vector<pair<shared_ptr<IProcessContext>, shared_ptr<SplatField>>> m_captureProcessors;
  
   shared_ptr<IWriteBuffer> m_outputBuffer;
 

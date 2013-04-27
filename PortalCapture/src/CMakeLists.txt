@@ -13,6 +13,7 @@ set(SOURCES
     OpenGLTripleBuffer.cpp
 	ScriptInterface.cpp
     TriMesh.cpp
+    SplatField.cpp
     CameraCapture.cpp
     PortalProcessor.cpp
     SixFringeProcessor.cpp
