@@ -35,6 +35,7 @@
 #include <wrench/gl/Texture.h>
 #include <wrench/gl/FBO.h>
 
+#include "DynamicallyScriptableQObject.h"
 #include "CalibrationData.h"
 
 #include "IWriteBuffer.h"
@@ -56,7 +57,7 @@ public:
   virtual void       Process( void ) = 0;
 };
 
-class SixFringeProcessor : public QObject, public IProcessContext
+class SixFringeProcessor : public DynamicallyScriptableQObject, public IProcessContext
 {
   Q_OBJECT
 	

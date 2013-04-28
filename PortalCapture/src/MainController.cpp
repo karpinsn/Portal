@@ -52,10 +52,11 @@ shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
   return sharedContext;
 }
 
+// This will put StartSystem on top of the event loop
 void MainController::Start(void)
-{
-  // This will put start on top of the event loop
-  QTimer::singleShot(0, this, SLOT( StartSystem() ));
+{ 
+  wrench::Logger::logDebug("Starting ...");
+  QTimer::singleShot(0, this, SLOT( StartSystem() )); 
 }
 
 void MainController::Close(void)
@@ -69,15 +70,14 @@ void MainController::StartSystem(void)
 {
   for(auto context = m_contexts.begin(); context != m_contexts.end(); ++context)
   {
-		context->second->Start( );
+	context->second->Start( );
   }
-  wrench::Logger::logDebug("Started");
+  wrench::Logger::logDebug("Started!");
 }
 
 void MainController::InitProcessContext( QString outputBufferName )
 {
   auto outputBuffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
-  
   m_processContext->Init( outputBuffer );
 }
 

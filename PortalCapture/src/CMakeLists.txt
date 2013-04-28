@@ -12,6 +12,7 @@ set(SOURCES
     MultiOpenGLBuffer.cpp
     OpenGLTripleBuffer.cpp
 	ScriptInterface.cpp
+    DynamicallyScriptableQObject.cpp
     TriMesh.cpp
     SplatField.cpp
     CameraCapture.cpp
@@ -34,6 +35,7 @@ set(MOCS
 	../include/OpenGLTripleBuffer.h
 	../include/MultiOpenGLBuffer.h
     ../include/ScriptInterface.h
+    ../include/DynamicallyScriptableQObject.h
     ../include/CameraCapture.h
     ../include/PortalProcessor.h
     ../include/SixFringeProcessor.h

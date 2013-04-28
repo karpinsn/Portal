@@ -14,11 +14,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "DynamicallyScriptableQObject.h"
 #include "Utils.h"
 
 using namespace std;
 
-class CalibrationData : public QObject, protected QScriptable
+class CalibrationData : public DynamicallyScriptableQObject
 {	
   Q_OBJECT
   Q_PROPERTY( QVariantList Distortion WRITE SetDistortion READ GetDistortionAsVariant )

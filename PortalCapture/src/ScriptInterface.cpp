@@ -54,7 +54,7 @@ void ScriptInterface::PopThis( void )
 void ScriptInterface::AddObject(shared_ptr<QObject> object, QString name)
 {
   m_scriptObjects.insert(make_pair(name, object));
-  QScriptValue value = m_scriptEngine.newQObject(object.get());
+  QScriptValue value = m_scriptEngine.newQObject(object.get(), QScriptEngine::QtOwnership, QScriptEngine::AutoCreateDynamicProperties);
   m_scriptEngine.globalObject().setProperty(name, value);
 }
 

@@ -21,8 +21,8 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
   m_fringe2Phase.uniform("gammaCutoff", 0.0f);
-  m_fringe2Phase.uniform("pitch1", 60);
-  m_fringe2Phase.uniform("pitch2", 63);
+  m_fringe2Phase.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
+  m_fringe2Phase.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
 
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -45,9 +45,8 @@ void SixFringeProcessor::Init( )
   m_wrapped2Unwrapped.link();
   m_wrapped2Unwrapped.uniform("unfilteredPhase", 0);
   m_wrapped2Unwrapped.uniform("filteredPhase", 1);
-  // TODO - Remove this hardcoding
-  m_wrapped2Unwrapped.uniform("pitch1", 60.0f);
-  m_wrapped2Unwrapped.uniform("pitch2", 63.0f);
+  m_wrapped2Unwrapped.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
+  m_wrapped2Unwrapped.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
 
   m_phase2Depth.init();
   m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -56,15 +55,15 @@ void SixFringeProcessor::Init( )
   m_phase2Depth.bindAttributeLocation("vertTexCoord", 1);
   m_phase2Depth.link();
   m_phase2Depth.uniform("actualPhase", 0);
-  // TODO - Remove this hardcoding
+
   // Camera Properties
   m_phase2Depth.uniform("cameraWidth", width);
   m_phase2Depth.uniform("cameraHeight", height);
   m_phase2Depth.uniform("cameraMatrix", m_cameraCalibration->GetIntrinsicAsMat() * m_cameraCalibration->GetExtrinsicAsMat());
   
   // Projector properties
-  m_phase2Depth.uniform("fringePitch", 60);
-  m_phase2Depth.uniform("Phi0", -5.1313f);
+  m_phase2Depth.uniform("fringePitch", ResolveProperty<int>("fringePitch1"));
+  m_phase2Depth.uniform("Phi0", ResolveProperty<float>("Phi0"));
   m_phase2Depth.uniform("projectorMatrix", m_projectorCalibration->GetIntrinsicAsMat() * m_projectorCalibration->GetExtrinsicAsMat());
 
   m_phaseMap0.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
