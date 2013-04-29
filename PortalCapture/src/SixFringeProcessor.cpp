@@ -23,7 +23,7 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.uniform("gammaCutoff", 0.0f);
   m_fringe2Phase.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
   m_fringe2Phase.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
-
+  
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_phaseFilter.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/HorizontalMedianFilter.frag"));
@@ -36,7 +36,7 @@ void SixFringeProcessor::Init( )
   m_phaseFilter.uniform("height", ( float )height );
   m_gaussFilter.init();
   m_gaussFilter.setImageDimensions( width, height );
-
+  
   m_wrapped2Unwrapped.init();
   m_wrapped2Unwrapped.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_wrapped2Unwrapped.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Wrapped2Unwrapped.frag"));
@@ -65,7 +65,7 @@ void SixFringeProcessor::Init( )
   m_phase2Depth.uniform("fringePitch", ResolveProperty<int>("fringePitch1"));
   m_phase2Depth.uniform("Phi0", ResolveProperty<float>("Phi0"));
   m_phase2Depth.uniform("projectorMatrix", m_projectorCalibration->GetIntrinsicAsMat() * m_projectorCalibration->GetExtrinsicAsMat());
-
+ 
   m_phaseMap0.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap2.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
