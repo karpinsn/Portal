@@ -72,38 +72,34 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 
 void PortalProcessor::OutputFringe( int processorNumber )
 {
+  // Check if we have an invalid processor number
   if(processorNumber > (int)m_captureProcessors.size() || processorNumber < 0)
   {
 	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
 	m_displayNumber = 0;
   }
   else
-  {
-	m_displayNumber = processorNumber;
-  }
+	{	m_displayNumber = processorNumber; }
 
   m_displayMode = Fringe;
 }
 
 void PortalProcessor::OutputDepth( int processorNumber )
 {
+  // Check if we have an invalid processor number
   if(processorNumber > (int)m_captureProcessors.size() || processorNumber < 0)
   {
 	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
 	m_displayNumber = 0;
   }
   else
-  {
-	m_displayNumber = processorNumber;
-  }
+	{	m_displayNumber = processorNumber; }
 
   m_displayMode = Depth;
 }
 
 void PortalProcessor::OutputHolo( void )
-{
-  m_displayMode = Holo;
-}
+  { m_displayMode = Holo; }
 
 void PortalProcessor::paintGL( void )
 {

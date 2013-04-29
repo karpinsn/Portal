@@ -86,18 +86,40 @@ public:
   void Init( shared_ptr<IWriteBuffer> outputBuffer );
 
 public slots:
+ /**
+  * Outputs the fringe from the specified processor whenever _Output() is called.
+  */
   void OutputFringe( int processorNumber );
+
+ /**
+  * Outputs the depthmap from the specified processor whenever _Output() is called.
+  */
   void OutputDepth( int processorNumber );
+
+ /**
+  * Outputs the holoencoded frame whenever _Output() is called. This is the default output 
+  */
   void OutputHolo( void );
 
 signals:
+ /**
+  * Signal that is emitted once a frame has been processed
+  */
   void ProcessedFrame( void );
 
 protected:
   void paintGL( void );
 
 private:
+ /**
+  * Processes all of the capture processors into a single holo frame.
+  * This should only be called from the draw thread.
+  */
   void _Process( void );
+
+ /**
+  * Outputs whatever the currently selected output is to the output buffer
+  */
   void _Output( void );
 };
 

@@ -36,9 +36,7 @@ void WebsocketStream::Start(void)
 }
 
 void WebsocketProcessor::Stop(void)
-{
-  m_running = false;
-}
+  { m_running = false; }
 
 void WebsocketProcessor::ProcessSocket()
 {
@@ -56,14 +54,10 @@ void WebsocketStreamer::Init(void)
 }
 
 bool WebsocketStreamer::IsRunning( void )
-{
-  return m_running;
-}
+  { return m_running; }
 
 void WebsocketStreamer::Stop(void)
-{
-  m_running = false;
-}
+  { m_running = false; }
 
 void WebsocketStreamer::StreamFrame(void)
 {

@@ -7,9 +7,7 @@ CameraCaptureWorker::CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer, 
 { }
 
 bool CameraCaptureWorker::IsRunning( void )
-{
-  return m_running;
-}
+  { return m_running; }
 
 void CameraCaptureWorker::Init( void )
 {
@@ -22,9 +20,7 @@ void CameraCaptureWorker::Init( void )
 }
 
 void CameraCaptureWorker::Stop(void)
-{
-  m_running = false;
-}
+  { m_running = false; }
 
 void CameraCaptureWorker::DropFrame( void )
 {
@@ -113,11 +109,7 @@ CameraCapture::CameraCapture(shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<l
 }
 
 void CameraCapture::Start(void)
-{ 
-  m_workerThread->start( QThread::TimeCriticalPriority );
-}
+  { m_workerThread->start( QThread::TimeCriticalPriority ); }
 
 void CameraCapture::DropFrame( void )
-{
-  m_worker->DropFrame();
-}
+  { m_worker->DropFrame(); }

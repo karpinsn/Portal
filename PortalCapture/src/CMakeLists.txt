@@ -12,7 +12,6 @@ set(SOURCES
     MultiOpenGLBuffer.cpp
     OpenGLTripleBuffer.cpp
 	ScriptInterface.cpp
-    DynamicallyScriptableQObject.cpp
     TriMesh.cpp
     SplatField.cpp
     CameraCapture.cpp

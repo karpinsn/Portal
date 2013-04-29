@@ -37,9 +37,7 @@ QVariantList CalibrationData::GetIntrinsicAsVariant( void )
 }
 
 const glm::mat3& CalibrationData::GetIntrinsicAsMat( void ) const
-{
-  return m_intrinsic;
-}
+  { return m_intrinsic; }
 
 void CalibrationData::SetDistortion(QVariantList coefficients)
 {
@@ -64,9 +62,7 @@ QVariantList CalibrationData::GetDistortionAsVariant( )
 }
 
 const float* CalibrationData::GetDistortionAsFloatArray( void ) const
-{
-  return m_distortionCoefficients;
-}
+  { return m_distortionCoefficients; }
 
 void CalibrationData::SetExtrinsic(QVariantList extrinsicMatrixList)
 {
@@ -96,6 +92,4 @@ QVariantList CalibrationData::GetExtrinsicAsVariant( )
 }
 
 const glm::mat4x3& CalibrationData::GetExtrinsicAsMat( void ) const
-{
-  return m_extrinsic;
-}
+  { return m_extrinsic; }
