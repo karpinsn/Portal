@@ -21,8 +21,6 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
   m_fringe2Phase.uniform("gammaCutoff", 0.0f);
-  m_fringe2Phase.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
-  m_fringe2Phase.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
   
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));

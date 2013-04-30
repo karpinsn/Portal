@@ -30,19 +30,16 @@ SplatField::SplatField(int width, int height)
 
 void SplatField::draw()
 {
-  // Enable point sprites and their ability to replace texture coordinates
-  glEnable(GL_POINT_SPRITE);
-  glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
- 
-  // Disable depth and enable blend so that we can get our splat rendering
+  glEnable(GL_POINT_SPRITE); // Enable point sprites and their ability to replace texture coordinates
+  glDepthMask(GL_FALSE); // Disable depth and enable blend so that we can get our splat rendering
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glDepthMask(GL_FALSE);
-
-
-  m_field.draw();
-
-  // Put depth back on
+  {
+	glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  
+	m_field.draw();
+  } // Put our stuff back
+  glDisable(GL_BLEND);
   glDepthMask(GL_TRUE);
   glDisable(GL_POINT_SPRITE);
 }
