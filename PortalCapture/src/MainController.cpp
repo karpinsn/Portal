@@ -47,7 +47,7 @@ shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
 
   //  Make sure that we created the context and that it is properly sharing
   Utils::ThrowIfFalse(sharedContext->isSharing( ), "Unable to create a shared OpenGL context" );
-  Utils::ThrowIfFalse(QGLContext::areSharing( sharedContext->context( ), m_processContext->context( ) ), "Sharing between contexts failed" );
+  Utils::ThrowIfFalse(QGLContext::areSharing( sharedContext->context( ), ( m_processContext)->QGLWidget::context( ) ), "Sharing between contexts failed" );
   
   return sharedContext;
 }

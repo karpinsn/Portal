@@ -37,6 +37,8 @@
 #include <wrench/gl/Texture.h>
 #include <wrench/gl/FBO.h>
 
+#include "DynamicallyScriptableQObject.h"
+
 #include "SixFringeProcessor.h"
 #include "TriMesh.h"
 #include "SplatField.h"
@@ -50,7 +52,7 @@
 using namespace std;
 using namespace wrench::gl;
 
-class PortalProcessor : public QGLWidget
+class PortalProcessor : public DynamicallyScriptableQGLWidget
 {
   Q_OBJECT
 	

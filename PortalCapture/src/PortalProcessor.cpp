@@ -14,9 +14,8 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   Utils::ThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
   Utils::ThrowIfFalse(0 < m_captureProcessors.size(), "Must have an input capture buffer");
 
-  // TODO - Fix this
-  int width = 800;
-  int height = 600;
+  int width = ResolveProperty<int>( "outputWidth" );
+  int height = ResolveProperty<int>( "outputHeight" );
 
   // Make sure we are the current OpenGL Context
   makeCurrent( );
@@ -39,7 +38,7 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   m_coordinate2Holo.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/Coordinate2Holo.vert"));
   m_coordinate2Holo.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Coordinate2Holo.frag"));
   m_coordinate2Holo.link();
-  m_coordinate2Holo.uniform("fringeFrequency", 16.0f);
+  m_coordinate2Holo.uniform("fringeFrequency", ResolveProperty<float>( "fringeFrequency" ) );
   m_coordinate2Holo.uniform("coordinateMap", 0);
 
   // Define the matricies that we need for Holovideo encoding
