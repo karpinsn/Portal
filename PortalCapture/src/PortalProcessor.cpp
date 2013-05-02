@@ -38,13 +38,13 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   m_coordinate2Holo.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/Coordinate2Holo.vert"));
   m_coordinate2Holo.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Coordinate2Holo.frag"));
   m_coordinate2Holo.link();
-  m_coordinate2Holo.uniform("fringeFrequency", ResolveProperty<float>( "fringeFrequency" ) );
+  m_coordinate2Holo.uniform("fringeFrequency", ResolveProperty<float>( "fringeFrequency" ) / 2.0f );
   m_coordinate2Holo.uniform("coordinateMap", 0);
 
   // Define the matricies that we need for Holovideo encoding
   // --------------------------------------------------------
   // Scaling so that we fit in our cube around the origin
-  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/1000.0f ) );
+  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/300.0f ) );
   m_coordinate2Holo.uniform( "modelView", modelView );
   // Rotate the projector modelView some angle around our model view (30 degrees?)
   glm::mat4 projectorModelView = glm::rotate( modelView, 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) ;
@@ -121,6 +121,9 @@ void PortalProcessor::_Process( void )
   {
 	(*itr).first->Process( );
   }
+
+  // TODO - Fix this
+  glViewport (0, 0, 800, 600);
 
   // Now that we have processed, we need to rectify everything into one scan
   m_imageProcessor.bind();
