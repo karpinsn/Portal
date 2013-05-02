@@ -57,8 +57,10 @@ void SixFringeProcessor::Init( )
   // Camera Properties
   m_phase2Depth.uniform("cameraWidth", width);
   m_phase2Depth.uniform("cameraHeight", height);
-  m_phase2Depth.uniform("cameraMatrix", m_cameraCalibration->GetIntrinsicAsMat() * m_cameraCalibration->GetExtrinsicAsMat());
-  
+  m_phase2Depth.uniform("cameraDistortion", m_cameraCalibration->GetDistortionAsFloatArray(), 5);
+  m_phase2Depth.uniform("cameraIntrinsic", m_cameraCalibration->GetIntrinsicAsMat( ) );
+  m_phase2Depth.uniform("cameraExtrinsic", m_cameraCalibration->GetExtrinsicAsMat( ) );
+
   // Projector properties
   m_phase2Depth.uniform("fringePitch", ResolveProperty<int>("fringePitch1"));
   m_phase2Depth.uniform("Phi0", ResolveProperty<float>("Phi0"));
