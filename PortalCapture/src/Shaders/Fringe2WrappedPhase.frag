@@ -17,6 +17,7 @@ void main(void)
 	float phi1 = atan( sqrt( 3.0 ) * ( fringe1.r - fringe1.b ), ( 2.0 * fringe1.g ) - fringe1.r - fringe1.b );
 	float phi2 = atan( sqrt( 3.0 ) * ( fringe2.r - fringe2.b ), ( 2.0 * fringe2.g ) - fringe2.r - fringe2.b );
 	float phi12 = mod( phi1 - phi2, 2.0 * pi );
-	
-	phase = vec4(phi1, phi2, phi12, 0.0);
+    float gamma1 = sqrt(pow((2 * fringe1.g - fringe1.r - fringe1.b), 2) + 3 * pow((fringe1.r - fringe1.b), 2)) / (fringe1.r + fringe1.g + fringe1.b);	
+    float gamma2 = sqrt(pow((2 * fringe2.g - fringe2.r - fringe2.b), 2) + 3 * pow((fringe2.r - fringe2.b), 2)) / (fringe2.r + fringe2.g + fringe2.b);
+	phase = vec4(phi1, phi2, phi12, min(gamma1, gamma2));
 }

@@ -20,7 +20,6 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.link();
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
-  m_fringe2Phase.uniform("gammaCutoff", 0.0f);
   
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -45,6 +44,7 @@ void SixFringeProcessor::Init( )
   m_wrapped2Unwrapped.uniform("filteredPhase", 1);
   m_wrapped2Unwrapped.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
   m_wrapped2Unwrapped.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
+  m_wrapped2Unwrapped.uniform("gammaCutoff", ResolveProperty<float>("gammaCutoff"));
 
   m_phase2Depth.init();
   m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));

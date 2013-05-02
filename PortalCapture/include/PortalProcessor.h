@@ -70,9 +70,12 @@ private:
  
   shared_ptr<IWriteBuffer> m_outputBuffer;
 
+  ShaderProgram m_coordinateRectifier;
   ShaderProgram m_coordinate2Holo;
   ShaderProgram m_renderTexture;
 
+  Texture	m_blendMap;
+  Texture	m_rectifiedCoordinateMap;
   Texture	m_encodedMap;
 
   FBO m_imageProcessor;
