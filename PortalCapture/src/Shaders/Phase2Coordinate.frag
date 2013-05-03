@@ -45,7 +45,11 @@ vec2 FixDistortion(vec2 uvCoord, mat3 intrinsic, float distCoeff[5])
 void main()
 {
     float pi = 3.14159;
-	float Phi = texture(actualPhase, fragTexCoord).r; 
+    vec4 phase = texture(actualPhase, fragTexCoord);
+    if(phase.a == 0.0) // If alpha is 0.0 then we are supposed to drop the fragment (gamma filter)
+        { discard; }
+
+	float Phi = phase.r; 
     float uProjector = 1.0 + ( ( Phi - Phi0 ) / ( ( 2.0 * pi ) / float( fringePitch) ) );
     mat4x3 cameraMatrix = cameraIntrinsic * cameraExtrinsic;
      

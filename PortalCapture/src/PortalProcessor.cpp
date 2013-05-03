@@ -35,7 +35,7 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 
   // Initialize our matricies -----------------------------------------------------
   // Scaling so that we fit in our cube around the origin
-  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/300.0f ) );
+  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/200.0f ) );
   // Rotate the projector modelView some angle around our model view (30 degrees?)
   glm::mat4 projectorModelView = glm::rotate( modelView, 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) ;
   // Our projection is a cube around the origin
@@ -82,6 +82,8 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   m_encodedMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 
   m_imageProcessor.init( width, height );
+  glViewport( 0, 0, width, height );
+
   m_imageProcessor.setTextureAttachPoint( m_rectifiedCoordinateMap, GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_encodedMap,	GL_COLOR_ATTACHMENT1 );
   m_imageProcessor.unbind( );
@@ -131,9 +133,6 @@ void PortalProcessor::_Process( void )
   {
 	(*itr).first->Process( );
   }
-
-  // TODO - Fix this
-  glViewport (0, 0, 800, 600);
 
   // Now that we have processed, we need to rectify everything into one scan
   m_imageProcessor.bind();
