@@ -58,12 +58,11 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
 
   // Shader Pass 2 - Encoding
   m_coordinate2Holo.init( );
-  m_coordinate2Holo.attachShader( new Shader(GL_VERTEX_SHADER, "Shaders/Coordinate2Holo.vert" ) );
+  m_coordinate2Holo.attachShader( new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert" ) );
   m_coordinate2Holo.attachShader( new Shader(GL_FRAGMENT_SHADER, "Shaders/Coordinate2Holo.frag" ) );
   m_coordinate2Holo.link( );
-  m_coordinate2Holo.uniform("fringeFrequency", ResolveProperty<float>( "fringeFrequency" ) / 2.0f );
-  m_coordinate2Holo.uniform("coordinateMap", 0);
-  m_coordinate2Holo.uniform( "modelView", modelView );
+  m_coordinate2Holo.uniform( "fringeFrequency", ResolveProperty<float>( "fringeFrequency" ) / 2.0f );
+  m_coordinate2Holo.uniform( "coordinateMap", 0 );
   m_coordinate2Holo.uniform( "projectorModelView", projectorModelView );
   m_coordinate2Holo.uniform( "projectionMatrix", projection );
 
@@ -105,19 +104,8 @@ void PortalProcessor::OutputFringe( int processorNumber )
   m_displayMode = Fringe;
 }
 
-void PortalProcessor::OutputDepth( int processorNumber )
-{
-  // Check if we have an invalid processor number
-  if(processorNumber > (int)m_captureProcessors.size() || processorNumber < 0)
-  {
-	wrench::Logger::logDebug("Invalid processor number, defaulting to 0");
-	m_displayNumber = 0;
-  }
-  else
-	{	m_displayNumber = processorNumber; }
-
-  m_displayMode = Depth;
-}
+void PortalProcessor::OutputCoord( )
+  { m_displayMode = Coord; }
 
 void PortalProcessor::OutputHolo( void )
   { m_displayMode = Holo; }
@@ -169,6 +157,7 @@ void PortalProcessor::_Process( void )
 	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT1 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	m_rectifiedCoordinateMap.bind( GL_TEXTURE0 );
+	m_imageProcessor.process( );
   }
   m_imageProcessor.unbind();
 }
@@ -178,8 +167,8 @@ void PortalProcessor::_Output( void )
   // Output results
   m_imageProcessor.bind();
   {
-	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT1 );
-	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT1 );
+	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT2 );
+	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT2 );
 	m_renderTexture.bind( );
 
 	switch (m_displayMode)
@@ -187,11 +176,11 @@ void PortalProcessor::_Output( void )
 	  case Fringe:
 		m_captureProcessors[m_displayNumber].first->BindFringeImage( GL_TEXTURE0 );
 		break;
-	  case Depth:
-		m_captureProcessors[m_displayNumber].first->BindDepthMap( GL_TEXTURE0 );
+	  case Coord:
+		m_rectifiedCoordinateMap.bind( GL_TEXTURE0 );
 		break;
 	  case Holo:
-		m_rectifiedCoordinateMap.bind( GL_TEXTURE0 );
+		m_encodedMap.bind( GL_TEXTURE0 );
 		break;
 	}
 	

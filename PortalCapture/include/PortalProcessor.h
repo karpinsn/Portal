@@ -62,7 +62,7 @@ private:
   enum OutputMode
   {
 	Fringe,
-	Depth,
+	Coord,
 	Holo
   };
 
@@ -97,9 +97,9 @@ public slots:
   void OutputFringe( int processorNumber );
 
  /**
-  * Outputs the depthmap from the specified processor whenever _Output() is called.
+  * Outputs the unified coordinate map whenever _Output() is called.
   */
-  void OutputDepth( int processorNumber );
+  void OutputCoord( );
 
  /**
   * Outputs the holoencoded frame whenever _Output() is called. This is the default output 
