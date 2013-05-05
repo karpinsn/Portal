@@ -4,10 +4,11 @@ const int cameraPin =  7;         // the number of the LED pin
 const int dropFrameButtonPin = 2; // The pin for ISR 0 that the button is attached to
 
 int projectorState = 0;
+volatile int dropFrames = 0;
 
 DropFrameISR(INT0_vect)
 {
-
+    dropFrames++;
 }
 
 void setup() {
@@ -38,7 +39,7 @@ void loop()
     }
     else if(currentState == HIGH)
     {
-        // Rising edge, reduce the frame drop
+        // Rising edge, reduce the drop frame count
         dropFrames--;
     }
   }
