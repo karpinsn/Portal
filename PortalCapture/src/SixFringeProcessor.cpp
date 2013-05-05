@@ -20,7 +20,6 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.link();
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
-  m_fringe2Phase.uniform("gammaCutoff", 0.0f);
   
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -45,6 +44,7 @@ void SixFringeProcessor::Init( )
   m_wrapped2Unwrapped.uniform("filteredPhase", 1);
   m_wrapped2Unwrapped.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
   m_wrapped2Unwrapped.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
+  m_wrapped2Unwrapped.uniform("gammaCutoff", ResolveProperty<float>("gammaCutoff"));
 
   m_phase2Depth.init();
   m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -57,8 +57,10 @@ void SixFringeProcessor::Init( )
   // Camera Properties
   m_phase2Depth.uniform("cameraWidth", width);
   m_phase2Depth.uniform("cameraHeight", height);
-  m_phase2Depth.uniform("cameraMatrix", m_cameraCalibration->GetIntrinsicAsMat() * m_cameraCalibration->GetExtrinsicAsMat());
-  
+  m_phase2Depth.uniform("cameraDistortion", m_cameraCalibration->GetDistortionAsFloatArray(), 5);
+  m_phase2Depth.uniform("cameraIntrinsic", m_cameraCalibration->GetIntrinsicAsMat( ) );
+  m_phase2Depth.uniform("cameraExtrinsic", m_cameraCalibration->GetExtrinsicAsMat( ) );
+
   // Projector properties
   m_phase2Depth.uniform("fringePitch", ResolveProperty<int>("fringePitch1"));
   m_phase2Depth.uniform("Phi0", ResolveProperty<float>("Phi0"));

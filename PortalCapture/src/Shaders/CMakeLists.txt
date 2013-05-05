@@ -6,6 +6,7 @@ include(FileCopyTargets)
 
 set(SHADER_VERT_SOURCES
 	PassThrough.vert
+	CoordinateRectifier.vert
     Coordinate2Holo.vert
 )
 
@@ -19,7 +20,7 @@ set(SHADER_FRAG_SOURCES
     Phase2Coordinate.frag
     Depth2Holo.frag
 	RenderTexture.frag
-	Rectifier.frag
+	CoordinateRectifier.frag
     Coordinate2Holo.frag
 )
 
