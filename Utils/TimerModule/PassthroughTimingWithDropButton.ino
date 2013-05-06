@@ -6,7 +6,7 @@ const int dropFrameButtonPin = 2; // The pin for ISR 0 that the button is attach
 int projectorState = 0;
 volatile int dropFrames = 0;
 
-DropFrameISR(INT0_vect)
+void DropFrameISR()
 {
     dropFrames++;
 }
@@ -19,25 +19,23 @@ void setup() {
   // Save the current state so we dont have to read it in the main loop
   projectorState = digitalRead(projectorPin);
 
-  // Setup the Drop Frame button
-  pinMode(dropFrameButtonPin, INPUT);        // Make it input
-  digitalWrite(pin, HIGH);                   // Enable pullup resistor
+  // Setup the Drop Frame Interrupt
   attachInterrupt(0, DropFrameISR, FALLING); // Attach the ISR
 }
 
 void loop()
 {
-  if(currentState != digitalRead(projectorPin))
+  if(projectorState != digitalRead(projectorPin))
   {
     // Different state
-    currentState = digitalRead(projectorPin);
+    projectorState = digitalRead(projectorPin);
     
-    if(0 == dropFrames)
+    if(projectorState == LOW || 0 == dropFrames)
     {
         // Dont need to drop any frames so output the signal
-        digitalWrite(cameraPin, currentState);
+        digitalWrite(cameraPin, projectorState);
     }
-    else if(currentState == HIGH)
+    else if(projectorState == HIGH)
     {
         // Rising edge, reduce the drop frame count
         dropFrames--;
