@@ -29,17 +29,16 @@ float step_h = 1.0/height;
 
 void main(void)
 {
-  float v[5];
-  float t;
+  vec4 v[5];
+  vec4 t;
   
   for(int dX = -2; dX <= 2; ++dX)
   {
 	vec2 offset = vec2(float(dX)*step_w, 0.0);
-	v[dX + 2] = texture(image, fragTexCoord + offset).b;
+	v[dX + 2] = texture(image, fragTexCoord + offset);
   }
 
   m5(v[0], v[1], v[2], v[3], v[4])
   
-  vec4 original = texture( image, fragTexCoord );
-  filteredImage = vec4(original.r, original.g, v[2], original.a);
+  filteredImage = v[2];
 }

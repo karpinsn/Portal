@@ -6,6 +6,8 @@ precision highp sampler2D;
 
 uniform sampler2D actualPhase;
 
+uniform float gammaCutoff;
+
 uniform int fringePitch;
 uniform float Phi0;
 
@@ -46,8 +48,11 @@ void main()
 {
     float pi = 3.14159;
     vec4 phase = texture(actualPhase, fragTexCoord);
-    if(phase.a == 0.0) // If alpha is 0.0 then we are supposed to drop the fragment (gamma filter)
-        { discard; }
+    if(phase.a < gammaCutoff)
+    { 
+        coordinateMap = vec4(0.0); 
+        return;
+    }
 
 	float Phi = phase.r; 
     float uProjector = 1.0 + ( ( Phi - Phi0 ) / ( ( 2.0 * pi ) / float( fringePitch) ) );

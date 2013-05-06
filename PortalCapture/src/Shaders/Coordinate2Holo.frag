@@ -17,6 +17,15 @@ void main()
     if(coord.a == 0.0) // If we have zero in alpha, then we haven't blended and shouldn't render
         discard;
 
+    // Step 1 - Normalizing
+    // Since we have been doing blending not all the fragments will have an alpha
+    // of 1.0 (either more or less). We need to normalize all the colors so that
+    // they are correctly sampled
+    
+    // TODO - comeback
+    //coord = coord.xyzw / coord.xyzw;
+
+    // Step 2 - Holo encoding
 	//	Constants for encoding
 	float pi = 3.14159265;
 	float stepHeight = 1.0 / (2.0 * fringeFrequency);

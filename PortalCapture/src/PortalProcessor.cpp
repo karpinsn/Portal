@@ -48,7 +48,7 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   // Shaders Pass 1 - Rectification
   m_coordinateRectifier.init( );
   m_coordinateRectifier.attachShader( new Shader( GL_VERTEX_SHADER, "Shaders/CoordinateRectifier.vert" ) );
-  m_coordinateRectifier.attachShader( new Shader( GL_FRAGMENT_SHADER, "Shaders/Coordinaterectifier.frag" ) );
+  m_coordinateRectifier.attachShader( new Shader( GL_FRAGMENT_SHADER, "Shaders/CoordinateRectifier.frag" ) );
   m_coordinateRectifier.link( );
   m_coordinateRectifier.uniform( "coordinateMap", 0 );
   m_coordinateRectifier.uniform( "blendMap", 1 );

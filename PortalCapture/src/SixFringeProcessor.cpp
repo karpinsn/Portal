@@ -31,9 +31,21 @@ void SixFringeProcessor::Init( )
   //  In the shader these are floating point, so ensure that they are with a cast
   m_phaseFilter.uniform("width", ( float )width );
   m_phaseFilter.uniform("height", ( float )height );
+  
+  
   m_gaussFilter.init();
   m_gaussFilter.setImageDimensions( width, height );
   
+  m_gammaEroder.init();
+  m_gammaEroder.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
+  m_gammaEroder.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/GammaErode.frag"));
+  m_gammaEroder.bindAttributeLocation("vert", 0);
+  m_gammaEroder.bindAttributeLocation("vertTexCoord", 1);
+  m_gammaEroder.link();
+  m_gammaEroder.uniform("image", 0);
+  m_gammaEroder.uniform("width", ( float )width );
+  m_gammaEroder.uniform("height", ( float )height );
+
   m_wrapped2Unwrapped.init();
   m_wrapped2Unwrapped.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_wrapped2Unwrapped.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Wrapped2Unwrapped.frag"));
@@ -53,6 +65,7 @@ void SixFringeProcessor::Init( )
   m_phase2Depth.bindAttributeLocation("vertTexCoord", 1);
   m_phase2Depth.link();
   m_phase2Depth.uniform("actualPhase", 0);
+  m_phase2Depth.uniform("gammaCutoff", ResolveProperty<float>("gammaCutoff"));
 
   // Camera Properties
   m_phase2Depth.uniform("cameraWidth", width);
@@ -113,6 +126,7 @@ void SixFringeProcessor::Process( void )
 	_wrapPhase( GL_COLOR_ATTACHMENT0, m_inputBuffer );
 	_filterPhase( GL_COLOR_ATTACHMENT1, m_phaseMap0 );
 	_gaussianFilter( GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT1, m_phaseMap1, m_phaseMap2);
+	//_erodeGamma( GL_COLOR_ATTACHMENT2, m_phaseMap1 );
 	_unwrapPhase(GL_COLOR_ATTACHMENT2, m_phaseMap0, m_phaseMap1);
 	_calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap2 );
   }
@@ -140,6 +154,15 @@ void SixFringeProcessor::_filterPhase( GLenum drawBuffer, Texture& phase2Filter 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_phaseFilter.bind( );
   phase2Filter.bind( GL_TEXTURE0 );
+  m_imageProcessor.process( );
+}
+
+void SixFringeProcessor::_erodeGamma( GLenum drawBuffer, Texture& gamma2Filter )
+{
+  m_imageProcessor.bindDrawBuffer( drawBuffer );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  m_gammaEroder.bind( );
+  gamma2Filter.bind( GL_TEXTURE0 );
   m_imageProcessor.process( );
 }
 
