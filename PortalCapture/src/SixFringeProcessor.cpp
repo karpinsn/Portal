@@ -1,7 +1,8 @@
 #include "SixFringeProcessor.h"
 
 SixFringeProcessor::SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> cameraCalibration, shared_ptr<CalibrationData> projectorCalibration ) :
-  m_isInit(false), m_gaussFilter(11), m_inputBuffer(inputBuffer), 
+  // TODO - Remove Gauss Filter hardcoding
+  m_isInit(false), m_gaussFilter(9), m_inputBuffer(inputBuffer), 
   m_cameraCalibration(cameraCalibration), m_projectorCalibration(projectorCalibration)
 { }
 
@@ -20,7 +21,12 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.link();
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
-  
+  m_fringe2Phase.uniform("gammaCutoff", ResolveProperty<float>("gammaCutoff"));
+  m_fringe2Phase.uniform("intensityCutoff", ResolveProperty<float>("intensityCutoff"));
+
+  m_gaussFilter.init();
+  m_gaussFilter.setImageDimensions( width, height );
+
   m_phaseFilter.init();
   m_phaseFilter.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_phaseFilter.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/HorizontalMedianFilter.frag"));
@@ -31,10 +37,6 @@ void SixFringeProcessor::Init( )
   //  In the shader these are floating point, so ensure that they are with a cast
   m_phaseFilter.uniform("width", ( float )width );
   m_phaseFilter.uniform("height", ( float )height );
-  
-  
-  m_gaussFilter.init();
-  m_gaussFilter.setImageDimensions( width, height );
   
   m_gammaEroder.init();
   m_gammaEroder.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -56,8 +58,7 @@ void SixFringeProcessor::Init( )
   m_wrapped2Unwrapped.uniform("filteredPhase", 1);
   m_wrapped2Unwrapped.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
   m_wrapped2Unwrapped.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
-  m_wrapped2Unwrapped.uniform("gammaCutoff", ResolveProperty<float>("gammaCutoff"));
-
+  
   m_phase2Depth.init();
   m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
   m_phase2Depth.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Phase2Coordinate.frag"));
@@ -65,7 +66,6 @@ void SixFringeProcessor::Init( )
   m_phase2Depth.bindAttributeLocation("vertTexCoord", 1);
   m_phase2Depth.link();
   m_phase2Depth.uniform("actualPhase", 0);
-  m_phase2Depth.uniform("gammaCutoff", ResolveProperty<float>("gammaCutoff"));
 
   // Camera Properties
   m_phase2Depth.uniform("cameraWidth", width);
@@ -124,10 +124,9 @@ void SixFringeProcessor::Process( void )
   m_imageProcessor.bind();
   {
 	_wrapPhase( GL_COLOR_ATTACHMENT0, m_inputBuffer );
-	_filterPhase( GL_COLOR_ATTACHMENT1, m_phaseMap0 );
-	_gaussianFilter( GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT1, m_phaseMap1, m_phaseMap2);
-	//_erodeGamma( GL_COLOR_ATTACHMENT2, m_phaseMap1 );
-	_unwrapPhase(GL_COLOR_ATTACHMENT2, m_phaseMap0, m_phaseMap1);
+	_gaussianFilter( GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, m_phaseMap0, m_phaseMap1);
+	_unwrapPhase(GL_COLOR_ATTACHMENT1, m_phaseMap0, m_phaseMap2);
+	_filterPhase( GL_COLOR_ATTACHMENT2, m_phaseMap1 );
 	_calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap2 );
   }
   m_imageProcessor.unbind();
@@ -157,6 +156,7 @@ void SixFringeProcessor::_filterPhase( GLenum drawBuffer, Texture& phase2Filter 
   m_imageProcessor.process( );
 }
 
+// TODO - Take this out I think
 void SixFringeProcessor::_erodeGamma( GLenum drawBuffer, Texture& gamma2Filter )
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );

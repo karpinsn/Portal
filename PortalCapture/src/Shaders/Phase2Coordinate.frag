@@ -6,8 +6,6 @@ precision highp sampler2D;
 
 uniform sampler2D actualPhase;
 
-uniform float gammaCutoff;
-
 uniform int fringePitch;
 uniform float Phi0;
 
@@ -46,9 +44,9 @@ vec2 FixDistortion(vec2 uvCoord, mat3 intrinsic, float distCoeff[5])
 
 void main()
 {
-    float pi = 3.14159;
+    float pi = 3.14159265;
     vec4 phase = texture(actualPhase, fragTexCoord);
-    if(phase.a < gammaCutoff)
+    if( phase.a < 1.0 )
     { 
         coordinateMap = vec4(0.0); 
         return;

@@ -6,13 +6,16 @@ this.NewCalibrationData("ProjectorConfig", "ProjectorCalibration.js");
 this.NewMultiBuffer("Cam1Buffer", false, true, 2); // 2 since we are using six fringe
 
 // Set the properties on the main process
-Process.outputWidth = 800;
-Process.outputHeight = 600;
+Process.outputWidth = 512;
+Process.outputHeight = 512;
 Process.fringeFrequency = 16.0;
+Process.pointSize = 3.0;
 
 // Now create capture contexts from our cameras and add them to the process context
 this.NewCaptureContext("Capture1", "Cam1", "Cam1Buffer");
 this.NewSixFringeProcessor("Processor1", "Cam1Buffer", "Cam1Config", "ProjectorConfig");
+Processor1.gammaCutoff = .45;
+Processor1.intensityCutoff = .1176;
 Processor1.fringePitch1 = 60;
 Processor1.fringePitch2 = 63;
 Processor1.Phi0 = -5.1313;

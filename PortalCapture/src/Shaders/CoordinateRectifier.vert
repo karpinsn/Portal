@@ -19,14 +19,13 @@ void main()
 { 
     vec4 newVert = texture(coordinateMap, vertTexCoord);
 
-    // If the vertex is invalid we will incur a performance hit for pushing 
-    // through the pipeline. Instead set it to just the vert location and discard
-    // in the fragment
-    if( any( isinf( newVert ) ) || any( isnan( newVert ) ) )
+    // Check if we are supposed to discard this
+    if( newVert.a == 0.0 )
     {
-        newVert = vec4( vert, 1.0 );
+        // Just set the vec to an invalid value and it will go away
+        newVert = vec4( vec3( -100.0 ), 0.0 );
     }
-    	
+   	
 	//	Need Modelview for the boundingbox. That will give us world coord relative to the box
 	fragPosition = newVert.xyz;  
     gl_PointSize = 5.0;
