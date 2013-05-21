@@ -37,16 +37,6 @@ void SixFringeProcessor::Init( )
   //  In the shader these are floating point, so ensure that they are with a cast
   m_phaseFilter.uniform("width", ( float )width );
   m_phaseFilter.uniform("height", ( float )height );
-  
-  m_gammaEroder.init();
-  m_gammaEroder.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
-  m_gammaEroder.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/GammaErode.frag"));
-  m_gammaEroder.bindAttributeLocation("vert", 0);
-  m_gammaEroder.bindAttributeLocation("vertTexCoord", 1);
-  m_gammaEroder.link();
-  m_gammaEroder.uniform("image", 0);
-  m_gammaEroder.uniform("width", ( float )width );
-  m_gammaEroder.uniform("height", ( float )height );
 
   m_wrapped2Unwrapped.init();
   m_wrapped2Unwrapped.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -153,16 +143,6 @@ void SixFringeProcessor::_filterPhase( GLenum drawBuffer, Texture& phase2Filter 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_phaseFilter.bind( );
   phase2Filter.bind( GL_TEXTURE0 );
-  m_imageProcessor.process( );
-}
-
-// TODO - Take this out I think
-void SixFringeProcessor::_erodeGamma( GLenum drawBuffer, Texture& gamma2Filter )
-{
-  m_imageProcessor.bindDrawBuffer( drawBuffer );
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-  m_gammaEroder.bind( );
-  gamma2Filter.bind( GL_TEXTURE0 );
   m_imageProcessor.process( );
 }
 

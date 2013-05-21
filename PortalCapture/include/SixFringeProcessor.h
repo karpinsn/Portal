@@ -70,7 +70,6 @@ private:
   
   ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
-  ShaderProgram m_gammaEroder;
   GaussProgram	m_gaussFilter;
   ShaderProgram m_wrapped2Unwrapped;
   ShaderProgram m_phase2Depth;
@@ -100,7 +99,6 @@ signals:
 private:
   void _wrapPhase( GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer );
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
-  void _erodeGamma( GLenum drawBuffer, Texture& gamma2Filter );
   void _gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer );
   void _unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase );
   void _calculateDepth( GLenum drawBuffer, Texture& phase );
