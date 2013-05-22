@@ -45,16 +45,30 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   glEnable( GL_PROGRAM_POINT_SIZE );
 
   // Initialize our shaders --------------------------------------------------------
-  // Shaders Pass 1 - Rectification
-  m_coordinateRectifier.init( );
-  m_coordinateRectifier.attachShader( new Shader( GL_VERTEX_SHADER, "Shaders/CoordinateRectifier.vert" ) );
-  m_coordinateRectifier.attachShader( new Shader( GL_FRAGMENT_SHADER, "Shaders/CoordinateRectifier.frag" ) );
-  m_coordinateRectifier.link( );
-  m_coordinateRectifier.uniform( "coordinateMap", 0 );
-  m_coordinateRectifier.uniform( "blendMap", 1 );
-  m_coordinateRectifier.uniform( "modelView", modelView );
-  m_coordinateRectifier.uniform( "projectionMatrix", projection );
-  m_coordinateRectifier.uniform( "pointSize", ResolveProperty<float>( "pointSize" ) );
+  // Shaders Pass 1 - Rectification: Depth
+  m_coordinateRectifierPass1.init( );
+  m_coordinateRectifierPass1.attachShader( new Shader( GL_VERTEX_SHADER, "Shaders/CoordinateRectifier.vert" ) );
+  m_coordinateRectifierPass1.attachShader( new Shader( GL_FRAGMENT_SHADER, "Shaders/CoordinateRectifierDepth.frag") );
+  m_coordinateRectifierPass1.link( );
+  m_coordinateRectifierPass1.uniform( "coordinateMap", 0 );
+  m_coordinateRectifierPass1.uniform( "modelView", modelView );
+  m_coordinateRectifierPass1.uniform( "projectionMatrix", projection );
+  m_coordinateRectifierPass1.uniform( "pointSize", ResolveProperty<float>( "pointSize" ) );
+  m_coordinateRectifierPass1.uniform( "delta", .1f );
+
+  // Shaders Pass 2 - Rectification: Splatting
+  m_coordinateRectifierPass2.init( );
+  m_coordinateRectifierPass2.attachShader( new Shader( GL_VERTEX_SHADER, "Shaders/CoordinateRectifier.vert" ) );
+  m_coordinateRectifierPass2.attachShader( new Shader( GL_FRAGMENT_SHADER, "Shaders/CoordinateRectifierSplat.frag" ) );
+  m_coordinateRectifierPass2.link( );
+  m_coordinateRectifierPass2.uniform( "coordinateMap", 0 );
+  m_coordinateRectifierPass2.uniform( "blendMap", 1 );
+  m_coordinateRectifierPass2.uniform( "depthMap", 2 );
+  m_coordinateRectifierPass2.uniform( "width", width );
+  m_coordinateRectifierPass2.uniform( "height", height );
+  m_coordinateRectifierPass2.uniform( "modelView", modelView );
+  m_coordinateRectifierPass2.uniform( "projectionMatrix", projection );
+  m_coordinateRectifierPass2.uniform( "pointSize", ResolveProperty<float>( "pointSize" ) );
 
   // Shader Pass 2 - Encoding
   m_coordinate2Holo.init( );
@@ -78,6 +92,7 @@ void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
   m_blendMap.init( blendImage.cols, blendImage.rows, GL_RGBA, GL_RGB, GL_UNSIGNED_BYTE );
   m_blendMap.transferToTexture( blendImage );
 
+  m_rectifiedDepthMap.init( width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
   m_rectifiedCoordinateMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_encodedMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 
@@ -105,6 +120,9 @@ void PortalProcessor::OutputFringe( int processorNumber )
 
   m_displayMode = Fringe;
 }
+
+void PortalProcessor::OutputDepth( )
+  { m_displayMode = Depth; } 
 
 void PortalProcessor::OutputCoord( )
   { m_displayMode = Coord; }
@@ -137,19 +155,23 @@ void PortalProcessor::_Process( void )
   // Now that we have processed, we need to rectify everything into one scan
   m_imageProcessor.bind();
   {
-	// Shader pass 1 - Rectification
-	m_coordinateRectifier.bind( );
-	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Make sure we clear to transparent
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	m_blendMap.bind( GL_TEXTURE1 );
+	// Shader pass 1 - Rectification: Depth
+	// We need to render to the depth buffer first so that we can figure out if we need
+	// to cull geometry in the second pass (Actual Splatting)
+	m_coordinateRectifierPass1.bind( );
+	m_imageProcessor.setTextureAttachPoint( m_rectifiedDepthMap, GL_DEPTH_ATTACHMENT ); // Make the depth render to our texture
+	_RenderProcessors( );
+	m_imageProcessor.resetDepthBuffer( ); // Set the depth buffer back so that we dont erase the data
 
-	// For each processor, render it in the scene
-	for ( int processor = 0; processor < (int)m_captureProcessors.size(); ++processor )
-	{ 
-	  m_captureProcessors[processor].first->BindDepthMap( GL_TEXTURE0 ); 
-	  m_captureProcessors[processor].second->draw( );
-	}
+	// Shader pass 2 - Rectification: Splatting
+	// This is the actual splatting pass that will render out the rectified coordinate map
+	// via splatting of the coordinates
+	m_coordinateRectifierPass2.bind( );
+	m_blendMap.bind( GL_TEXTURE1 );
+	m_rectifiedDepthMap.bind( GL_TEXTURE2 );
+	glDisable( GL_DEPTH_TEST ); // Disable depth test for this pass, we will manually do it
+	_RenderProcessors( );
+	glEnable( GL_DEPTH_TEST ); // Now put it back
 
 	// Shader pass 2 - Encoding
 	m_coordinate2Holo.bind( );
@@ -175,6 +197,9 @@ void PortalProcessor::_Output( void )
 	  case Fringe:
 		m_captureProcessors[m_displayNumber].first->BindFringeImage( GL_TEXTURE0 );
 		break;
+	  case Depth:
+		m_rectifiedDepthMap.bind( GL_TEXTURE0 );
+		break;
 	  case Coord:
 		m_rectifiedCoordinateMap.bind( GL_TEXTURE0 );
 		break;
@@ -185,5 +210,19 @@ void PortalProcessor::_Output( void )
 	
 	// Now process into the output buffer
 	m_imageProcessor.process( );
+  }
+}
+
+void PortalProcessor::_RenderProcessors( )
+{
+  m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Make sure we clear to transparent
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
+  // For each processor, render it in the scene
+  for ( int processor = 0; processor < (int)m_captureProcessors.size(); ++processor )
+  { 
+	m_captureProcessors[processor].first->BindDepthMap( GL_TEXTURE0 ); 
+	m_captureProcessors[processor].second->draw( );
   }
 }

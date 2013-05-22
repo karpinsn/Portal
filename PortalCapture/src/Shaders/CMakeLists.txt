@@ -20,7 +20,8 @@ set(SHADER_FRAG_SOURCES
     Phase2Coordinate.frag
     Depth2Holo.frag
 	RenderTexture.frag
-	CoordinateRectifier.frag
+    CoordinateRectifierDepth.frag
+    CoordinateRectifierSplat.frag
     Coordinate2Holo.frag
 )
 

@@ -27,7 +27,7 @@ void main()
     }
    	
 	//	Need Modelview for the boundingbox. That will give us world coord relative to the box
-	fragPosition = newVert.xyz;  
-    gl_PointSize = 5.0;
-    gl_Position = projectionMatrix * modelView * newVert; 
+    fragPosition = newVert.xyz;  
+    gl_PointSize = pointSize;
+    gl_Position  = projectionMatrix * modelView * newVert; 
 } 

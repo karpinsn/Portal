@@ -62,6 +62,7 @@ private:
   enum OutputMode
   {
 	Fringe,
+	Depth,
 	Coord,
 	Holo
   };
@@ -70,11 +71,14 @@ private:
  
   shared_ptr<IWriteBuffer> m_outputBuffer;
 
-  ShaderProgram m_coordinateRectifier;
+  ShaderProgram m_coordinateRectifierPass1;
+  ShaderProgram m_coordinateRectifierPass2;
   ShaderProgram m_coordinate2Holo;
   ShaderProgram m_renderTexture;
+  
 
   Texture	m_blendMap;
+  Texture	m_rectifiedDepthMap;
   Texture	m_rectifiedCoordinateMap;
   Texture	m_encodedMap;
 
@@ -95,6 +99,11 @@ public slots:
   * Outputs the fringe from the specified processor whenever _Output() is called.
   */
   void OutputFringe( int processorNumber );
+
+ /** 
+  * Outputs the unified depth map whenever _Output() is called.
+  */
+  void OutputDepth( );
 
  /**
   * Outputs the unified coordinate map whenever _Output() is called.
@@ -126,6 +135,11 @@ private:
   * Outputs whatever the currently selected output is to the output buffer
   */
   void _Output( void );
+
+ /**
+  * Renders out each processor to the currently bound FBO
+  */
+  void _RenderProcessors( );
 };
 
 #endif	// _PORTAL_PORTAL_PROCESSOR_H_
