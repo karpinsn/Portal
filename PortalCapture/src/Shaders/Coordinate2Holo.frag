@@ -39,7 +39,7 @@ void main()
 
 	holoImage = vec4((1.0 - sin(angularFrequency * projectorX)) * .5, 
 						(1.0 - cos(angularFrequency * projectorX)) * .5, 
-						cos(stairAngularFrequency * (projectorX - (b * (1.0 / stepHeight) * stepWidth)) + pi) * (stepHeight / 3.0) + (stepHeight / 2.0) + b, 
+						cos(stairAngularFrequency * (projectorX - ((b / stepHeight) * stepWidth)) + pi) * (stepHeight / 4.5) + (stepHeight / 2.0) + b, 
 						1.0);
 }
 

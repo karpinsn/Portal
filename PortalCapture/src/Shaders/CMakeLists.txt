@@ -15,7 +15,6 @@ set(SHADER_FRAG_SOURCES
 	Fringe2WrappedPhase.frag
 	HorizontalMedianFilter.frag
 	PhaseFilter.frag
-    GammaErode.frag
     Wrapped2Unwrapped.frag
 	Phase2Depth.frag
     Phase2Coordinate.frag
