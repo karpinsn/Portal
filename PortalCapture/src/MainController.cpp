@@ -34,6 +34,42 @@ void MainController::Init(QString initScriptFilename)
 	m_interface->PushThis("Main");  // We are now the new 'this'
 	m_interface->AddObject(m_interface, "Global");
 	m_interface->AddObject(m_processContext, "Process");
+	
+	// Add our object types
+	m_interface->AddObjectType<CalibrationData>( "CalibrationData" );
+	m_interface->AddObjectType<OpenGLTripleBuffer, MainController*, bool, bool>( "OpenGLTripleBuffer" );
+	m_interface->AddObjectType<MultiOpenGLBuffer, int, bool, bool, MainController*>( "MultiOpenGLBuffer" );
+	m_interface->AddObjectType<CameraCapture, ITripleBuffer*, lens::ICamera*>( "CameraCapture" );
+	m_interface->AddObjectType<SixFringeProcessor, MultiOpenGLBuffer*, CalibrationData*, CalibrationData*>( "SixFringeProcessor" );
+	m_interface->AddObjectType<WebsocketStream, int, ITripleBuffer*>( "WebsocketStream" );
+
+	// LensTypes
+	m_interface->AddObjectType<lens::OpenCVCamera>( "OpenCVCamera" );
+	#ifdef USE_FILE_CAMERA
+	m_interface->AddObjectType<lens::FileCamera>( "FileCamera" );
+	#endif
+	#ifdef USE_IC_CAMERA
+	m_interface->AddObjectType<lens::ICCamera>( "ICCamera" );
+	#endif
+	#ifdef USE_JAI_CAMERA
+	m_interface->AddObjectType<lens::JAICamera>( "JAICamera" );
+	#endif
+	#ifdef USE_POINT_GREY_CAMERA
+	m_interface->AddObjectType<lens::PointGreyCamera>( "PointGreyCamera" );
+	m_interface->AddObjectType<lens::PointGreyCamera, >( "PointGreyCamera" );
+	#endif
+	#ifdef USE_PHANTOM_CAMERA
+	m_interface->AddObjectType<lens::PhantomCamera>( "PhantomCamera" );
+	#endif
+
+	// Register any types we need to pass around
+	//m_interface->RegisterMetaObjectType<lens::ICamera>( );
+	m_interface->RegisterMetaObjectType<ITripleBuffer>( );
+	m_interface->RegisterMetaObjectType<CalibrationData>( );
+	m_interface->RegisterMetaObjectType<MainController>( );
+	m_interface->RegisterMetaObjectType<OpenGLTripleBuffer>( );
+	m_interface->RegisterMetaObjectType<MultiOpenGLBuffer>( );
+	
 	m_interface->RunScript(initScriptFilename);
   }
 
@@ -56,7 +92,7 @@ shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
 void MainController::Start(void)
 { 
   wrench::Logger::logDebug("Starting ...");
-  QTimer::singleShot(0, this, SLOT( StartSystem() )); 
+  QTimer::singleShot(0, this, SLOT( StartSystem( ) ) ); 
 }
 
 void MainController::Close(void)
@@ -73,121 +109,4 @@ void MainController::StartSystem(void)
 	context->second->Start( );
   }
   wrench::Logger::logDebug("Started!");
-}
-
-void MainController::InitProcessContext( QString outputBufferName )
-{
-  auto outputBuffer = m_interface->ResolveObject<IWriteBuffer>(outputBufferName);
-  m_processContext->Init( outputBuffer );
-}
-
-// ---------------------- Factory Methods for the scripting interface
-
-void MainController::NewBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext )
-{
-  // Make the buffer then add it to the scripting interface
-  auto buffer = make_shared<OpenGLTripleBuffer>( this, makeReadContext, makeWriteContext );
-  m_interface->AddObject(buffer, bufferName);
-}
-
-void MainController::NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount)
-{
-  // Make the buffer then add it to the scripting interface
-  auto buffer = make_shared<MultiOpenGLBuffer>( bufferCount, makeReadContext, makeWriteContext, this );
-  m_interface->AddObject(buffer, bufferName);
-}
-
-void MainController::NewCamera( QString cameraName, QString cameraType, QString configScript )
-{
-  shared_ptr<lens::ICamera> camera;
-
-  if( 0 == cameraType.compare( QString("OpenCV") ) )
-  {
-	camera = make_shared<lens::OpenCVCamera>( );
-  }
-  // Add possibilities of more cameras based on config
-  #ifdef USE_FILE_CAMERA
-  else if( 0 == cameraType.compare( QString("FileCamera") ) )
-  {
-	camera = make_shared<lens::FileCamera>( );
-  }
-  #endif
-  #ifdef USE_POINT_GREY_CAMERA
-  else if( 0 == cameraType.compare( QString("PointGrey") ) )
-  {
-	//	Create a point grey camera and instance it
-	camera = make_shared<lens::PointGreyCamera>( );
-  }
-  #endif //USE_POINT_GREY_CAMERA
- 
-  Utils::ThrowIfFalse(nullptr != camera, "Unknown camera requested, unable to instantiate");
-
-  if(nullptr != m_interface)
-  {
-	m_interface->AddObject( camera, cameraName );
-
-	if( !configScript.isNull( ) && !configScript.isEmpty( ) )
-	{
-	  m_interface->PushThis( cameraName );
-	  m_interface->RunScript( configScript );
-
-	  // Restore 'this' object once we are done
-	  m_interface->PopThis( );
-	}
-  }
-}
-
-void MainController::NewCaptureContext( QString contextName, QString cameraName, QString outputBufferName )
-{
-  // Init our output context
-  wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data()); 
-  auto buffer = m_interface->ResolveObject<IWriteBuffer>( outputBufferName );
-  auto camera = m_interface->ResolveObject<lens::ICamera>( cameraName );
-
-  auto context = make_shared<CameraCapture>( buffer, camera );
-  m_contexts.insert( make_pair( contextName, context) );
-	  
-  // Add our object to the script interface
-  m_interface->AddObject(context, contextName);
-}
-
-void MainController::NewSixFringeProcessor( QString contextName, QString inputBufferName, QString cameraCalibrationName, QString projectorCalibrationName )
-{
-  wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data()); 
-  auto buffer = m_interface->ResolveObject<MultiOpenGLBuffer>( inputBufferName );
-  auto cameraCalibration = m_interface->ResolveObject<CalibrationData>( cameraCalibrationName );
-  auto projectorCalibration = m_interface->ResolveObject<CalibrationData>( projectorCalibrationName );
-  auto context = make_shared<SixFringeProcessor>(buffer, cameraCalibration, projectorCalibration);
-  
-  m_processContext->AddProcessContext(context);
-
-  // Add our object to the script interface
-  m_interface->AddObject(context, contextName);
-}
-
-void MainController::NewStreamContext( QString contextName, int port, QString inputBufferName )
-{
-  wrench::Logger::logDebug("Creating (%s) context", contextName.toLocal8Bit().data());  
-  auto buffer = m_interface->ResolveObject<IReadBuffer>(inputBufferName);
- 
-  // Create our object and add to the list of contexts
-  auto context = make_shared<WebsocketStream> ( port, buffer );
-  m_contexts.insert( make_pair(contextName, context) );
-
-  // Add our object to the script interface
-  m_interface->AddObject(context, contextName);
-}
-
-void MainController::NewCalibrationData( QString calibrationObjectName, QString configScriptFilePath )
-{
-  wrench::Logger::logDebug( "Creating (%s) calibration data", calibrationObjectName.toLocal8Bit().data() );  
-  
-  // Create our calibration data and then set it to the new 'this' object
-  auto calibrationData = make_shared<CalibrationData>( );
-  m_interface->AddObject( calibrationData, calibrationObjectName );
-  m_interface->PushThis( calibrationObjectName );
-  m_interface->RunScript( configScriptFilePath );
-
-  // Restore 'this' object once we are done
-  m_interface->PopThis( );
 }

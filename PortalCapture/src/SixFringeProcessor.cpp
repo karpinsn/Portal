@@ -1,6 +1,6 @@
 #include "SixFringeProcessor.h"
 
-SixFringeProcessor::SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, shared_ptr<CalibrationData> cameraCalibration, shared_ptr<CalibrationData> projectorCalibration ) :
+SixFringeProcessor::SixFringeProcessor( MultiOpenGLBuffer* inputBuffer, CalibrationData* cameraCalibration, CalibrationData* projectorCalibration ) :
   // TODO - Remove Gauss Filter hardcoding
   m_isInit(false), m_gaussFilter(9), m_inputBuffer(inputBuffer), 
   m_cameraCalibration(cameraCalibration), m_projectorCalibration(projectorCalibration)
@@ -122,7 +122,7 @@ void SixFringeProcessor::Process( void )
   m_imageProcessor.unbind();
 }
 
-void SixFringeProcessor::_wrapPhase(GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer)
+void SixFringeProcessor::_wrapPhase(GLenum drawBuffer, MultiOpenGLBuffer* fringeBuffer)
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

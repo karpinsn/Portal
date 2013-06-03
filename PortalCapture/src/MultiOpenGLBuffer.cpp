@@ -1,7 +1,6 @@
 #include "MultiOpenGLBuffer.h"
 
-MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, bool makeReadContext, bool makeWriteContext, ISharedGLContextFactory* contextFactory) : 
-QObject( ), m_currentBufferIndex(0)
+MultiOpenGLBuffer::MultiOpenGLBuffer(::size_t bufferCount, bool makeReadContext, bool makeWriteContext, ISharedGLContextFactory* contextFactory) : m_currentBufferIndex(0)
 { 
   // Make all of the buffers that we need
   for ( ::size_t buffer = 0; buffer < bufferCount; ++buffer )
@@ -43,6 +42,20 @@ Texture& MultiOpenGLBuffer::StartWriteTexture( void )
 }
 
 void MultiOpenGLBuffer::WriteFinished( void )
+{
+  throw "UNIMPLEMENTED!!!!";
+}
+
+void MultiOpenGLBuffer::StartRead( void )
+{
+  throw "UNIMPLEMENTED!!!!";
+}
+const shared_ptr<IplImage> MultiOpenGLBuffer::ReadImage( void )
+{
+ throw "UNIMPLEMENTED!!!!";
+}
+
+const wrench::gl::Texture& MultiOpenGLBuffer::ReadTexture( void )
 {
   throw "UNIMPLEMENTED!!!!";
 }

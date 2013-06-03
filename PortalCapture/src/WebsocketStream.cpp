@@ -1,6 +1,6 @@
 #include "WebsocketStream.h"
 
-WebsocketStream::WebsocketStream(int port, shared_ptr<IReadBuffer> inputBuffer)
+WebsocketStream::WebsocketStream(int port, ITripleBuffer* inputBuffer)
 {
   // Open our socket connection
   m_socket.start(port);
@@ -26,7 +26,7 @@ WebsocketStream::WebsocketStream(int port, shared_ptr<IReadBuffer> inputBuffer)
   connect(m_socketStreamer, SIGNAL(Finished()), m_streamProcessorThread, SLOT(quit()));
   connect(m_streamProcessorThread, SIGNAL(finished()), m_streamProcessorThread, SLOT(deleteLater()));
   connect(m_socketStreamer, SIGNAL(Finished()), m_socketStreamer, SLOT(deleteLater()));
-  connect(inputBuffer.get( ), SIGNAL( WriteFilled( ) ), m_socketStreamer, SLOT( StreamFrame( ) ) );
+  connect(inputBuffer, SIGNAL( WriteFilled( ) ), m_socketStreamer, SLOT( StreamFrame( ) ) );
 }
 
 void WebsocketStream::Start(void)

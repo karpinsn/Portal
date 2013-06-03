@@ -30,9 +30,9 @@ file(GLOB
 #   Qt Files
 set(MOCS
     ../include/MainController.h
-    ../include/IReadBuffer.h
 	../include/OpenGLTripleBuffer.h
 	../include/MultiOpenGLBuffer.h
+    ../include/ITripleBuffer.h
     ../include/ScriptInterface.h
     ../include/DynamicallyScriptableQObject.h
     ../include/CameraCapture.h

@@ -38,7 +38,6 @@
 #include "DynamicallyScriptableQObject.h"
 #include "CalibrationData.h"
 
-#include "IWriteBuffer.h"
 #include "MultiOpenGLBuffer.h"
 
 #include "Utils.h"
@@ -64,9 +63,9 @@ class SixFringeProcessor : public DynamicallyScriptableQObject, public IProcessC
 private:
   DISALLOW_COPY_AND_ASSIGN(SixFringeProcessor);
 
-  shared_ptr<MultiOpenGLBuffer> m_inputBuffer;
-  shared_ptr<CalibrationData>	m_cameraCalibration;
-  shared_ptr<CalibrationData>	m_projectorCalibration;
+  MultiOpenGLBuffer* m_inputBuffer;
+  CalibrationData*	 m_cameraCalibration;
+  CalibrationData* 	 m_projectorCalibration;
   
   ShaderProgram m_fringe2Phase;
   ShaderProgram m_phaseFilter;
@@ -83,9 +82,9 @@ private:
   bool m_isInit;
 
 public:
-  SixFringeProcessor( shared_ptr<MultiOpenGLBuffer> inputBuffer, 
-					  shared_ptr<CalibrationData> cameraCalibration, 
-					  shared_ptr<CalibrationData> projectorCalibration );
+  SixFringeProcessor( MultiOpenGLBuffer* inputBuffer, 
+					  CalibrationData*   cameraCalibration, 
+					  CalibrationData*   projectorCalibration );
   void      Init( void );
   const int GetWidth( void );
   const int GetHeight( void );
@@ -97,7 +96,7 @@ signals:
   void ProcessedFrame( void );
 
 private:
-  void _wrapPhase( GLenum drawBuffer, shared_ptr<MultiOpenGLBuffer> fringeBuffer );
+  void _wrapPhase( GLenum drawBuffer, MultiOpenGLBuffer* fringeBuffer );
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
   void _gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer );
   void _unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase );

@@ -1,6 +1,6 @@
 #include "CameraCapture.h"
 
-CameraCaptureWorker::CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera) : 
+CameraCaptureWorker::CameraCaptureWorker(ITripleBuffer* outputBuffer, lens::ICamera* camera) : 
   m_running(false), m_currentChannelLoad(0), 
   m_outputBuffer(outputBuffer), m_dropFrame(false),
   m_camera(camera)
@@ -94,7 +94,7 @@ void CameraCaptureWorker::_FastPack(IplImage* src)
   }
 }
 
-CameraCapture::CameraCapture(shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera)
+CameraCapture::CameraCapture(ITripleBuffer* outputBuffer, lens::ICamera* camera)
 {
   m_workerThread = new QThread();
   m_worker = new CameraCaptureWorker( outputBuffer, camera );

@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QGLWidget>
 #include <QMutex>
+#include <QMetaType>
 
 #include <wrench\gl\Texture.h>
 
@@ -76,5 +77,7 @@ signals:
   //  Emitted when the write buffers have been filled up
   void WriteFilled( void );
 };
+
+Q_DECLARE_METATYPE(OpenGLTripleBuffer*)
 
 #endif // _PORTAL_CAPTURE_OPEN_GL_TRIPLE_BUFFER_H_

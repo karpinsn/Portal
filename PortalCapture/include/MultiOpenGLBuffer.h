@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QScriptEngine>
 #include <QtScript>
+#include <QMetaType>
 
 #include "ITripleBuffer.h"
 #include "OpenGLTripleBuffer.h"
@@ -32,7 +33,7 @@
 using namespace std;
 using namespace wrench::gl;
 
-class MultiOpenGLBuffer : public QObject, public IWriteBuffer
+class MultiOpenGLBuffer : public ITripleBuffer
 {
   Q_OBJECT
 
@@ -50,6 +51,11 @@ public:
   Texture&	StartWriteTexture( void );
   void		WriteFinished( void );
 
+  // Read Buffers
+  void						  StartRead( void );
+  const shared_ptr<IplImage>  ReadImage( void );
+  const wrench::gl::Texture&  ReadTexture( void );
+
   // Read buffers
   int						  GetWidth( void );
   int						  GetHeight( void );
@@ -60,5 +66,7 @@ signals:
   //  Emitted when the write buffers have been filled up
   void WriteFilled( void );
 };
+
+Q_DECLARE_METATYPE(MultiOpenGLBuffer*)
 
 #endif // _PORTAL_CAPTURE_MULTI_OPEN_GL_BUFFER_H_

@@ -44,7 +44,6 @@
 #include "SplatField.h"
 #include "CalibrationData.h"
 
-#include "IWriteBuffer.h"
 #include "MultiOpenGLBuffer.h"
 
 #include "Utils.h"
@@ -69,7 +68,7 @@ private:
 
   vector<pair<shared_ptr<IProcessContext>, shared_ptr<SplatField>>> m_captureProcessors;
  
-  shared_ptr<IWriteBuffer> m_outputBuffer;
+  shared_ptr<ITripleBuffer> m_outputBuffer;
 
   ShaderProgram m_coordinateRectifierPass1;
   ShaderProgram m_coordinateRectifierPass2;
@@ -92,7 +91,7 @@ private:
 public:
   PortalProcessor(void);
   void AddProcessContext( shared_ptr<IProcessContext> processContext );
-  void Init( shared_ptr<IWriteBuffer> outputBuffer );
+  void Init( shared_ptr<ITripleBuffer> outputBuffer );
 
 public slots:
  /**

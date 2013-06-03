@@ -10,6 +10,7 @@
 #include <QScriptable>
 #include <QScriptValue>
 #include <QScriptEngine>
+#include <QMetaType>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -49,5 +50,7 @@ public slots:
   QVariantList		  GetExtrinsicAsVariant( void );
   const glm::mat4x3&  GetExtrinsicAsMat( void ) const;
 };
+
+Q_DECLARE_METATYPE(CalibrationData*)
 
 #endif  // _PORTAL_PROCESS_CALIBRATION_DATA_

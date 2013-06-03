@@ -19,7 +19,7 @@
 
 #include "IContext.h"
 #include "Utils.h"
-#include "IWriteBuffer.h"
+#include "ITripleBuffer.h"
 
 using namespace std;
 
@@ -42,12 +42,12 @@ private:
   int	m_currentChannelLoad;
   bool	m_dropFrame;
 
-  shared_ptr<IWriteBuffer>	m_outputBuffer;
-  shared_ptr<lens::ICamera> m_camera;
+  ITripleBuffer*	m_outputBuffer;
+  lens::ICamera* m_camera;
   shared_ptr<IplImage>		m_packFrame;
 
 public:
-  CameraCaptureWorker(shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera);
+  CameraCaptureWorker(ITripleBuffer* outputBuffer, lens::ICamera* camera);
   bool IsRunning( void );
 
 signals:
@@ -76,7 +76,7 @@ private:
   CameraCaptureWorker* m_worker;
 
 public:
-  CameraCapture( shared_ptr<IWriteBuffer> outputBuffer, shared_ptr<lens::ICamera> camera );
+  CameraCapture( ITripleBuffer* outputBuffer, lens::ICamera* camera );
 
 public slots:
   void Start( );

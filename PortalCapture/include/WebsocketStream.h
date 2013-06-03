@@ -25,9 +25,9 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include "ITripleBuffer.h"
 #include "IContext.h"
 #include "Utils.h"
-#include "IReadBuffer.h"
 #include "OpenGLTripleBuffer.h"
 
 using namespace std;
@@ -69,11 +69,11 @@ class WebsocketStreamer : public QObject
 	DISALLOW_COPY_AND_ASSIGN(WebsocketStreamer);
 	bool m_running;
 	antenna::BaseStation& m_socket;
-	shared_ptr<IReadBuffer> m_inputBuffer;
+	ITripleBuffer* m_inputBuffer;
 	shared_ptr<IplImage>	m_formatConverterImage;
 
   public:
-	WebsocketStreamer(antenna::BaseStation& socket, shared_ptr<IReadBuffer> buffer) : m_socket(socket), m_inputBuffer(buffer), m_running(false) { };
+	WebsocketStreamer(antenna::BaseStation& socket, ITripleBuffer* buffer) : m_socket(socket), m_inputBuffer(buffer), m_running(false) { };
 	bool IsRunning( void );
 	void Stop(void);
 
@@ -102,7 +102,7 @@ private:
   WebsocketStreamer*  m_socketStreamer;
 
 public:
-  WebsocketStream(int port, shared_ptr<IReadBuffer> inputBuffer);
+  WebsocketStream(int port, ITripleBuffer* inputBuffer);
   void Start( );
 };
 

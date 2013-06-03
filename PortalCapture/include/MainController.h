@@ -30,6 +30,8 @@
 #include <QObject>
 #include <QScriptEngine>
 #include <QGLWidget>
+#include <QMetaType>
+
 #include <memory>
 #include <assert.h>
 #include <map>
@@ -82,23 +84,13 @@ public slots:
   void Start(void);
   void Close(void);
 
-  // Process Initalizing methods
-  void InitProcessContext( QString outputBufferName);
-
-  // Factory methods
-  void NewBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext );
-  void NewMultiBuffer( QString bufferName, bool makeReadContext, bool makeWriteContext, int bufferCount);
-  void NewCamera( QString cameraName, QString cameraType, QString configScript );
-  void NewCaptureContext( QString contextName, QString cameraName, QString outputBufferName );
-  void NewSixFringeProcessor( QString contextName, QString inputBufferName, QString cameraCalibrationName, QString projectorCalibrationName );
-  void NewStreamContext( QString contextName, int port, QString inputBufferName );
-  void NewCalibrationData( QString calibrationObjectName, QString configScriptFilePath );
-
 private slots:
   void StartSystem(void);
 
 signals:
   void Finished(void);
 };
+
+Q_DECLARE_METATYPE(MainController*)
 
 #endif	// _PORTAL_CAPTURE_MAIN_CONTROLLER_H_

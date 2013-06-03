@@ -78,3 +78,11 @@ void ScriptInterface::RunScript(QString filename)
 	wrench::Logger::logError( "Uncaught exception at line: %d %s", line, result.toString().toLocal8Bit().data() );
   }
 }
+
+void ScriptInterface::RunScript( QObject* obj, QString filename )
+{
+  QScriptContext* context = m_scriptEngine.pushContext( );
+  context->setThisObject( m_scriptEngine.toScriptValue( obj ) );
+  RunScript( filename );
+  PopThis( );
+}

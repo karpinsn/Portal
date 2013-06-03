@@ -9,7 +9,7 @@ void PortalProcessor::AddProcessContext( shared_ptr<IProcessContext> processCont
   m_captureProcessors.push_back( make_pair( processContext, nullptr ) );
 }
 
-void PortalProcessor::Init( shared_ptr<IWriteBuffer> outputBuffer )
+void PortalProcessor::Init( shared_ptr<ITripleBuffer> outputBuffer )
 {
   Utils::ThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
   Utils::ThrowIfFalse(0 < m_captureProcessors.size(), "Must have an input capture buffer");

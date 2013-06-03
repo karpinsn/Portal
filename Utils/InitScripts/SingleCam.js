@@ -1,9 +1,14 @@
+var cam1 = new OpenCVCamera( );
+Global.RunScript(cam1, "PointGreyConfig.js");
+
+// Load up the calibration files
+var cam1Calibration = new CalibrationData( );
+var projectorCalibration = new CalibrationData( );
+Global.RunScript( cam1Calibration, "Camera1Calibration.js" );
+Global.RunScript( projectorCalibration, "ProjectorCalibration.js" );
+
 //	Create our new camera, its configuration, and its buffer
-this.NewCamera("Cam1", "PointGrey", "PointGreyConfig.js");
-//this.NewCamera("Cam1", "FileCamera", "FileCameraConfig.js");
-this.NewCalibrationData("Cam1Config", "Camera1Calibration.js");
-this.NewCalibrationData("ProjectorConfig", "ProjectorCalibration.js");
-this.NewMultiBuffer("Cam1Buffer", false, true, 2); // 2 since we are using six fringe
+var cam1Buffer = new MultiOpenGLBuffer( false, false, 2, this);
 
 // Set the properties on the main process
 Process.outputWidth = 512;
@@ -12,21 +17,21 @@ Process.fringeFrequency = 16.0;
 Process.pointSize = 3.0;
 
 // Now create capture contexts from our cameras and add them to the process context
-this.NewCaptureContext("Capture1", "Cam1", "Cam1Buffer");
-this.NewSixFringeProcessor("Processor1", "Cam1Buffer", "Cam1Config", "ProjectorConfig");
-Processor1.gammaCutoff = .45;
-Processor1.intensityCutoff = .1176;
-Processor1.fringePitch1 = 60;
-Processor1.fringePitch2 = 63;
-Processor1.Phi0 = -5.1313;
+var capture1 = new CaptureContext( cam1, cam1Buffer );
+var processor1 = new NewSixFringeProcessor( cam1Buffer, cam1Calibration, projectorCalibration );
+processor1.gammaCutoff = .45;
+processor1.intensityCutoff = .1176;
+processor1.fringePitch1 = 60;
+processor1.fringePitch2 = 63;
+processor1.Phi0 = -5.1313;
 
 // Finally, init our process context and its output context
-this.NewBuffer("StreamBuffer", true, false);
-this.InitProcessContext("StreamBuffer");
-this.NewStreamContext("Stream", 7681, "StreamBuffer");
+var streamBuffer = new OpenGLTripleBuffer( this, true, false );
+Process.InitProcessContext( streamBuffer );
+var streamContext = new WebsocketStream( 7681, streamBuffer );
 
 // Once we fill our capture buffer we want to process it
-Cam1Buffer.WriteFilled.connect(Process.updateGL);
+cam1Buffer.WriteFilled.connect(Process.updateGL);
 
 //  This will call Start() on all of our contexts
 this.Start();
