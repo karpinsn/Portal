@@ -4,12 +4,12 @@ PortalProcessor::PortalProcessor( void ) :
   m_isInit(false), m_displayMode(Holo), m_displayNumber(0)
 { }
 
-void PortalProcessor::AddProcessContext( shared_ptr<IProcessContext> processContext )
+void PortalProcessor::AddProcessContext( IProcessContext* processContext )
 {
   m_captureProcessors.push_back( make_pair( processContext, nullptr ) );
 }
 
-void PortalProcessor::Init( shared_ptr<ITripleBuffer> outputBuffer )
+void PortalProcessor::Init( ITripleBuffer* outputBuffer )
 {
   Utils::ThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
   Utils::ThrowIfFalse(0 < m_captureProcessors.size(), "Must have an input capture buffer");

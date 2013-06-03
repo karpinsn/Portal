@@ -1,15 +1,20 @@
 // Create our cameras
-this.NewCamera("Cam1", "PointGrey", "Camera1Config.js");
-this.NewCamera("Cam2", "PointGrey", "Camera2Config.js");
+var cam1 = new PointGreyCamera( );
+var cam2 = new PointGreyCamera( );
+Global.RunScript( cam1, "Camera1Config.js" );
+Global.RunScript( cam2, "Camera2Config.js" );
 
 // Load our calibration data
-this.NewCalibrationData("Cam1Config", "Camera1Calibration.js");
-this.NewCalibrationData("Cam2Config", "Camera2Calibration.js");
-this.NewCalibrationData("ProjectorConfig", "ProjectorCalibration.js");
+var cam1Config = new CalibrationData( );
+var cam2Config = new CalibrationData( );
+var projectorConfig = new CalibrationData( );
+Global.RunScript( cam1Config, "Camera1Calibration.js" );
+Global.RunScript( cam2Config, "Camera2Calibration.js" );
+Global.RunScript( projectorConfig, "ProjectorCalibration.js" );
 
 // Buffers for our cameras
-this.NewMultiBuffer("Cam1Buffer", false, true, 2); // 2 Since we are using six fringe
-this.NewMultiBuffer("Cam2Buffer", false, true, 2); 
+var cam1Buffer = new MultiOpenGLBuffer(2, false, true, this); // 2 Since we are using six fringe
+var cam2Buffer = new MultiOpenGLBuffer(2, false, true, this); 
 
 // Set the properties on the main process
 Process.outputWidth = 512;
@@ -18,30 +23,33 @@ Process.fringeFrequency = 16.0;
 Process.pointSize = 3.0;
 
 // Now create capture contexts from our cameras and add them to the process context
-this.NewCaptureContext("Capture1", "Cam1", "Cam1Buffer");
-this.NewSixFringeProcessor("Processor1", "Cam1Buffer", "Cam1Config", "ProjectorConfig");
-Processor1.gammaCutoff = .45;
-Processor1.intensityCutoff = .1176;
-Processor1.fringePitch1 = 60;
-Processor1.fringePitch2 = 63;
-Processor1.Phi0 = -5.1313;
+var capture1 = new CameraCapture( cam1Buffer, cam1 );
+var processor1 = new SixFringeProcessor( cam1Buffer, cam1Config, projectorConfig );
+processor1.gammaCutoff = .45;
+processor1.intensityCutoff = .1176;
+processor1.fringePitch1 = 60;
+processor1.fringePitch2 = 63;
+processor1.Phi0 = -5.1313;
+Process.AddProcessContext(processor1);
 
-this.NewCaptureContext("Capture2", "Cam2", "Cam2Buffer");
-this.NewSixFringeProcessor("Processor2", "Cam2Buffer", "Cam2Config", "ProjectorConfig");
-Processor2.gammaCutoff = .45;
-Processor2.intensityCutoff = .1176;
-Processor2.fringePitch1 = 60;
-Processor2.fringePitch2 = 63;
-Processor2.Phi0 = -5.1313;
+var capture2 = new CameraCapture( cam2Buffer, cam2 );
+var processor2 = new SixFringeProcessor( cam2Buffer, cam2Config, projectorConfig );
+processor2.gammaCutoff = .45;
+processor2.intensityCutoff = .1176;
+processor2.fringePitch1 = 60;
+processor2.fringePitch2 = 63;
+processor2.Phi0 = -5.1313;
+Process.AddProcessContext(processor2);
 
 // Finally, init our process context and its output context
-this.NewBuffer("StreamBuffer", true, false);
-this.InitProcessContext("StreamBuffer");
-this.NewStreamContext("Stream", 7681, "StreamBuffer");
+var streamBuffer = new OpenGLTripleBuffer( this, true, false );
+Process.Init( streamBuffer );
+var streamContext = new WebsocketStream( 7681, streamBuffer );
 
 // Once we fill our capture buffer we want to process it
-Cam1Buffer.WriteFilled.connect(Process.updateGL);
+cam1Buffer.WriteFilled.connect( Process.updateGL );
 
-//  This will call Start() on all of our contexts
-this.Start();
-
+// Now start up our contexts
+streamContext.Start( );
+capture1.Start( );
+capture2.Start( );

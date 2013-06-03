@@ -36,8 +36,8 @@ class IStreamContext : public QObject, public IContext
 {
   Q_OBJECT
 
-public:
-  virtual void Start( ) = 0;
+public slots:
+  virtual void Start( void ) = 0;
 };
 
 class WebsocketProcessor : public QObject
@@ -103,7 +103,9 @@ private:
 
 public:
   WebsocketStream(int port, ITripleBuffer* inputBuffer);
-  void Start( );
+
+public slots:
+  void Start( void );
 };
 
 #endif	// _PORTAL_STREAM_WEBSOCKET_STREAM_H_

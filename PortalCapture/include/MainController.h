@@ -76,7 +76,7 @@ private:
   shared_ptr<PortalProcessor>		  m_processContext; //  Main Context : Runs on UI thread
   
 public:
-  MainController( shared_ptr<ScriptInterface> scriptInterface );
+  MainController( shared_ptr<ScriptInterface> scriptInterface = nullptr );
   void Init(QString initScriptFilename);
   shared_ptr<QGLWidget> MakeSharedContext(void);
 
@@ -84,10 +84,8 @@ public slots:
   void Start(void);
   void Close(void);
 
-private slots:
-  void StartSystem(void);
-
 signals:
+  void Started(void);
   void Finished(void);
 };
 

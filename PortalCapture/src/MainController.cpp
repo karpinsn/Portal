@@ -35,8 +35,17 @@ void MainController::Init(QString initScriptFilename)
 	m_interface->AddObject(m_interface, "Global");
 	m_interface->AddObject(m_processContext, "Process");
 	
+	// Register any types we need to pass around
+	m_interface->RegisterMetaObjectType<lens::ICamera>( );
+	m_interface->RegisterMetaObjectType<ITripleBuffer>( );
+	m_interface->RegisterMetaObjectType<CalibrationData>( );
+	m_interface->RegisterMetaObjectType<MainController>( );
+	m_interface->RegisterMetaObjectType<OpenGLTripleBuffer>( );
+	m_interface->RegisterMetaObjectType<MultiOpenGLBuffer>( );
+
 	// Add our object types
 	m_interface->AddObjectType<CalibrationData>( "CalibrationData" );
+	qRegisterMetaType<MainController*>("MainController");
 	m_interface->AddObjectType<OpenGLTripleBuffer, MainController*, bool, bool>( "OpenGLTripleBuffer" );
 	m_interface->AddObjectType<MultiOpenGLBuffer, int, bool, bool, MainController*>( "MultiOpenGLBuffer" );
 	m_interface->AddObjectType<CameraCapture, ITripleBuffer*, lens::ICamera*>( "CameraCapture" );
@@ -56,19 +65,11 @@ void MainController::Init(QString initScriptFilename)
 	#endif
 	#ifdef USE_POINT_GREY_CAMERA
 	m_interface->AddObjectType<lens::PointGreyCamera>( "PointGreyCamera" );
-	m_interface->AddObjectType<lens::PointGreyCamera, >( "PointGreyCamera" );
+	m_interface->AddObjectType<lens::PointGreyCamera, unsigned int>( "PointGreyCamera" );
 	#endif
 	#ifdef USE_PHANTOM_CAMERA
 	m_interface->AddObjectType<lens::PhantomCamera>( "PhantomCamera" );
 	#endif
-
-	// Register any types we need to pass around
-	//m_interface->RegisterMetaObjectType<lens::ICamera>( );
-	m_interface->RegisterMetaObjectType<ITripleBuffer>( );
-	m_interface->RegisterMetaObjectType<CalibrationData>( );
-	m_interface->RegisterMetaObjectType<MainController>( );
-	m_interface->RegisterMetaObjectType<OpenGLTripleBuffer>( );
-	m_interface->RegisterMetaObjectType<MultiOpenGLBuffer>( );
 	
 	m_interface->RunScript(initScriptFilename);
   }
@@ -88,11 +89,10 @@ shared_ptr<QGLWidget> MainController::MakeSharedContext(void)
   return sharedContext;
 }
 
-// This will put StartSystem on top of the event loop
 void MainController::Start(void)
 { 
-  wrench::Logger::logDebug("Starting ...");
-  QTimer::singleShot(0, this, SLOT( StartSystem( ) ) ); 
+  wrench::Logger::logDebug("Started!");
+  emit( Started( ) );
 }
 
 void MainController::Close(void)
@@ -100,13 +100,4 @@ void MainController::Close(void)
   wrench::Logger::logDebug("Closing");
   //  This will tell the event loop that we are done and close the app
   emit( Finished( ) );
-}
-
-void MainController::StartSystem(void)
-{
-  for(auto context = m_contexts.begin(); context != m_contexts.end(); ++context)
-  {
-	context->second->Start( );
-  }
-  wrench::Logger::logDebug("Started!");
 }

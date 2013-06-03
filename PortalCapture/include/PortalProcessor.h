@@ -66,9 +66,9 @@ private:
 	Holo
   };
 
-  vector<pair<shared_ptr<IProcessContext>, shared_ptr<SplatField>>> m_captureProcessors;
+  vector<pair<IProcessContext*, shared_ptr<SplatField>>> m_captureProcessors;
  
-  shared_ptr<ITripleBuffer> m_outputBuffer;
+  ITripleBuffer* m_outputBuffer;
 
   ShaderProgram m_coordinateRectifierPass1;
   ShaderProgram m_coordinateRectifierPass2;
@@ -90,10 +90,12 @@ private:
 
 public:
   PortalProcessor(void);
-  void AddProcessContext( shared_ptr<IProcessContext> processContext );
-  void Init( shared_ptr<ITripleBuffer> outputBuffer );
 
 public slots:
+  void AddProcessContext( IProcessContext* processContext );
+
+  void Init( ITripleBuffer* outputBuffer );
+
  /**
   * Outputs the fringe from the specified processor whenever _Output() is called.
   */

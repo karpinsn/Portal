@@ -115,12 +115,14 @@ public:
 
   template <typename objectType>
 	void RegisterMetaObjectType( void )
-  { qScriptRegisterMetaType( &m_scriptEngine, ScriptInterface::Object2ScriptValue<objectType>, ScriptInterface::ScriptValue2Object<objectType> ); }
+  {
+	qScriptRegisterMetaType( &m_scriptEngine, ScriptInterface::Object2ScriptValue<objectType>, ScriptInterface::ScriptValue2Object<objectType> ); 
+  }
 
 private:
   template <typename objectType>
 	static QScriptValue Object2ScriptValue(QScriptEngine* engine, objectType* const &in)
-  { return engine->newQObject(in); }
+  { return engine->newQObject( in ); }
 
   template <typename objectType>
 	static void ScriptValue2Object(const QScriptValue &object, objectType* &out)
@@ -135,7 +137,7 @@ private:
   template <typename objectType, typename arg0>
 	static QScriptValue CreateScriptableObject( QScriptContext* context, QScriptEngine* engine )
   {
-	arg0 argument0 = context->argument(0).toVariant().value<arg0>();
+	arg0 argument0 = qscriptvalue_cast<arg0>( context->argument(0) );
 	
 	return engine->newQObject( new objectType( argument0 ), QScriptEngine::AutoOwnership, QScriptEngine::AutoCreateDynamicProperties );
   }
@@ -143,8 +145,8 @@ private:
   template <typename objectType, typename arg0, typename arg1>
 	static QScriptValue CreateScriptableObject( QScriptContext* context, QScriptEngine* engine )
   {
-	arg0 argument0 = context->argument(0).toVariant().value<arg0>();
-	arg1 argument1 = context->argument(1).toVariant().value<arg1>();
+	arg0 argument0 = qscriptvalue_cast<arg0>( context->argument(0) );
+	arg1 argument1 = qscriptvalue_cast<arg1>( context->argument(1) );
 
 	return engine->newQObject( new objectType( argument0, argument1 ), QScriptEngine::AutoOwnership, QScriptEngine::AutoCreateDynamicProperties );
   }
@@ -152,9 +154,9 @@ private:
   template <typename objectType, typename arg0, typename arg1, typename arg2>
 	static QScriptValue CreateScriptableObject( QScriptContext* context, QScriptEngine* engine )
   {
-	arg0 argument0 = context->argument(0).toVariant().value<arg0>();
-	arg1 argument1 = context->argument(1).toVariant().value<arg1>();
-	arg2 argument2 = context->argument(2).toVariant().value<arg2>();
+	arg0 argument0 = qscriptvalue_cast<arg0>( context->argument(0) );
+	arg1 argument1 = qscriptvalue_cast<arg1>( context->argument(1) );
+	arg2 argument2 = qscriptvalue_cast<arg2>( context->argument(2) );
 
 	return engine->newQObject( new objectType( argument0, argument1, argument2 ), QScriptEngine::AutoOwnership, QScriptEngine::AutoCreateDynamicProperties );
   }
@@ -162,12 +164,13 @@ private:
   template <typename objectType, typename arg0, typename arg1, typename arg2, typename arg3>
 	static QScriptValue CreateScriptableObject( QScriptContext* context, QScriptEngine* engine )
   {
-	arg0 argument0 = context->argument(0).toVariant().value<arg0>();
-	arg1 argument1 = context->argument(1).toVariant().value<arg1>();
-	arg2 argument2 = context->argument(2).toVariant().value<arg2>();
-	arg2 argument3 = context->argument(2).toVariant().value<arg3>();
+	arg0 argument0 = qscriptvalue_cast<arg0>( context->argument(0) );
+	arg1 argument1 = qscriptvalue_cast<arg1>( context->argument(1) );
+	arg2 argument2 = qscriptvalue_cast<arg2>( context->argument(2) );
+	arg3 argument3 = qscriptvalue_cast<arg3>( context->argument(3) );
 
 	return engine->newQObject( new objectType( argument0, argument1, argument2, argument3 ), QScriptEngine::AutoOwnership, QScriptEngine::AutoCreateDynamicProperties );
   }
+
 };
 #endif	// _PORTAL_CAPTURE_SCRIPT_INTERFACE_H_
