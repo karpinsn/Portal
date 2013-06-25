@@ -79,11 +79,11 @@ protected:
 	ASSERT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
 
 	// Check the rgba value at 0,0
-	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(0,0);
+	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(5,5);
 	for(int i = 0; i < 4; ++i)
 	{ 
-	  //EXPECT_FLOAT_EQ(ExpectedOut(i), actual(i));
-	  EXPECT_NEAR(ExpectedOut(i), actual(i), .0001f); 
+	  EXPECT_FLOAT_EQ(ExpectedOut(i), actual(i));
+	  //EXPECT_NEAR(ExpectedOut(i), actual(i), .0001f); 
 	}
   }
 };
@@ -179,9 +179,7 @@ TEST_F(ShadersTest, Wrapped2Unwrapped)
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(113.4973f, 113.4973f, 113.4973f, 113.4973f), cv::Scalar(.4f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 5.6832, 0.0));
-  CheckValue( cv::Scalar(2.0f, 2.0f, 2.0f, 2.0f),					  cv::Scalar(2.0f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, .2, 0.0));
-  CheckValue( cv::Scalar(95.04777f, 95.04777f, 95.04777f, 95.04777f), cv::Scalar(.8f, 0.0, 0.0, 0.0),	cv::Scalar(0.0f, 0.0, 4.7832, 0.0)); 
+  CheckValue( cv::Scalar(2.6179812, 2.6179812, 2.6179812, 1.0), cv::Scalar(.5f, -.8660f, .7159f, -.6982f), cv::Scalar(.5f, -.8660f, .7159f, -.6982f) );
 }
 
 TEST_F(ShadersTest, Phase2Depth)
@@ -224,9 +222,8 @@ TEST_F(ShadersTest, Fringe2WrappedPhase)
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(-2.5131, 2.2194, 1.5507),	cv::Scalar(0.2078, 0.1020, 0.3608), cv::Scalar(0.3686, 0.1373, 0.1686) );
-  CheckValue( cv::Scalar(2.8452, 1.2324, 1.6127),	cv::Scalar(0.2431, 0.0863, 0.1961), cv::Scalar(0.2392, 0.2078, 0.0784) );
-  CheckValue( cv::Scalar(2.2570, -0.0890, 2.3461),	cv::Scalar(0.3294, 0.1255, 0.1608), cv::Scalar(0.1333, 0.3333, 0.1529) );
+  CheckValue( cv::Scalar(.50000793f, -.86602539f, .7158522f, -.69826132f), cv::Scalar(.9330, 0.0670, .5), cv::Scalar( 0.9845, 0.1509, 0.3646) );
+  CheckValue( cv::Scalar(-0.00000011921111, -1, .60631108, -.79527503), cv::Scalar(.75, 0, .75), cv::Scalar(.9505, .0869, .4226) );
 }
 
 TEST_F(ShadersTest, Phase2Coordinate)
