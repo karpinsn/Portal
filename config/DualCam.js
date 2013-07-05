@@ -27,8 +27,8 @@ var capture1 = new CameraCapture( cam1Buffer, cam1 );
 var processor1 = new SixFringeProcessor( cam1Buffer, cam1Config, projectorConfig );
 processor1.gammaCutoff = .45;
 processor1.intensityCutoff = .1176;
-processor1.fringePitch1 = 60;
-processor1.fringePitch2 = 63;
+processor1.fringePitch1 = 93;
+processor1.fringePitch2 = 102;
 processor1.Phi0 = -5.1313;
 Process.AddProcessContext(processor1);
 
@@ -36,8 +36,8 @@ var capture2 = new CameraCapture( cam2Buffer, cam2 );
 var processor2 = new SixFringeProcessor( cam2Buffer, cam2Config, projectorConfig );
 processor2.gammaCutoff = .45;
 processor2.intensityCutoff = .1176;
-processor2.fringePitch1 = 60;
-processor2.fringePitch2 = 63;
+processor2.fringePitch1 = 93;
+processor2.fringePitch2 = 102;
 processor2.Phi0 = -5.1313;
 Process.AddProcessContext(processor2);
 
