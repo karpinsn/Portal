@@ -15,6 +15,7 @@ b = (1.0 - cos((2.0 * pi) * (x / pitch1) + (2.0*pi/3.0))) * .5;
 fringe1(:,:,1) = ones(height, 1) * r;
 fringe1(:,:,2) = ones(height, 1) * g;
 fringe1(:,:,3) = ones(height, 1) * b;
+fringe1(:,:,4) = zeros(height, width);
 
 r = (1.0 - cos((2.0 * pi) * (x / pitch2) - (2.0*pi/3.0))) * .5;
 g = (1.0 - cos((2.0 * pi) * (x / pitch2))) * .5;
@@ -23,6 +24,10 @@ b = (1.0 - cos((2.0 * pi) * (x / pitch2) + (2.0*pi/3.0))) * .5;
 fringe2(:,:,1) = ones(height, 1) * r;
 fringe2(:,:,2) = ones(height, 1) * g;
 fringe2(:,:,3) = ones(height, 1) * b;
+fringe2(:,:,4) = zeros(height, width);
+
+writePFM(fringe1, 'Fringe1-30.pfm');
+writePFM(fringe2, 'Fringe2-39.pfm');
 
 %% Phase Wrapping
 phi1 = atan2((sqrt(3.0) .* (fringe1(:,:,1) - fringe1(:,:,3))), (2.0 .* fringe1(:,:,2)) - fringe1(:,:,1) - fringe1(:,:,3));

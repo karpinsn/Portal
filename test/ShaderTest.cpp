@@ -64,31 +64,6 @@ protected:
 	shaderProcessor.setTextureAttachPoint( outputTextureFloat, GL_COLOR_ATTACHMENT0 );
   }
 
-  virtual void CheckValue(cv::Scalar ExpectedOut, cv::Scalar texture0 = cv::Scalar(0.0), cv::Scalar texture1 = cv::Scalar(0.0))
-  {
-	// Transfer to the texture, then bind
-	ASSERT_TRUE( inputTexture0Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture0)) );
-	ASSERT_TRUE( inputTexture1Float.transferToTexture(cv::Mat(width, height, CV_32FC4, texture1)) );
-
-	shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	inputTexture0Float.bind( GL_TEXTURE0 );
-	inputTexture1Float.bind( GL_TEXTURE1 );
-	
-	shaderProcessor.process( );
-	IplImage* outputImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 4);
-	ASSERT_TRUE(outputTextureFloat.transferFromTexture(outputImage));
-
-	// Check the rgba value at 0,0
-	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(5,5);
-	for(int i = 0; i < 4; ++i)
-	{ 
-	  // Cant use EXPECT_FLOAT_EQ since there are rounding errors between different GPUs
-	  EXPECT_NEAR(ExpectedOut(i), actual(i), .0001f); 
-	}
-  }
-
   virtual void CheckImageValues( cv::Mat expectedOut, cv::Mat texture0, cv::Mat texture1 )
   {
 	ASSERT_TRUE( inputTexture0Float.transferToTexture( texture0 ) );
@@ -214,30 +189,16 @@ TEST_F(ShadersTest, Wrapped2Unwrapped)
   CheckImageValues( unwrappedPhase, wrappedPhase, wrappedPhase );
 }
 
-TEST_F(ShadersTest, Phase2Depth)
-{
-  wrench::gl::ShaderProgram shader;
-  shader.init();
-  shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
-  shader.attachShader(new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/Phase2Depth.frag"));
-  shader.bindAttributeLocation("vert", 0);
-  shader.bindAttributeLocation("vertTexCoord", 1);
-  shader.link();
-  shader.uniform("actualPhase", 0);
-  shader.uniform("referencePhase", 1);
-  shader.uniform("scale", 3.0f);
-  shader.uniform("shift", 2.0f);
-  shaderProcessor.bind( );
-  shader.bind( );
-
-  // Now check some values!
-  CheckValue( cv::Scalar(8.0, 8.0, 8.0, 8.0),	  cv::Scalar(4.0), cv::Scalar(2.0) );
-  CheckValue( cv::Scalar(5.0, 5.0, 5.0, 5.0),	  cv::Scalar(2.0), cv::Scalar(1.0) );
-  CheckValue( cv::Scalar(14.0, 14.0, 14.0, 14.0), cv::Scalar(6.0), cv::Scalar(2.0) );
-}
-
 TEST_F(ShadersTest, Fringe2WrappedPhase)
 {
+  cv::Mat fringe1 = TestUtils::LoadPFM( "data/fringe1-30.pfm" );
+  cv::cvtColor( fringe1, fringe1, CV_BGRA2RGBA );
+  cv::Mat fringe2 = TestUtils::LoadPFM( "data/fringe2-39.pfm" );
+  cv::cvtColor( fringe2, fringe2, CV_BGRA2RGBA );
+
+  cv::Mat wrappedPhase = TestUtils::LoadPFM( "data/WrappedPhaseComponents-30-39.pfm" );
+  cv::cvtColor( wrappedPhase, wrappedPhase, CV_BGRA2RGBA );
+
   wrench::gl::ShaderProgram shader;
   shader.init();
   shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
@@ -247,15 +208,14 @@ TEST_F(ShadersTest, Fringe2WrappedPhase)
   shader.link();
   shader.uniform("fringeImage1", 0);
   shader.uniform("fringeImage2", 1);
-  shader.uniform("pitch1", 60);
-  shader.uniform("pitch2", 63);
+  shader.uniform("pitch1", 30);
+  shader.uniform("pitch2", 39);
 
   shaderProcessor.bind( );
   shader.bind( );
 
   // Now check some values!
-  CheckValue( cv::Scalar(.50000793f, -.86602539f, .7158522f, -.69826132f), cv::Scalar(.9330, 0.0670, .5), cv::Scalar( 0.9845, 0.1509, 0.3646) );
-  CheckValue( cv::Scalar(-0.00000011921111, -1, .60631108, -.79527503), cv::Scalar(.75, 0, .75), cv::Scalar(.9505, .0869, .4226) );
+  CheckImageValues( wrappedPhase, fringe1, fringe2 );
 }
 
 TEST_F(ShadersTest, Phase2Coordinate)
