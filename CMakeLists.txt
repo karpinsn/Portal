@@ -6,6 +6,7 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/CMakeModules")
 include(CreateLaunchers)
+include(FileCopyTargets)
 
 #	---------------------------------------------------------------------------
 # 	Set package properties
@@ -101,6 +102,12 @@ if(Portal_UNIT_TESTS)
     add_subdirectory(test)
 endif()
 
+#	---------------------------------------------------------------------------
+#	Bring any config files into our working directory
+#	---------------------------------------------------------------------------
+file(GLOB CONFIG_FILES config/*)
+add_file_copy_target(configFiles ${EXECUTABLE_OUTPUT_PATH} ${CONFIG_FILES})
+
 #   ---------------------------------------------------------------------------
 #   Build and link the app!
 #   ---------------------------------------------------------------------------
@@ -112,6 +119,7 @@ add_executable("${PROJECT_NAME}Launcher"
 add_dependencies("${PROJECT_NAME}Launcher" wrench)
 add_dependencies("${PROJECT_NAME}Launcher" antenna)
 add_dependencies("${PROJECT_NAME}Launcher" Shaders)
+add_dependencies("${PROJECT_NAME}Launcher" configFiles)
 add_dependencies("${PROJECT_NAME}Launcher" ${PROJECT_NAME})
 
 target_link_libraries("${PROJECT_NAME}Launcher" ${LIBS})

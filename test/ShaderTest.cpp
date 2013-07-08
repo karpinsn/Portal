@@ -84,8 +84,8 @@ protected:
 	cv::Vec4f actual = cv::Mat(outputImage).at<cv::Vec4f>(5,5);
 	for(int i = 0; i < 4; ++i)
 	{ 
-	  EXPECT_FLOAT_EQ(ExpectedOut(i), actual(i));
-	  //EXPECT_NEAR(ExpectedOut(i), actual(i), .0001f); 
+	  // Cant use EXPECT_FLOAT_EQ since there are rounding errors between different GPUs
+	  EXPECT_NEAR(ExpectedOut(i), actual(i), .0001f); 
 	}
   }
 };
