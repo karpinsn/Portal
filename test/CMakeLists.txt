@@ -8,6 +8,7 @@ set(TESTS
     MainControllerTest.cpp
     ShaderTest.cpp
     SixFringeProcessorTest.cpp
+    TestUtils.h
     )
 
 #
