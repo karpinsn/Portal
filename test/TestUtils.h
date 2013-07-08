@@ -8,6 +8,70 @@
 class TestUtils
 {
 public:
+  static bool WritePFM( std::string fileName, cv::Mat image )
+  {
+	std::ofstream file;
+	file.open( fileName, std::ios::binary | std::ios::out );
+
+	if( !file.is_open( ) )
+	  { return false; } // Unable to save the file, return false for failure
+
+	// Header line 1
+	// Modified for 4 channel images. This is not part of the standard
+	file << 'P';
+	if( 4 == image.channels() )
+	{
+	  file << 'F';
+	  file << 'A';
+	}
+	else if ( 3 == image.channels( ) )
+	{
+	  file << 'F';
+	}
+	else if ( 1 == image.channels( ) )
+	{
+	  file << 'f';
+	} // TODO - Need to check for other channel counts and error approprately
+	file << '\n';
+
+	// Header line 2
+	auto size = image.size; // Remember that matricies are column major
+	std::ostringstream line;
+	file << size[1]; // Width
+	file << ' ';
+	file << size[0]; // Height
+	file << '\n';
+
+	// Header line 3
+	file << 1.0f; // Scale
+	file << '\n';
+
+	// Convert to RGB if needed 
+	// Convert to OpenCV channel sequence
+	switch( image.type( ) )
+	{
+	case CV_32FC3:
+	  cv::cvtColor( image, image, CV_RGB2BGR );
+	  break;
+	case CV_32FC4:
+	  cv::cvtColor( image, image, CV_RGBA2BGRA );
+	  break;
+	default:
+	  break;
+	}
+
+	// Now actually write out the float values
+	for( int row = 0; row < size[0]; ++row )
+	{
+	  // Remember that images are not guarentteed to be contingious.
+	  // Need to write a row at a time
+	  file.write( ( char* )image.ptr( row ), sizeof( float ) * size[1] * image.channels( ) );
+	}
+	file.close( );
+
+	return true;
+  }
+
   static cv::Mat LoadPFM( std::string fileName )
   {
 	std::ifstream file;
@@ -19,9 +83,12 @@ public:
 	char lineBuffer[2048];
 
 	// Header line 1
+	// Modified for 4 channel images. This is not part of the standard
 	file.getline(lineBuffer, 2048);
 	int type;
-	if (lineBuffer[0] == 'P' && lineBuffer[1] == 'F')
+	if( lineBuffer[0] == 'P' && lineBuffer[1] == 'F' && lineBuffer[2] == 'A' )
+	  { type = CV_32FC4; }
+	else if (lineBuffer[0] == 'P' && lineBuffer[1] == 'F')
 	  { type = CV_32FC3; }
 	else if (lineBuffer[0] == 'P' && lineBuffer[1] == 'f')
 	  { type = CV_32FC1; }
@@ -54,10 +121,24 @@ public:
 	{
 	  file.read( ( char* )image.ptr( row ), sizeof( float ) * width * image.channels( ) ); 
 	}
+	file.close( );
 
 	// Scale as needed - Can't do this it will convert to uchar
 	// cv::scaleAdd
-	cv::cvtColor( image, image, CV_RGB2BGR );
+	
+	// Convert to OpenCV channel sequence
+	switch( type )
+	{
+	case CV_32FC3:
+	  cv::cvtColor( image, image, CV_RGB2BGR );
+	  break;
+	case CV_32FC4:
+	  cv::cvtColor( image, image, CV_RGBA2BGRA );
+	  break;
+	default:
+	  break;
+	}
+
 	return image;
   } 
 };
