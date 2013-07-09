@@ -11,6 +11,8 @@ set(TEST_DATA_FILES
 	WrappedPhaseComponents-30-39.pfm
 	FlatCoordinateMap.pfm
 	FlatCoordinateHolo.pfm
+	LeftCamCoordinates.pfm
+	RightCamCoordinates.pfm
 )
 
 #	---------------------------------------------------------------------------------------
