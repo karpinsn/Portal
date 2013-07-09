@@ -113,6 +113,7 @@ TEST_F(ShadersTest, Coordinate2Holo)
   shaderProcessor.bind( );
   shader.bind( );
 
+  // TODO - This test fails since the texture coordinates range [.002, .998] instead of [0, 1]
   CheckImageValues( coordinateHolo, coordinateMap, coordinateMap );
 }
 
