@@ -77,3 +77,33 @@ outPhase(:,:,2) = phase;
 outPhase(:,:,3) = phase;
 outPhase(:,:,4) = 1.0;
 writePFM(outPhase, 'UnwrappedPhase-30-39.pfm');
+
+%% Coordinate 2 Holo checker
+coordinates(:,:,1) = ones(height, 1) * linspace(0, 1, width);
+coordinates(:,:,2) = linspace(1,0,height)' * ones(1, width);
+coordinates(:,:,3) = zeros(height, width);
+coordinates(:,:,4) = ones(height, width);
+writePFM(coordinates, 'FlatCoordinateMap.pfm');
+
+x = linspace(-1.0, 1.0, width);
+
+F = 2.0;                              % Frequency of the fringe (Needs to be even for Ib fringe)
+angularFrequency = 2.0 * pi * F;      % Angular Frequency of the fringe (omega)
+P = width / (2 * F);
+theta = pi/6;
+
+stepHeight = 1.0 / (2 * F);       % Make the step height as large as possible. 
+stepWidth = 1.0 / F;
+
+r = (1.0 - sin(angularFrequency * x)) * .5;
+g = (1.0 - cos(angularFrequency * x)) * .5;
+b = floor(x .* F) * stepHeight + .5;
+Ib = cos((angularFrequency * 4.5) * (x - (b * (1.0 / stepHeight) * stepWidth)) + pi) * (stepHeight/2.5) + (stepHeight/2.0) + b;
+Ib(1, width) = 1.0; % Cap it at 1.0
+
+I = ones(height, width, 4);
+I(:, :, 1) = ones(height,1) * r;
+I(:, :, 2) = ones(height,1) * g;
+I(:, :, 3) = ones(height,1) * Ib;
+
+writePFM(I, 'FlatCoordinateHolo.pfm');

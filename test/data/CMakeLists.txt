@@ -5,11 +5,12 @@ include(FileCopyTargets)
 #	---------------------------------------------------------------------------------------
 
 set(TEST_DATA_FILES
-	TestHolo1.png
-	UnwrappedPhase-30-39.pfm
-	WrappedPhaseComponents-30-39.pfm
 	Fringe1-30.pfm
 	Fringe2-39.pfm
+    UnwrappedPhase-30-39.pfm
+	WrappedPhaseComponents-30-39.pfm
+	FlatCoordinateMap.pfm
+	FlatCoordinateHolo.pfm
 )
 
 #	---------------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ void main()
     // they are correctly sampled
     
     // TODO - comeback
-    //coord = coord.xyzw / coord.xyzw;
+    //coord = coord.xyzw / coord.wwww;
 
     // Step 2 - Holo encoding
 	//	Constants for encoding

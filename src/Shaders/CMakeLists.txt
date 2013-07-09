@@ -7,7 +7,6 @@ include(FileCopyTargets)
 set(SHADER_VERT_SOURCES
 	PassThrough.vert
 	CoordinateRectifier.vert
-    Coordinate2Holo.vert
 )
 
 set(SHADER_FRAG_SOURCES
