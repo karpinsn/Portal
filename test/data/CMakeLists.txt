@@ -13,6 +13,8 @@ set(TEST_DATA_FILES
 	FlatCoordinateHolo.pfm
 	LeftCamCoordinates.pfm
 	RightCamCoordinates.pfm
+	MergedCoordinates.pfm
+	MergedDepth.pfm
 )
 
 #	---------------------------------------------------------------------------------------

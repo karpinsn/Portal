@@ -30,8 +30,10 @@
 #include <wrench/gl/Texture.h>
 #include <wrench/gl/FBO.h>
 
+
 #include "TestUtils.h"
 
+#include "SplatField.h"
 #include "TriMesh.h"
 
 class ShadersTest : public ::testing::Test
@@ -45,6 +47,7 @@ protected:
   wrench::gl::Texture inputTexture0Float;
   wrench::gl::Texture inputTexture1Float;
   wrench::gl::Texture outputTextureFloat;
+  wrench::gl::Texture outputTextureDepth;
 
   virtual void SetUp()
   {
@@ -56,9 +59,14 @@ protected:
 	// Now need to init GLEW so we can do fancy OpenGL
 	ASSERT_EQ( GLEW_OK, glewInit( ) );
 
+	// Init our state
+	glEnable( GL_PROGRAM_POINT_SIZE );
+	glEnable( GL_DEPTH_TEST );
+
 	inputTexture0Float.init( width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT );
 	inputTexture1Float.init( width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT );
 	outputTextureFloat.init( width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT );
+	outputTextureDepth.init( width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
 	
 	shaderProcessor.init( width, height );
 	shaderProcessor.setTextureAttachPoint( outputTextureFloat, GL_COLOR_ATTACHMENT0 );
@@ -208,6 +216,67 @@ TEST_F(ShadersTest, Phase2Coordinate)
   // Now check some values! // TODO - Comeback and fix this
   //CheckValue( cv::Scalar(281.01715f, 105.57656f, 602.74893f, 1.0f), cv::Scalar(2.0f) );
   //CheckValue( cv::Scalar(274.27292f, 106.76128f, 592.96862f, 1.0f), cv::Scalar(5.0f) );
+}
+
+TEST_F(ShadersTest, CoordinateRectifierDepth)
+{
+  cv::Mat leftCam = TestUtils::LoadPFM( "data/LeftCamCoordinates.pfm" );
+  cv::cvtColor( leftCam, leftCam, CV_BGRA2RGBA );
+  cv::Mat rightCam = TestUtils::LoadPFM( "data/RightCamCoordinates.pfm" );
+  cv::cvtColor( rightCam, rightCam, CV_BGRA2RGBA );
+  cv::Mat mergedDepth = TestUtils::LoadPFM( "data/MergedDepth.pfm" );
+
+  wrench::gl::ShaderProgram shader;
+  shader.init();
+  shader.attachShader(new wrench::gl::Shader(GL_VERTEX_SHADER, "Shaders/CoordinateRectifier.vert"));
+  shader.attachShader(new wrench::gl::Shader(GL_FRAGMENT_SHADER, "Shaders/CoordinateRectifierDepth.frag"));
+  shader.bindAttributeLocation("vert", 0);
+  shader.bindAttributeLocation("vertTexCoord", 1);
+  shader.link();
+
+  shader.uniform( "coordinateMap", 0 );
+  shader.uniform( "modelView", glm::mat4( ) ); // Test data is set for identity
+  shader.uniform( "projectionMatrix", glm::ortho( -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f ) );
+  shader.uniform( "pointSize", 1.0f );
+  shader.uniform( "delta", 0.0f );
+
+  SplatField mesh( width, height );
+  shaderProcessor.bind( );
+  shader.bind( );
+
+  //shaderProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
+  shaderProcessor.setTextureAttachPoint( outputTextureDepth, GL_DEPTH_ATTACHMENT );
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Make sure we clear to transparent
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+  glPushAttrib(GL_VIEWPORT_BIT);
+  {
+    glViewport (0, 0, width, height);
+
+	// Left camera first
+	ASSERT_TRUE( inputTexture0Float.transferToTexture( leftCam ) );
+	inputTexture0Float.bind( GL_TEXTURE0 );
+	mesh.draw( );
+	// Then right camera
+	ASSERT_TRUE( inputTexture0Float.transferToTexture( rightCam ) );
+	inputTexture0Float.bind( GL_TEXTURE0 );
+	mesh.draw( );
+  }
+  glPopAttrib();
+    
+  shaderProcessor.resetDepthBuffer( );
+  shaderProcessor.unbind( );
+
+  // Fetch the results and check
+  IplImage* depthImage = cvCreateImage( cvSize(width, height), IPL_DEPTH_32F, 1 );
+  ASSERT_TRUE( outputTextureDepth.transferFromTexture( depthImage ) );
+  
+  TestUtils::WritePFM( "Out1.pfm", cv::Mat( depthImage ) ); // Uncomment if you need to see the output image
+
+  double norm = cv::norm( cv::Mat(depthImage) - mergedDepth );
+  // Cant use EXPECT_FLOAT_EQ since there are rounding errors between different GPUs
+  EXPECT_NEAR( 0.0, norm, .001f );
+  OGLStatus::logOGLErrors("Test");
 }
 
 int main(int argc, char **argv)

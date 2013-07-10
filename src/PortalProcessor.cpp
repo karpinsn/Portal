@@ -43,6 +43,7 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
 
   // Init the OpenGL state that we need --------------------------------------------
   glEnable( GL_PROGRAM_POINT_SIZE );
+  glEnable( GL_DEPTH_TEST );
 
   // Initialize our shaders --------------------------------------------------------
   // Shaders Pass 1 - Rectification: Depth
