@@ -29,5 +29,6 @@ void main()
 
     // This is where the actual blending happends. Render out our coord map
     // and then select the alpha based on the pointCoord position in the sprite
-    rectifiedCoordMap = vec4( fragPosition, texture( blendMap, gl_PointCoord ).r ); 
+    float blendValue = texture( blendMap, gl_PointCoord ).r;
+    rectifiedCoordMap = vec4( fragPosition * blendValue, blendValue );
 }

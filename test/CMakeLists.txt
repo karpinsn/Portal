@@ -4,10 +4,12 @@ set(PROJECT_UNIT_TEST_NAME "${PROJECT_NAME}UnitTests")
 
 # Add our tests
 set(TESTS
+    TestMain.cpp
     CalibrationDataTest.cpp
     MainControllerTest.cpp
-    ShaderTest.cpp
     SixFringeProcessorTest.cpp
+    FringeProcessorShaderTest.cpp
+    PortalProcessorShaderTest.cpp
     TestUtils.h
     )
 

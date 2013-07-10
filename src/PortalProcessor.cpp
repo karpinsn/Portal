@@ -91,7 +91,7 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
   // Initialize our textures --------------------------------------------------------
   auto blendImage = cv::imread("blend.png");
   m_blendMap.init( blendImage.cols, blendImage.rows, GL_RGBA, GL_RGB, GL_UNSIGNED_BYTE );
-  m_blendMap.transferToTexture( blendImage );
+  assert( m_blendMap.transferToTexture( blendImage ) );
 
   m_rectifiedDepthMap.init( width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
   m_rectifiedCoordinateMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );

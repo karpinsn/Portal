@@ -15,6 +15,7 @@ set(TEST_DATA_FILES
 	RightCamCoordinates.pfm
 	MergedCoordinates.pfm
 	MergedDepth.pfm
+	blend.png
 )
 
 #	---------------------------------------------------------------------------------------
