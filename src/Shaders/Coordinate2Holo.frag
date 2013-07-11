@@ -21,9 +21,7 @@ void main()
     // Since we have been doing blending not all the fragments will have an alpha
     // of 1.0 (either more or less). We need to normalize all the colors so that
     // they are correctly sampled
-    
-    // TODO - comeback
-    //coord = coord.xyzw / coord.wwww;
+    coord = coord.xyzw / coord.wwww;
 
     // Step 2 - Holo encoding
 	//	Constants for encoding

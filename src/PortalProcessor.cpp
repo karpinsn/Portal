@@ -35,7 +35,7 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
 
   // Initialize our matricies -----------------------------------------------------
   // Scaling so that we fit in our cube around the origin
-  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/200.0f ) );
+  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/90.0f ) );
   // Rotate the projector modelView some angle around our model view (30 degrees?)
   glm::mat4 projectorModelView = glm::rotate( modelView, 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) ;
   // Our projection is a cube around the origin
