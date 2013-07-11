@@ -171,9 +171,31 @@ TEST_F(PortalProcessorShaderTest, CoordinateRectifierSplat)
   IplImage* blendedCoords = cvCreateImage( cvSize(width, height), IPL_DEPTH_32F, 4 );
   ASSERT_TRUE( outputTextureFloat.transferFromTexture( blendedCoords ) );
   
-  TestUtils::WritePFM( "Out.pfm", cv::Mat( blendedCoords ) ); // Uncomment if you need to see the output image
+  cv::Mat blendedCoordMat( blendedCoords );
+  // Quick normalize based on alpha. Not the most efficient but it will work
+  for(int r = 0; r < height; ++r)
+  {
+	float* pixelPointer = blendedCoordMat.ptr<float>(r);
+	for(int c = 0; c < width; ++c)
+	{
+	  // Skip 0.0 so we dont get NaNs
+	  if( 0.0f == pixelPointer[c * 4 + 3] )
+		{ continue; }
+	  pixelPointer[c * 4] = pixelPointer[c * 4] / pixelPointer[c * 4 + 3];
+	  pixelPointer[c * 4 + 1] = pixelPointer[c * 4 + 1] / pixelPointer[c * 4 + 3];
+	  pixelPointer[c * 4 + 2] = pixelPointer[c * 4 + 2] / pixelPointer[c * 4 + 3];
+	  pixelPointer[c * 4 + 3] = pixelPointer[c * 4 + 3] / pixelPointer[c * 4 + 3];
+	}
+  }
 
-  //double norm = cv::norm( cv::Mat(depthImage) - mergedDepth );
+  //TestUtils::WritePFM( "Out.pfm", blendedCoordMat ); // Uncomment if you need to see the output image
+
+  cv::Mat mergedDepth = TestUtils::LoadPFM("data/MergedCoordinates.pfm");
+  cv::cvtColor( mergedDepth, mergedDepth, CV_BGRA2RGBA );
+  double norm = cv::norm( // We are grabbing a ROI since there are some rounding errors around the edge of the sphere
+	cv::Mat( blendedCoordMat, cv::Rect(80, 80, width - 160, height - 160) ) - 
+	cv::Mat(mergedDepth, cv::Rect(80, 80, width - 160, height - 160) ) );
+  
   // Cant use EXPECT_FLOAT_EQ since there are rounding errors between different GPUs
-  //EXPECT_NEAR( 0.0, norm, .001f );
+  EXPECT_NEAR( 0.0, norm, .001f ); 
 }

@@ -5,7 +5,7 @@ radius = 1;
 
 %% Object generation (a sphere)
 x = ones(height, 1) * linspace(-1, 1, width);
-y = linspace(1, -1, height)' * ones(1, width);
+y = linspace(-1, 1, height)' * ones(1, width);
 z = radius^2 - x.^2 - y.^2;
 a = ones(height, width);
 % Make sure the points are valid. Mask any that are not

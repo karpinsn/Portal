@@ -34,7 +34,7 @@ void SplatField::draw()
   glEnable(GL_BLEND);
   {
 	glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	m_field.draw();
   } // Put our stuff back
   glDisable(GL_BLEND);
