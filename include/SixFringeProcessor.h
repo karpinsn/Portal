@@ -58,6 +58,8 @@ public:
 
 class SixFringeProcessor : public DynamicallyScriptableQObject, public IProcessContext
 {
+  friend class SixFringeProcessorTest; // Used for unit testing
+
   Q_OBJECT
 	
 private:

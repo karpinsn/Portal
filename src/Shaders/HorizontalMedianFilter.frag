@@ -17,6 +17,9 @@
 #define m5(a,b,c,d,e) 	m2(a,b); m2(c,d); m2(a,c); m2(a,e); m2(d,e); m2(b,e);
 #define m6(a,b,c,d,e,f)	m2(a,d); m2(b,e); m2(c,f); m2(a,b); m2(a,c); m2(e,f); m2(d,f);
 
+precision highp float;
+precision highp sampler2D;
+
 uniform sampler2D image;
 uniform float width;
 uniform float height;

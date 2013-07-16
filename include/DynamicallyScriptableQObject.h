@@ -15,6 +15,12 @@ class DynamicallyScriptableQGLWidget : public QGLWidget, protected QScriptable
   Q_OBJECT
    
 public:
+  template <typename T> bool SetProperty(const char* name, T property2Set )
+  {
+	auto variantProperty = QVariant( property2Set );
+	return setProperty( name, variantProperty );
+  }
+
   template <typename T> T ResolveProperty(const char* name)
   {
 	auto property2Resolve = property(name);
@@ -30,6 +36,12 @@ class DynamicallyScriptableQObject : public QObject, protected QScriptable
   Q_OBJECT
    
 public:
+  template <typename T> bool SetProperty(const char* name, T property2Set )
+  {
+	auto variantProperty = QVariant( property2Set );
+	return setProperty( name, variantProperty );
+  }
+
   template <typename T> T ResolveProperty(const char* name)
   {
 	auto property2Resolve = property(name);

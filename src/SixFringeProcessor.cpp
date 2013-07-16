@@ -48,8 +48,8 @@ void SixFringeProcessor::Init( )
   m_wrapped2Unwrapped.uniform("filteredPhase", 1);
   m_wrapped2Unwrapped.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
   m_wrapped2Unwrapped.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
-  m_wrapped2Unwrapped.uniform("m", ResolveProperty<float>("m"));
-  m_wrapped2Unwrapped.uniform("b2", ResolveProperty<float>("b"));
+  m_wrapped2Unwrapped.uniform("m", ResolveProperty<float>("m") * float( width ) );
+  m_wrapped2Unwrapped.uniform("b2", ResolveProperty<float>("b") / float( width ) );
   m_wrapped2Unwrapped.uniform("rightSide", true);
   
   m_phase2Depth.init();

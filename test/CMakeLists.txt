@@ -1,6 +1,7 @@
 # Enable testing and find GTest
 enable_testing()
 set(PROJECT_UNIT_TEST_NAME "${PROJECT_NAME}UnitTests")
+include(FileCopyTargets)
 
 # Add our tests
 set(TESTS
@@ -25,6 +26,7 @@ add_executable("${PROJECT_UNIT_TEST_NAME}"
     ${TESTS})
 
 add_dependencies("${PROJECT_UNIT_TEST_NAME}" TestData)
+add_dependencies("${PROJECT_UNIT_TEST_NAME}" TestDataCapture1)
 
 # Link against GTest and GText Main
 target_link_libraries("${PROJECT_UNIT_TEST_NAME}" gtest gtest_main ${LIBS})

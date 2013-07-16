@@ -1,5 +1,8 @@
 #version 130
 
+precision highp float;
+precision highp sampler2D;
+
 uniform sampler2D depthMap;
 uniform float fringeFrequency;
 

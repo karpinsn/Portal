@@ -30,8 +30,9 @@ processor1.intensityCutoff = .10;
 processor1.fringePitch1 = 54;
 processor1.fringePitch2 = 60;
 processor1.Phi0 = -5.1313;
-processor1.m = 0.011635528346629;
-processor1.b = -1.576614090968211;
+processor1.m = 0.010833078115827;
+processor1.b = -1.218721288030523;
+// Pitch12Cam 580
 Process.AddProcessContext(processor1);
 
 var capture2 = new CameraCapture( cam2Buffer, cam2 );
@@ -41,8 +42,9 @@ processor2.intensityCutoff = .10;
 processor2.fringePitch1 = 54;
 processor2.fringePitch2 = 60;
 processor2.Phi0 = -5.1313;
-processor2.m = 0.010300303782262;
-processor2.b = -1.560496023012635;
+processor2.m = 0.011023132117859;
+processor2.b = -2.645551708286142;
+// pitch12Cam = 570;
 Process.AddProcessContext(processor2);
 
 // Finally, init our process context and its output context

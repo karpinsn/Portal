@@ -55,7 +55,7 @@ private:
   QThread* m_workerThread;
   
 public:
-  ScriptInterface( void );
+  ScriptInterface( bool launchConsoleInterface = true );
   
   template <typename T>
 	shared_ptr<T> ResolveObject(QString name)

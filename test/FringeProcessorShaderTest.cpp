@@ -30,7 +30,6 @@
 #include <wrench/gl/Texture.h>
 #include <wrench/gl/FBO.h>
 
-
 #include "TestUtils.h"
 
 #include "SplatField.h"

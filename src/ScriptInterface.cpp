@@ -18,23 +18,26 @@ void ConsoleWorker::ProcessInput( void )
   emit Done();
 }
 
-ScriptInterface::ScriptInterface( void )
+ScriptInterface::ScriptInterface( bool launchConsoleInterface )
 {
   // Save the original global object so we can still search for
   // objects, even if the global object is changed.
   m_global = m_scriptEngine.globalObject( );
   
-  // Setup our console thread
-  m_workerThread = new QThread();
-  m_worker = new ConsoleWorker(*this);
-  m_worker->moveToThread(m_workerThread);
+  if( launchConsoleInterface )
+  {
+	// Setup our console thread
+	m_workerThread = new QThread();
+	m_worker = new ConsoleWorker(*this);
+	m_worker->moveToThread(m_workerThread);
 
-  connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( ProcessInput( ) ));
-  connect(m_worker,		  SIGNAL( Done( ) ),	  m_workerThread, SLOT( quit( ) ));
-  connect(m_workerThread, SIGNAL( finished( ) ),  m_workerThread, SLOT( deleteLater( ) ));
-  connect(m_worker,		  SIGNAL( Done( ) ),	  m_worker,		  SLOT( deleteLater( ) ));
+	connect(m_workerThread, SIGNAL( started( ) ),	  m_worker,		  SLOT( ProcessInput( ) ));
+	connect(m_worker,		  SIGNAL( Done( ) ),	  m_workerThread, SLOT( quit( ) ));
+	connect(m_workerThread, SIGNAL( finished( ) ),  m_workerThread, SLOT( deleteLater( ) ));
+	connect(m_worker,		  SIGNAL( Done( ) ),	  m_worker,		  SLOT( deleteLater( ) ));
 
-  m_workerThread->start();
+	m_workerThread->start();
+  }
 }
 
 void ScriptInterface::PushThis( QString thisName )
