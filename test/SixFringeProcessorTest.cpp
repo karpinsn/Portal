@@ -110,8 +110,8 @@ TEST_F(SixFringeProcessorTest, CheckProcessLeft)
   cv::Mat components = TestUtils::LoadPFM( "data/Capture1/LeftComponents.pfm" );
   cv::cvtColor( components, components, CV_BGRA2RGBA );
   EXPECT_NEAR( 0.0, cv::norm( cv::Mat(outImage) - components ), .001f );
-  
-  // Phase 1
+
+  // Unwrapped Phase - PhaseMap 1
   GetPhaseMap1( ).transferFromTexture( outImage );
-  //TestUtils::WritePFM( "Phase1.pfm", cv::Mat( outImage ) );
+  TestUtils::WritePFM( "Phase1.pfm", cv::Mat( outImage ) );
 }

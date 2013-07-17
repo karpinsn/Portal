@@ -38,7 +38,7 @@ class MultiOpenGLBuffer : public ITripleBuffer
   Q_OBJECT
 
 private:
-  //DISALLOW_COPY_AND_ASSIGN(MultiOpenGLBuffer);
+  DISALLOW_COPY_AND_ASSIGN(MultiOpenGLBuffer);
   ::vector<shared_ptr<OpenGLTripleBuffer>> m_buffers;
   ::size_t m_currentBufferIndex;
 
