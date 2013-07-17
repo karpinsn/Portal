@@ -4,10 +4,10 @@ P2 = 60;
 P12 = (P1 * P2) / abs(P1 - P2);
 
 %% Fringe loading
-leftFringe1 = imread('bin\Left1.png');
-leftFringe2 = imread('bin\Left2.png');
-rightFringe1 = imread('bin\Right1.png');
-rightFringe2 = imread('bin\Right2.png');
+leftFringe1 = imread('bin2\Left1.png');
+leftFringe2 = imread('bin2\Left2.png');
+rightFringe1 = imread('bin2\Right1.png');
+rightFringe2 = imread('bin2\Right2.png');
 
 [height, width, ~] = size(leftFringe1);
 
