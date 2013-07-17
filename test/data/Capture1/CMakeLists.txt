@@ -9,11 +9,14 @@ set(TEST_DATA_CAPTURE1_FILES
 	Left1.png
 	Left2.png
 	LeftComponents.pfm
+	LeftPhase.pfm
+	LeftPhaseFilt.pfm
 
 	RightCameraCalibration.js
 	Right1.png
 	Right2.png
 	RightComponents.pfm
+	RightPhase.pfm
 
 	ProjectorCalibration.js
 )

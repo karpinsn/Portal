@@ -223,7 +223,7 @@ void PortalProcessor::_RenderProcessors( )
   // For each processor, render it in the scene
   for ( int processor = 0; processor < (int)m_captureProcessors.size(); ++processor )
   { 
-	m_captureProcessors[processor].first->BindDepthMap( GL_TEXTURE0 ); 
+	m_captureProcessors[processor].first->BindCoordMap( GL_TEXTURE0 ); 
 	m_captureProcessors[processor].second->draw( );
   }
 }

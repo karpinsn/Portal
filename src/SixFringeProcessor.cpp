@@ -49,39 +49,39 @@ void SixFringeProcessor::Init( )
   m_wrapped2Unwrapped.uniform("pitch1", ResolveProperty<int>("fringePitch1"));
   m_wrapped2Unwrapped.uniform("pitch2", ResolveProperty<int>("fringePitch2"));
   m_wrapped2Unwrapped.uniform("m", ResolveProperty<float>("m") * float( width ) );
-  m_wrapped2Unwrapped.uniform("b2", ResolveProperty<float>("b") / float( width ) );
+  m_wrapped2Unwrapped.uniform("b", ResolveProperty<float>("b") );
   m_wrapped2Unwrapped.uniform("rightSide", true);
   
-  m_phase2Depth.init();
-  m_phase2Depth.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
-  m_phase2Depth.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Phase2Coordinate.frag"));
-  m_phase2Depth.bindAttributeLocation("vert", 0);
-  m_phase2Depth.bindAttributeLocation("vertTexCoord", 1);
-  m_phase2Depth.link();
-  m_phase2Depth.uniform("actualPhase", 0);
+  m_phase2Coords.init();
+  m_phase2Coords.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/PassThrough.vert"));
+  m_phase2Coords.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Phase2Coordinate.frag"));
+  m_phase2Coords.bindAttributeLocation("vert", 0);
+  m_phase2Coords.bindAttributeLocation("vertTexCoord", 1);
+  m_phase2Coords.link();
+  m_phase2Coords.uniform("actualPhase", 0);
 
   // Camera Properties
-  m_phase2Depth.uniform("cameraWidth", width);
-  m_phase2Depth.uniform("cameraHeight", height);
-  m_phase2Depth.uniform("cameraDistortion", m_cameraCalibration->GetDistortionAsFloatArray(), 5);
-  m_phase2Depth.uniform("cameraIntrinsic", m_cameraCalibration->GetIntrinsicAsMat( ) );
-  m_phase2Depth.uniform("cameraExtrinsic", m_cameraCalibration->GetExtrinsicAsMat( ) );
+  m_phase2Coords.uniform("cameraWidth", width);
+  m_phase2Coords.uniform("cameraHeight", height);
+  m_phase2Coords.uniform("cameraDistortion", m_cameraCalibration->GetDistortionAsFloatArray(), 5);
+  m_phase2Coords.uniform("cameraIntrinsic", m_cameraCalibration->GetIntrinsicAsMat( ) );
+  m_phase2Coords.uniform("cameraExtrinsic", m_cameraCalibration->GetExtrinsicAsMat( ) );
 
   // Projector properties
-  m_phase2Depth.uniform("fringePitch", ResolveProperty<int>("fringePitch1"));
-  m_phase2Depth.uniform("Phi0", ResolveProperty<float>("Phi0"));
-  m_phase2Depth.uniform("projectorMatrix", m_projectorCalibration->GetIntrinsicAsMat() * m_projectorCalibration->GetExtrinsicAsMat());
+  m_phase2Coords.uniform("fringePitch", ResolveProperty<int>("fringePitch1"));
+  m_phase2Coords.uniform("Phi0", ResolveProperty<float>("Phi0"));
+  m_phase2Coords.uniform("projectorMatrix", m_projectorCalibration->GetIntrinsicAsMat() * m_projectorCalibration->GetExtrinsicAsMat());
  
   m_phaseMap0.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap1.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap2.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
-  m_depthMap.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_coordMap.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 
   m_imageProcessor.init( width, height );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap0,		GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,		GL_COLOR_ATTACHMENT1 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap2,		GL_COLOR_ATTACHMENT2 );
-  m_imageProcessor.setTextureAttachPoint( m_depthMap,		GL_COLOR_ATTACHMENT3 );
+  m_imageProcessor.setTextureAttachPoint( m_coordMap,		GL_COLOR_ATTACHMENT3 );
   m_imageProcessor.unbind( );
 
   m_isInit = true;
@@ -89,13 +89,13 @@ void SixFringeProcessor::Init( )
 }
 
 const int SixFringeProcessor::GetWidth( void )
-  { return m_depthMap.getWidth( ); }
+  { return m_coordMap.getWidth( ); }
 
 const int SixFringeProcessor::GetHeight( void )
-  { return m_depthMap.getHeight( ); }
+  { return m_coordMap.getHeight( ); }
 
-void SixFringeProcessor::BindDepthMap( GLenum texture )
-  { m_depthMap.bind(texture); }
+void SixFringeProcessor::BindCoordMap( GLenum texture )
+  { m_coordMap.bind(texture); }
 
 void SixFringeProcessor::BindFringeImage( GLenum texture )
   { ( *m_inputBuffer->ReadBuffersBegin( ) )->ReadTexture( ).bind( texture ); }
@@ -120,7 +120,7 @@ void SixFringeProcessor::Process( void )
 	_gaussianFilter( GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, m_phaseMap0, m_phaseMap1);
 	_unwrapPhase(GL_COLOR_ATTACHMENT1, m_phaseMap0, m_phaseMap2);
 	_filterPhase( GL_COLOR_ATTACHMENT2, m_phaseMap1 );
-	_calculateDepth( GL_COLOR_ATTACHMENT3, m_phaseMap2 );
+	_calculateCoords( GL_COLOR_ATTACHMENT3, m_phaseMap2 );
   }
   m_imageProcessor.unbind();
 }
@@ -176,11 +176,11 @@ void SixFringeProcessor::_unwrapPhase( GLenum drawBuffer, Texture& unfilteredPha
   m_imageProcessor.process( );
 }
 
-void SixFringeProcessor::_calculateDepth( GLenum drawBuffer, Texture& phase )
+void SixFringeProcessor::_calculateCoords( GLenum drawBuffer, Texture& phase )
 {
   m_imageProcessor.bindDrawBuffer( drawBuffer );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  m_phase2Depth.bind( );
+  m_phase2Coords.bind( );
   phase.bind( GL_TEXTURE0 );
   m_imageProcessor.process( );
 }

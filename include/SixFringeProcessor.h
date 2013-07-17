@@ -51,7 +51,7 @@ public:
   virtual void       Init( void ) = 0;
   virtual const int  GetWidth( void ) = 0;
   virtual const int  GetHeight( void ) = 0;
-  virtual void       BindDepthMap( GLenum texture ) = 0;
+  virtual void       BindCoordMap( GLenum texture ) = 0;
   virtual void       BindFringeImage( GLenum texture ) = 0;
   virtual void       Process( void ) = 0;
 };
@@ -73,12 +73,12 @@ private:
   ShaderProgram m_phaseFilter;
   GaussProgram	m_gaussFilter;
   ShaderProgram m_wrapped2Unwrapped;
-  ShaderProgram m_phase2Depth;
+  ShaderProgram m_phase2Coords;
 
   Texture	m_phaseMap0;
   Texture	m_phaseMap1;
   Texture	m_phaseMap2;
-  Texture	m_depthMap;
+  Texture	m_coordMap;
 
   FBO m_imageProcessor;
   bool m_isInit;
@@ -90,7 +90,7 @@ public:
   void      Init( void );
   const int GetWidth( void );
   const int GetHeight( void );
-  void      BindDepthMap( GLenum texture );
+  void      BindCoordMap( GLenum texture );
   void      BindFringeImage( GLenum texture );
   void      Process( void );
 
@@ -102,7 +102,7 @@ private:
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
   void _gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer );
   void _unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase );
-  void _calculateDepth( GLenum drawBuffer, Texture& phase );
+  void _calculateCoords( GLenum drawBuffer, Texture& phase );
 };
 
 #endif	// _PORTAL_PROCESS_SIX_FRINGE_PROCESSOR_H_

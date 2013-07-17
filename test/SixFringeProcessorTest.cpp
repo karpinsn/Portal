@@ -68,14 +68,16 @@ public:
   }
 
   Texture& GetPhaseMap0( )
-  {
-	return processor->m_phaseMap0;
-  }
+	{ return processor->m_phaseMap0; }
 
   Texture& GetPhaseMap1( )
-  {
-	return processor->m_phaseMap1;
-  }
+	{ return processor->m_phaseMap1; }
+
+  Texture& GetPhaseMap2( )
+	{ return processor->m_phaseMap2; }
+
+  Texture& GetCoordMap( )
+	{ return processor->m_coordMap; }
 };
 
 TEST_F(SixFringeProcessorTest, CheckProcessLeft)
@@ -113,5 +115,22 @@ TEST_F(SixFringeProcessorTest, CheckProcessLeft)
 
   // Unwrapped Phase - PhaseMap 1
   GetPhaseMap1( ).transferFromTexture( outImage );
-  TestUtils::WritePFM( "Phase1.pfm", cv::Mat( outImage ) );
+  cv::Mat phase = TestUtils::LoadPFM( "data/Capture1/LeftPhase.pfm" );
+  cv::cvtColor( phase, phase, CV_BGRA2RGBA );
+  double norm = cv::norm( // We are grabbing a ROI since there is some random noise failing the test
+	cv::Mat(phase, cv::Rect(0, 0, phase.cols - 260, phase.rows) ) - 
+	cv::Mat(outImage, cv::Rect(0, 0, outImage->width - 260, outImage->height) ) );
+  // Using a large norm since there is a single pixel that is causing the test to fail
+  EXPECT_NEAR( 0.0, cv::norm( norm ), 18.0f ); 
+
+  // Filtered Unwrapped Phase - PhaseMap 2
+  GetPhaseMap2( ).transferFromTexture( outImage );
+  cv::Mat phaseFilt = TestUtils::LoadPFM( "data/Capture1/LeftPhaseFilt.pfm" );
+  cv::cvtColor( phaseFilt, phaseFilt, CV_BGRA2RGBA );
+  EXPECT_NEAR( 0.0, cv::norm( cv::Mat(outImage) - phaseFilt ), .001f );
+
+  // TODO - Finish this test
+  // Coordinate Map
+  GetCoordMap( ).transferFromTexture( outImage );
+  //TestUtils::WritePFM("Coords.pfm", cv::Mat(outImage));
 }

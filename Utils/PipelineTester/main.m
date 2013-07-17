@@ -46,6 +46,20 @@ portalRightComponents = gDebuggerReadCSV('bin\RightComponents.csv', 800, 600, '%
 leftComponentDelta = portalLeftComponents - leftComponents;
 rightComponentDelta = portalRightComponents - rightComponents;
 
+%% Component Smoothing
+H = fspecial('gaussian', 7, 7/3);
+leftComponents = imfilter(leftComponents, H);
+rightComponents = imfilter(rightComponents, H);
+
+%% Phase Recovery
+l1 = atan2(leftComponents(:,:,1), leftComponents(:,:,2));
+l2 = atan2(leftComponents(:,:,3), leftComponents(:,:,4));
+l12 = mod( l1 - l2, 2*pi );
+
+r1 = atan2(rightComponents(:,:,1), rightComponents(:,:,2));
+r2 = atan2(rightComponents(:,:,3), rightComponents(:,:,4));
+r12 = mod( r1 - r2, 2*pi );
+
 %% Phase Unwrapping
 leftM = 0.011635528346629;
 leftB = -1.576614090968211;
@@ -69,6 +83,22 @@ kr = floor((r12 * (P12/P1) - r1) / (2.0 * pi));
 % This phase should be unwrapped
 phaseL = l1 + kl * 2.0 * pi;
 phaseR = r1 + kr * 2.0 * pi;
+
+% Now mask
+phaseL(~lmask) = 0.0;
+phaseR(~rmask) = 0.0;
+
+%% Save Phase
+phase(:,:,1) = phaseL;
+phase(:,:,2) = phaseL;
+phase(:,:,3) = phaseL;
+phase(:,:,4) = lmask;
+writePFM(phase, 'bin\LeftPhase.pfm');
+phase(:,:,1) = phaseR;
+phase(:,:,2) = phaseR;
+phase(:,:,3) = phaseR;
+phase(:,:,4) = rmask;
+writePFM(phase, 'bin\RightPhase.pfm');
 
 %% Phase Check
 portalLeftPhase = gDebuggerReadCSV('bin\LeftPhase.csv', 800, 600, '%f');
