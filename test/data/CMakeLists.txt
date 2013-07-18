@@ -30,3 +30,4 @@ add_file_copy_target(TestData ${TEST_DATA_OUTPUT} ${TEST_DATA_FILES})
 #	Add subdirectories
 #	---------------------------------------------------------------------------------------
 add_subdirectory(capture1)
+add_subdirectory(capture2)

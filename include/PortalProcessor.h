@@ -53,8 +53,9 @@ using namespace wrench::gl;
 
 class PortalProcessor : public DynamicallyScriptableQGLWidget
 {
+  friend class PortalProcessorTest;	// Used for unit testing
   Q_OBJECT
-	
+
 private:
   DISALLOW_COPY_AND_ASSIGN(PortalProcessor);
 

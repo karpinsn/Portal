@@ -32,7 +32,7 @@
 
 class SixFringeProcessorTest : public ::testing::Test
 {
-public:
+protected:
   QGLWidget                      glContext;
   unique_ptr<SixFringeProcessor> processor;
   unique_ptr<MultiOpenGLBuffer>  buffer;

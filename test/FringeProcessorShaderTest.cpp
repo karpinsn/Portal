@@ -142,10 +142,7 @@ TEST_F(FringeProcessorShaderTest, Wrapped2Unwrapped)
   shader.uniform("pitch1", 30);
   shader.uniform("pitch2", 39);
   shader.uniform( "m", .0483f * 256.0f );
-  shader.uniform( "b1", -1.0f / 256.0f );
-  shader.uniform( "b2", -5.0f / 256.0f );
-  shader.uniform( "b3", -6.0f / 256.0f );
-  shader.uniform( "rightSide", false);
+  shader.uniform( "b", -5.0f );
   
   // Now do the actual shader pass to see if we get the expected output
   shaderProcessor.bind( );

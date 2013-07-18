@@ -11,6 +11,7 @@ set(TESTS
     SixFringeProcessorTest.cpp
     FringeProcessorShaderTest.cpp
     PortalProcessorShaderTest.cpp
+    PortalProcessorTest.cpp
     TestUtils.h
     )
 
@@ -27,6 +28,7 @@ add_executable("${PROJECT_UNIT_TEST_NAME}"
 
 add_dependencies("${PROJECT_UNIT_TEST_NAME}" TestData)
 add_dependencies("${PROJECT_UNIT_TEST_NAME}" TestDataCapture1)
+add_dependencies("${PROJECT_UNIT_TEST_NAME}" TestDataCapture2)
 
 # Link against GTest and GText Main
 target_link_libraries("${PROJECT_UNIT_TEST_NAME}" gtest gtest_main ${LIBS})

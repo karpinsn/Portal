@@ -37,7 +37,7 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
   // Scaling so that we fit in our cube around the origin
   glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/300.0f ) ) * glm::translate( glm::mat4( ), glm::vec3( 0.0f, 0.0f, -1100.0 ) );
   // Rotate the projector modelView some angle around our model view (30 degrees?)
-  glm::mat4 projectorModelView = glm::rotate( modelView, 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) ;
+  glm::mat4 projectorModelView = glm::rotate( glm::mat4( ), 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) * modelView;
   // Our projection is a cube around the origin
   glm::mat4 projection = glm::ortho( -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f );
 
@@ -139,7 +139,7 @@ void PortalProcessor::paintGL( void )
 
   OGLStatus::logOGLErrors("PortalProcessor - paintGL( )");
 
-  makeCurrent( );                   //  Make sure we are the current OpenGL Context
+  makeCurrent( );                   // Make sure we are the current OpenGL Context
   _Process( );                      // Process all of our capture processors
   _Output( );                       // Now output whatever is selected as the output
   m_outputBuffer->WriteFinished( ); // Inform the output buffer we are done and can swap
@@ -218,7 +218,7 @@ void PortalProcessor::_RenderProcessors( )
 {
   m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Make sure we clear to transparent
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
   
   // For each processor, render it in the scene
   for ( int processor = 0; processor < (int)m_captureProcessors.size(); ++processor )
