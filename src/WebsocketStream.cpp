@@ -61,8 +61,8 @@ void WebsocketStreamer::Stop(void)
 
 void WebsocketStreamer::StreamFrame(void)
 {
-  int encodingProperties[] = {CV_IMWRITE_JPEG_QUALITY, 95, 0};
-  //int encodingProperties[] = {CV_IMWRITE_PNG_COMPRESSION, 3, 0 };
+  //int encodingProperties[] = {CV_IMWRITE_JPEG_QUALITY, 95, 0};
+  int encodingProperties[] = {CV_IMWRITE_PNG_COMPRESSION, 3, 0 };
 
   ////	Do our image pulling stuff
   m_inputBuffer->StartRead();
@@ -71,7 +71,7 @@ void WebsocketStreamer::StreamFrame(void)
 
   // PROFILE: Hot point in the code (for PNG)
   auto buffer = shared_ptr<CvMat>(
-				cvEncodeImage(".jpg", m_formatConverterImage.get(), encodingProperties), 
+				cvEncodeImage(".png", m_formatConverterImage.get(), encodingProperties), 
 				[](CvMat* ptr){cvReleaseMat(&ptr);});
   m_socket.broadcastData(buffer->data.ptr, buffer->width);
 }
