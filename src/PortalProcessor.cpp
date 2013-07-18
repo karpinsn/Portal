@@ -12,7 +12,7 @@ void PortalProcessor::AddProcessContext( IProcessContext* processContext )
 void PortalProcessor::Init( ITripleBuffer* outputBuffer )
 {
   Utils::ThrowIfFalse(nullptr != outputBuffer, "Invalid output buffer");
-  Utils::ThrowIfFalse(0 < m_captureProcessors.size(), "Must have an input capture buffer");
+  Utils::ThrowIfFalse(0 < m_captureProcessors.size( ), "Must have an input capture buffer");
 
   int width = ResolveProperty<int>( "outputWidth" );
   int height = ResolveProperty<int>( "outputHeight" );
@@ -30,12 +30,12 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
   for ( auto itr = m_captureProcessors.begin( ); itr != m_captureProcessors.end( ); ++itr )
   {
 	(*itr).first->Init( );
-	(*itr).second = make_shared<SplatField>( (*itr).first->GetWidth(), (*itr).first->GetHeight() );
+	(*itr).second = make_shared<SplatField>( (*itr).first->GetWidth( ), (*itr).first->GetHeight( ) );
   }
 
   // Initialize our matricies -----------------------------------------------------
   // Scaling so that we fit in our cube around the origin
-  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/500.0f ) );
+  glm::mat4 modelView = glm::scale( glm::mat4( ), glm::vec3( 1.0/300.0f ) ) * glm::translate( glm::mat4( ), glm::vec3( 0.0f, 0.0f, -1100.0 ) );
   // Rotate the projector modelView some angle around our model view (30 degrees?)
   glm::mat4 projectorModelView = glm::rotate( modelView, 30.0f, glm::vec3( 0.0f, 1.0f, 0.0f ) ) ;
   // Our projection is a cube around the origin
@@ -89,7 +89,7 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
   m_renderTexture.uniform("image", 0);
 
   // Initialize our textures --------------------------------------------------------
-  auto blendImage = cv::imread("blend.png");
+  auto blendImage = cv::imread("blend.png"); // TODO - Remove hardcoding
   m_blendMap.init( blendImage.cols, blendImage.rows, GL_RGBA, GL_RGB, GL_UNSIGNED_BYTE );
   assert( m_blendMap.transferToTexture( blendImage ) );
 
