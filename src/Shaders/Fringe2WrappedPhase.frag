@@ -38,5 +38,5 @@ void main(void)
         { discard; }
     
     phase = vec4(sin(phi1), cos(phi1), sin(phi2), cos(phi2) );
-	tex = vec4( vec3( intensity ), 1.0 );
+	tex = vec4( vec3( ( fringe1.r + fringe1.g + fringe1.b ) / 3.0 ), 1.0 );
 }
