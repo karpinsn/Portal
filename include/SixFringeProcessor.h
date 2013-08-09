@@ -79,6 +79,7 @@ private:
   Texture	m_phaseMap1;
   Texture	m_phaseMap2;
   Texture	m_coordMap;
+  Texture	m_textureMap;
 
   FBO m_imageProcessor;
   bool m_isInit;
@@ -98,7 +99,7 @@ signals:
   void ProcessedFrame( void );
 
 private:
-  void _wrapPhase( GLenum drawBuffer, MultiOpenGLBuffer* fringeBuffer );
+  void _wrapPhase( GLenum* drawBuffers, MultiOpenGLBuffer* fringeBuffer );
   void _filterPhase( GLenum drawBuffer, Texture& phase2Filter );
   void _gaussianFilter( GLenum pass1DrawBuffer, GLenum pass2DrawBuffer, Texture& pass1ReadBuffer, Texture& pass2ReadBuffer );
   void _unwrapPhase( GLenum drawBuffer, Texture& unfilteredPhase, Texture& filteredPhase );

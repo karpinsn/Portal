@@ -25,24 +25,24 @@ Process.pointSize = 3.0;
 // Now create capture contexts from our cameras and add them to the process context
 var rightCapture = new CameraCapture( rightCameraBuffer, rightCamera );
 var rightProcessor = new SixFringeProcessor( rightCameraBuffer, rightCameraConfig, projectorConfig );
-rightProcessor.gammaCutoff = .10;
-rightProcessor.intensityCutoff = .10;
-rightProcessor.fringePitch1 = 54;
-rightProcessor.fringePitch2 = 60;
+rightProcessor.gammaCutoff = .06;
+rightProcessor.intensityCutoff = .06;
+rightProcessor.fringePitch1 = 96;
+rightProcessor.fringePitch2 = 117;
 rightProcessor.Phi0 = -3.02523737012350;
-rightProcessor.m = 0.010833078115827;
-rightProcessor.b = -1.218721288030523;
+rightProcessor.m = 0.011219973762821;
+rightProcessor.b = -1.671776090660283;
 Process.AddProcessContext(rightProcessor);
 
 var leftCapture = new CameraCapture( leftCameraBuffer, leftCamera );
 var leftProcessor = new SixFringeProcessor( leftCameraBuffer, leftCameraConfig, projectorConfig );
-leftProcessor.gammaCutoff = .10;
-leftProcessor.intensityCutoff = .10;
-leftProcessor.fringePitch1 = 54;
-leftProcessor.fringePitch2 = 60;
+leftProcessor.gammaCutoff = .06;
+leftProcessor.intensityCutoff = .06;
+leftProcessor.fringePitch1 = 96;
+leftProcessor.fringePitch2 = 117;
 leftProcessor.Phi0 = -3.02523737012350;
-leftProcessor.m = 0.011023132117859;
-leftProcessor.b = -2.645551708286142;
+leftProcessor.m = 0.011635528346629;
+leftProcessor.b = -1.733693723647701;
 Process.AddProcessContext(leftProcessor);
 
 // Finally, init our process context and its output context

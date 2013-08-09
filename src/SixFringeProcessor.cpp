@@ -18,6 +18,8 @@ void SixFringeProcessor::Init( )
   m_fringe2Phase.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/Fringe2WrappedPhase.frag"));
   m_fringe2Phase.bindAttributeLocation("vert", 0);
   m_fringe2Phase.bindAttributeLocation("vertTexCoord", 1);
+  m_fringe2Phase.bindOutputLocation("phase", 0);
+  m_fringe2Phase.bindOutputLocation("tex", 1);
   m_fringe2Phase.link();
   m_fringe2Phase.uniform("fringeImage1", 0);
   m_fringe2Phase.uniform("fringeImage2", 1); 
@@ -76,12 +78,14 @@ void SixFringeProcessor::Init( )
   m_phaseMap1.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_phaseMap2.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_coordMap.init		( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_textureMap.init		( width, height, GL_RGBA,        GL_RGBA, GL_UNSIGNED_BYTE );
 
   m_imageProcessor.init( width, height );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap0,		GL_COLOR_ATTACHMENT0 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap1,		GL_COLOR_ATTACHMENT1 );
   m_imageProcessor.setTextureAttachPoint( m_phaseMap2,		GL_COLOR_ATTACHMENT2 );
   m_imageProcessor.setTextureAttachPoint( m_coordMap,		GL_COLOR_ATTACHMENT3 );
+  m_imageProcessor.setTextureAttachPoint( m_textureMap,		GL_COLOR_ATTACHMENT4 );
   m_imageProcessor.unbind( );
 
   m_isInit = true;
@@ -116,7 +120,8 @@ void SixFringeProcessor::Process( void )
   // Our actual decoding is done here
   m_imageProcessor.bind();
   {
-	_wrapPhase( GL_COLOR_ATTACHMENT0, m_inputBuffer );
+	GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT4 };
+	_wrapPhase( drawBuffers, m_inputBuffer );
 	_gaussianFilter( GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, m_phaseMap0, m_phaseMap1);
 	_unwrapPhase(GL_COLOR_ATTACHMENT1, m_phaseMap0, m_phaseMap2);
 	_filterPhase( GL_COLOR_ATTACHMENT2, m_phaseMap1 );
@@ -125,9 +130,9 @@ void SixFringeProcessor::Process( void )
   m_imageProcessor.unbind();
 }
 
-void SixFringeProcessor::_wrapPhase(GLenum drawBuffer, MultiOpenGLBuffer* fringeBuffer)
+void SixFringeProcessor::_wrapPhase(GLenum* drawBuffers, MultiOpenGLBuffer* fringeBuffer)
 {
-  m_imageProcessor.bindDrawBuffer( drawBuffer );
+  m_imageProcessor.bindDrawBuffers( 2, drawBuffers );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   m_fringe2Phase.bind( );
 

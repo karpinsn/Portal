@@ -15,6 +15,7 @@ uniform float intensityCutoff;
 in vec2 fragTexCoord;
 
 out vec4 phase;
+out vec4 tex;
 
 void main(void)
 {
@@ -37,4 +38,5 @@ void main(void)
         { discard; }
     
     phase = vec4(sin(phi1), cos(phi1), sin(phi2), cos(phi2) );
+	tex = vec4( vec3( intensity ), 1.0 );
 }

@@ -11,8 +11,8 @@ height = 768;
 direction = 0;
 
 % Pitches of the patterns. Found using optimal finder above
-pitch1 = 60;
-pitch2 = 63;
+pitch1 = 96;
+pitch2 = 117;
 
 %% Calculated numbers
 pitch12 = (pitch1 * pitch2) / abs(pitch1 - pitch2);
