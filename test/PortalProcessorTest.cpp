@@ -53,6 +53,9 @@ public:
   void       BindFringeImage( GLenum texture )
 	{ throw "Unimplemented!"; }
 
+  void       BindTextureMap( GLenum texture )
+	{ throw "Unimplemented!"; }
+
   void       Process( void ) { } // Dont need to do anything 
 };
 

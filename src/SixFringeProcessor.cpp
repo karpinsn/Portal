@@ -104,6 +104,9 @@ void SixFringeProcessor::BindCoordMap( GLenum texture )
 void SixFringeProcessor::BindFringeImage( GLenum texture )
   { ( *m_inputBuffer->ReadBuffersBegin( ) )->ReadTexture( ).bind( texture ); }
 
+void SixFringeProcessor::BindTextureMap( GLenum texture )
+  { m_textureMap.bind(texture); }
+
 void SixFringeProcessor::Process( void )
 {
   // If we are not init then just return

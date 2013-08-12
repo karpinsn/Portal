@@ -53,6 +53,7 @@ public:
   virtual const int  GetHeight( void ) = 0;
   virtual void       BindCoordMap( GLenum texture ) = 0;
   virtual void       BindFringeImage( GLenum texture ) = 0;
+  virtual void       BindTextureMap( GLenum texture ) = 0;
   virtual void       Process( void ) = 0;
 };
 
@@ -93,6 +94,7 @@ public:
   const int GetHeight( void );
   void      BindCoordMap( GLenum texture );
   void      BindFringeImage( GLenum texture );
+  void      BindTextureMap( GLenum texture );
   void      Process( void );
 
 signals:
