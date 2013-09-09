@@ -95,13 +95,14 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
 
   m_rectifiedDepthMap.init( width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT );
   m_rectifiedCoordinateMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+  m_rectifiedTextureMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
   m_encodedMap.init( width, height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 
   m_imageProcessor.init( width, height );
   glViewport( 0, 0, width, height );
 
   m_imageProcessor.setTextureAttachPoint( m_rectifiedCoordinateMap, GL_COLOR_ATTACHMENT0 );
-  m_imageProcessor.setTextureAttachPoint( m_encodedMap,	GL_COLOR_ATTACHMENT1 );
+  m_imageProcessor.setTextureAttachPoint( m_encodedMap,	GL_COLOR_ATTACHMENT2 );
   m_imageProcessor.unbind( );
 
   m_isInit = true;
@@ -176,7 +177,7 @@ void PortalProcessor::_Process( void )
 
 	// Shader pass 2 - Encoding
 	m_coordinate2Holo.bind( );
-	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT1 );
+	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT2 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	m_rectifiedCoordinateMap.bind( GL_TEXTURE0 );
 	m_imageProcessor.process( );
@@ -189,8 +190,8 @@ void PortalProcessor::_Output( void )
   // Output results
   m_imageProcessor.bind();
   {
-	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT2 );
-	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT2 );
+	m_imageProcessor.setTextureAttachPoint( m_outputBuffer->StartWriteTexture( ), GL_COLOR_ATTACHMENT3 );
+	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT3 );
 	m_renderTexture.bind( );
 
 	switch (m_displayMode)

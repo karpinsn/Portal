@@ -80,6 +80,7 @@ private:
   Texture	m_blendMap;
   Texture	m_rectifiedDepthMap;
   Texture	m_rectifiedCoordinateMap;
+  Texture	m_rectifiedTextureMap;
   Texture	m_encodedMap;
 
   FBO m_imageProcessor;
