@@ -47,6 +47,7 @@ void MainController::Init(QString initScriptFilename)
 	m_interface->AddObjectType<CalibrationData>( "CalibrationData" );
 	qRegisterMetaType<MainController*>("MainController");
 	m_interface->AddObjectType<OpenGLTripleBuffer, MainController*, bool, bool>( "OpenGLTripleBuffer" );
+	m_interface->AddObjectType<OpenGLTripleBuffer, MainController*, bool, bool, unsigned int>( "OpenGLTripleBuffer" );
 	m_interface->AddObjectType<MultiOpenGLBuffer, int, bool, bool, MainController*>( "MultiOpenGLBuffer" );
 	m_interface->AddObjectType<CameraCapture, ITripleBuffer*, lens::ICamera*>( "CameraCapture" );
 	m_interface->AddObjectType<SixFringeProcessor, MultiOpenGLBuffer*, CalibrationData*, CalibrationData*>( "SixFringeProcessor" );

@@ -48,7 +48,7 @@ void WebsocketProcessor::ProcessSocket()
 void WebsocketStreamer::Init(void)
 {
   m_formatConverterImage = shared_ptr<IplImage>(
-	cvCreateImage( cvSize( m_inputBuffer->GetWidth(), m_inputBuffer->GetHeight() ), IPL_DEPTH_8U, 3),
+	cvCreateImage( cvSize( m_inputBuffer->GetWidth(), m_inputBuffer->GetHeight() ), IPL_DEPTH_8U, 4),
 	[](IplImage* ptr) { cvReleaseImage( &ptr ); } );
   m_running = true;
 }
