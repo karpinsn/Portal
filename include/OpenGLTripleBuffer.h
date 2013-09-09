@@ -45,6 +45,7 @@ private:
   shared_ptr<QGLWidget> m_readContext;
   bool m_makeReadContext;
   bool m_makeWriteContext;
+  const unsigned int m_channelCount;
 
   unique_ptr<Texture> m_writeBuffer;
   unique_ptr<Texture> m_workingBuffer;
@@ -55,7 +56,7 @@ private:
   QMutex m_swapLock;
 
 public:
-  OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory, bool makeReadContext, bool makeWriteContext);
+  OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory, bool makeReadContext, bool makeWriteContext, unsigned int channelCount = 3 );
   
   void						  InitWrite(int width, int height);
   void						  Write(const IplImage* data);

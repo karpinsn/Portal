@@ -7,6 +7,7 @@ uniform float fringeFrequency;
 uniform mat4 projectorModelView;
 uniform mat4 projectionMatrix;
 uniform sampler2D coordinateMap;
+uniform sampler2D textureMap;
 
 in vec2 fragTexCoord;
 out vec4 holoImage;
@@ -17,6 +18,8 @@ void main()
     if(coord.a == 0.0) // If we have zero in alpha, then we haven't blended and shouldn't render
         discard;
 
+	vec3 tex = texture( textureMap, fragTexCoord ).rgb;
+		
     // Step 1 - Normalizing
     // Since we have been doing blending not all the fragments will have an alpha
     // of 1.0 (either more or less). We need to normalize all the colors so that
@@ -35,9 +38,10 @@ void main()
 
 	float b = floor(projectorX * fringeFrequency) * stepHeight + .5;
 
+	// Stick the texture in the alpha channel
 	holoImage = vec4((1.0 - sin(angularFrequency * projectorX)) * .5, 
 						(1.0 - cos(angularFrequency * projectorX)) * .5, 
 						cos(stairAngularFrequency * (projectorX - ((b / stepHeight) * stepWidth)) + pi) * (stepHeight / 4.5) + (stepHeight / 2.0) + b, 
-						1.0);
+						tex.r);
 }
 

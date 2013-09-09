@@ -61,8 +61,11 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
   m_coordinateRectifierPass2.init( );
   m_coordinateRectifierPass2.attachShader( new Shader( GL_VERTEX_SHADER, "Shaders/CoordinateRectifier.vert" ) );
   m_coordinateRectifierPass2.attachShader( new Shader( GL_FRAGMENT_SHADER, "Shaders/CoordinateRectifierSplat.frag" ) );
+  m_coordinateRectifierPass2.bindOutputLocation( "rectifiedCoordMap", 0 );
+  m_coordinateRectifierPass2.bindOutputLocation( "rectifiedTextureMap", 1 );
   m_coordinateRectifierPass2.link( );
   m_coordinateRectifierPass2.uniform( "coordinateMap", 0 );
+  m_coordinateRectifierPass2.uniform( "textureMap", 1 );
   m_coordinateRectifierPass2.uniform( "blendMap", 1 );
   m_coordinateRectifierPass2.uniform( "depthMap", 2 );
   m_coordinateRectifierPass2.uniform( "width", width );
@@ -78,6 +81,7 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
   m_coordinate2Holo.link( );
   m_coordinate2Holo.uniform( "fringeFrequency", ResolveProperty<float>( "fringeFrequency" ) / 2.0f );
   m_coordinate2Holo.uniform( "coordinateMap", 0 );
+  m_coordinate2Holo.uniform( "textureMap", 1 );
   m_coordinate2Holo.uniform( "projectorModelView", projectorModelView );
   m_coordinate2Holo.uniform( "projectionMatrix", projection );
 
@@ -102,6 +106,7 @@ void PortalProcessor::Init( ITripleBuffer* outputBuffer )
   glViewport( 0, 0, width, height );
 
   m_imageProcessor.setTextureAttachPoint( m_rectifiedCoordinateMap, GL_COLOR_ATTACHMENT0 );
+  m_imageProcessor.setTextureAttachPoint( m_rectifiedTextureMap, GL_COLOR_ATTACHMENT1 );
   m_imageProcessor.setTextureAttachPoint( m_encodedMap,	GL_COLOR_ATTACHMENT2 );
   m_imageProcessor.unbind( );
 
@@ -118,7 +123,7 @@ void PortalProcessor::OutputFringe( int processorNumber )
 	m_displayNumber = 0;
   }
   else
-	{	m_displayNumber = processorNumber; }
+	{ m_displayNumber = processorNumber; }
 
   m_displayMode = Fringe;
 }
@@ -180,6 +185,7 @@ void PortalProcessor::_Process( void )
 	m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT2 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	m_rectifiedCoordinateMap.bind( GL_TEXTURE0 );
+	m_rectifiedTextureMap.bind( GL_TEXTURE1 );
 	m_imageProcessor.process( );
   }
   m_imageProcessor.unbind();
@@ -217,7 +223,8 @@ void PortalProcessor::_Output( void )
 
 void PortalProcessor::_RenderProcessors( )
 {
-  m_imageProcessor.bindDrawBuffer( GL_COLOR_ATTACHMENT0 );
+  GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+  m_imageProcessor.bindDrawBuffers( 2, drawBuffers );
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Make sure we clear to transparent
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
   
@@ -225,6 +232,7 @@ void PortalProcessor::_RenderProcessors( )
   for ( int processor = 0; processor < (int)m_captureProcessors.size(); ++processor )
   { 
 	m_captureProcessors[processor].first->BindCoordMap( GL_TEXTURE0 ); 
+	m_captureProcessors[processor].first->BindTextureMap( GL_TEXTURE1 );
 	m_captureProcessors[processor].second->draw( );
   }
 }

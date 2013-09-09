@@ -31,12 +31,16 @@ class MockProcessContext : public IProcessContext
 {
 private:
   Texture m_coordMap;
+  Texture m_texMap;
 
 public:
   MockProcessContext( cv::Mat coordMap )
   {
 	m_coordMap.init	( coordMap.cols, coordMap.rows, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
 	m_coordMap.transferToTexture( coordMap );
+
+	m_texMap.init( coordMap.cols, coordMap.rows, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT );
+	m_texMap.transferToTexture( coordMap ); // Just pass the coord map, they are handled the exact same
   }
 
   void       Init( void ) { } // Dont need to do anything
@@ -54,7 +58,7 @@ public:
 	{ throw "Unimplemented!"; }
 
   void       BindTextureMap( GLenum texture )
-	{ throw "Unimplemented!"; }
+	{ m_texMap.bind( texture ); }
 
   void       Process( void ) { } // Dont need to do anything 
 };

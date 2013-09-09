@@ -13,8 +13,10 @@ uniform sampler2D blendMap;
 uniform sampler2D depthMap;
 
 in vec3 fragPosition;
+in vec3 fragTexture;
 
 out vec4 rectifiedCoordMap;
+out vec4 rectifiedTextureMap;
 
 void main()
 {
@@ -31,4 +33,5 @@ void main()
     // and then select the alpha based on the pointCoord position in the sprite
     float blendValue = texture( blendMap, gl_PointCoord ).r;
     rectifiedCoordMap = vec4( fragPosition * blendValue, blendValue );
+	rectifiedTextureMap = vec4( fragTexture * blendValue, blendValue );
 }

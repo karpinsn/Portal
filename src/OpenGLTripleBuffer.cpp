@@ -1,7 +1,8 @@
 #include "OpenGLTripleBuffer.h"
 
-OpenGLTripleBuffer::OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory, bool makeReadContext, bool makeWriteContext) :
-  m_contextFactory(contextFactory), m_writeContext(nullptr), m_readContext(nullptr), m_makeReadContext(makeReadContext), m_makeWriteContext(makeWriteContext)
+OpenGLTripleBuffer::OpenGLTripleBuffer(ISharedGLContextFactory* contextFactory, bool makeReadContext, bool makeWriteContext, unsigned int channelCount ) :
+  m_contextFactory(contextFactory), m_writeContext(nullptr), m_readContext(nullptr), 
+  m_makeReadContext(makeReadContext), m_makeWriteContext(makeWriteContext), m_channelCount( channelCount )
 { }
 
 void OpenGLTripleBuffer::InitWrite(int width, int height)
@@ -28,11 +29,14 @@ void OpenGLTripleBuffer::InitWrite(int width, int height)
   m_workingBuffer = unique_ptr<Texture>( new Texture( ) );
   m_readBuffer	  = unique_ptr<Texture>( new Texture( ) );
 
-  m_writeBuffer->init	(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-  m_workingBuffer->init	(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-  m_readBuffer->init	(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  // TODO - This is pretty hack-ish
+  GLint format = m_channelCount == 4 ? GL_RGBA : GL_RGB;
 
-  m_readImage = shared_ptr<IplImage>( cvCreateImage( cvSize( width, height), IPL_DEPTH_8U, 3 ),
+  m_writeBuffer->init	(width, height, format, format, GL_UNSIGNED_BYTE);
+  m_workingBuffer->init	(width, height, format, format, GL_UNSIGNED_BYTE);
+  m_readBuffer->init	(width, height, format, format, GL_UNSIGNED_BYTE);
+
+  m_readImage = shared_ptr<IplImage>( cvCreateImage( cvSize( width, height), IPL_DEPTH_8U, m_channelCount ),
 	[] ( IplImage* ptr ) { cvReleaseImage( &ptr ); } );
 }
 

@@ -67,7 +67,7 @@ void WebsocketStreamer::StreamFrame(void)
   ////	Do our image pulling stuff
   m_inputBuffer->StartRead();
   auto frame = m_inputBuffer->ReadImage();
-  cvCvtColor(frame.get(), m_formatConverterImage.get(), CV_RGB2BGR);
+  cvCvtColor(frame.get(), m_formatConverterImage.get(), CV_RGBA2BGRA);
 
   // PROFILE: Hot point in the code (for PNG)
   auto buffer = shared_ptr<CvMat>(

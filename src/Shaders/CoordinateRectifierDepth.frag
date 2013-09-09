@@ -9,6 +9,7 @@ uniform mat4 projectionMatrix;
 uniform float delta;
 
 in vec3 fragPosition;
+in vec3 fragTexture;
 
 void main()
 {

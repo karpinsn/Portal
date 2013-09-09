@@ -46,7 +46,8 @@ leftProcessor.b = -1.733693723647701;
 Process.AddProcessContext(leftProcessor);
 
 // Finally, init our process context and its output context
-var streamBuffer = new OpenGLTripleBuffer( this, true, false );
+// Use 4 channel so that we can bring a texture in the alpha channel
+var streamBuffer = new OpenGLTripleBuffer( this, true, false, 4 );
 Process.Init( streamBuffer );
 var streamContext = new WebsocketStream( 7681, streamBuffer );
 

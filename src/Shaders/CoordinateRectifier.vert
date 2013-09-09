@@ -7,6 +7,7 @@ uniform mat4 modelView;
 uniform mat4 projectionMatrix;
 
 uniform sampler2D coordinateMap;
+uniform sampler2D textureMap;
 
 uniform float pointSize;
  
@@ -14,6 +15,7 @@ in vec3 vert;
 in vec2 vertTexCoord;
 
 out vec3 fragPosition;
+out vec3 fragTexture;
 
 void main()
 { 
@@ -28,6 +30,8 @@ void main()
    	
 	//	Need Modelview for the boundingbox. That will give us world coord relative to the box
     fragPosition = newVert.xyz;  
+	fragTexture = texture( textureMap, vertTexCoord ).rgb;
+	
     gl_PointSize = pointSize;
     gl_Position  = projectionMatrix * modelView * newVert; 
 } 
