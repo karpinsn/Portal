@@ -25,6 +25,7 @@ void main()
     // of 1.0 (either more or less). We need to normalize all the colors so that
     // they are correctly sampled
     coord = coord.xyzw / coord.wwww;
+    tex   = tex.xyzw / tex.wwww;
 
     // Step 2 - Holo encoding
 	//	Constants for encoding
