@@ -18,7 +18,7 @@ void main()
     if(coord.a == 0.0) // If we have zero in alpha, then we haven't blended and shouldn't render
         discard;
 
-	vec3 tex = texture( textureMap, fragTexCoord ).rgb;
+	vec4 tex = texture( textureMap, fragTexCoord );
 		
     // Step 1 - Normalizing
     // Since we have been doing blending not all the fragments will have an alpha
