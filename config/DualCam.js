@@ -20,29 +20,34 @@ var leftCameraBuffer = new MultiOpenGLBuffer(2, false, true, this);
 Process.outputWidth = 512;
 Process.outputHeight = 512;
 Process.fringeFrequency = 16.0;
+Process.angle = 30.0;
 Process.pointSize = 3.0;
+Process.scale = 1.0/225.0;
+Process.xShift = 0.0;
+Process.yShift = 150.0;
+Process.zShift = -850.0;
 
 // Now create capture contexts from our cameras and add them to the process context
 var rightCapture = new CameraCapture( rightCameraBuffer, rightCamera );
 var rightProcessor = new SixFringeProcessor( rightCameraBuffer, rightCameraConfig, projectorConfig );
 rightProcessor.gammaCutoff = .06;
 rightProcessor.intensityCutoff = .06;
-rightProcessor.fringePitch1 = 96;
-rightProcessor.fringePitch2 = 117;
+rightProcessor.fringePitch1 = 57;
+rightProcessor.fringePitch2 = 69;
 rightProcessor.Phi0 = -3.02523737012350;
-rightProcessor.m = 0.011219973762821;
-rightProcessor.b = -1.671776090660283;
+rightProcessor.m = 0.010685689297924;
+rightProcessor.b = -1.325025472942634;
 Process.AddProcessContext(rightProcessor);
 
 var leftCapture = new CameraCapture( leftCameraBuffer, leftCamera );
 var leftProcessor = new SixFringeProcessor( leftCameraBuffer, leftCameraConfig, projectorConfig );
 leftProcessor.gammaCutoff = .06;
 leftProcessor.intensityCutoff = .06;
-leftProcessor.fringePitch1 = 96;
-leftProcessor.fringePitch2 = 117;
+leftProcessor.fringePitch1 = 57;
+leftProcessor.fringePitch2 = 69;
 leftProcessor.Phi0 = -3.02523737012350;
-leftProcessor.m = 0.011635528346629;
-leftProcessor.b = -1.733693723647701;
+leftProcessor.m = 0.010649466622338;
+leftProcessor.b = -0.521823864494576;
 Process.AddProcessContext(leftProcessor);
 
 // Finally, init our process context and its output context

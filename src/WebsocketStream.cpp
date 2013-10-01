@@ -62,7 +62,7 @@ void WebsocketStreamer::Stop(void)
 void WebsocketStreamer::StreamFrame(void)
 {
   //int encodingProperties[] = {CV_IMWRITE_JPEG_QUALITY, 95, 0};
-  int encodingProperties[] = {CV_IMWRITE_PNG_COMPRESSION, 3, 0 };
+  int encodingProperties[] = {CV_IMWRITE_PNG_COMPRESSION, 9, 0 };
 
   ////	Do our image pulling stuff
   m_inputBuffer->StartRead();
